@@ -79,11 +79,15 @@ const initDatabase = async () => {
     due_date TIMESTAMP,
     subject TEXT,
     priority TEXT DEFAULT 'medium',
-    submission_status TEXT DEFAULT 'pending',
+    submission_status TEXT DEFAULT 'not_submitted',
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`);
+
+  try {
+    await sql(`ALTER TABLE assignments ALTER COLUMN submission_status SET DEFAULT 'not_submitted'`);
+  } catch(e) {}
 
   console.log('Database initialized successfully');
 };

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Task - TaskKeeper</title>
+    <title>Create Assignment - TaskKeeper</title>
     <style>
         * {
             margin: 0;
@@ -326,13 +326,13 @@
     </div>
 
     <div class="container">
-        <h1>Create New Task</h1>
-        <p style="color: #999; font-size: 14px; margin-bottom: 24px; line-height: 1.5;">Fill in the details below to add a new task. Set a deadline and priority to stay organized.</p>
+        <h1>Create New Assignment</h1>
+        <p style="color: #999; font-size: 14px; margin-bottom: 24px; line-height: 1.5;">Fill in the details below to add a new assignment. Priority is assigned automatically based on urgency and content.</p>
         <div id="alert" class="alert"></div>
         
         <form id="createTaskForm">
             <div class="form-group">
-                <label for="title">Task Title <span style="color: #e74c3c;">*</span></label>
+                <label for="title">Assignment Title <span style="color: #e74c3c;">*</span></label>
                 <input 
                     type="text" 
                     id="title" 
@@ -364,27 +364,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="priority">Priority</label>
-                    <select id="priority" name="priority">
-                        <option value="low">Low — No rush</option>
-                        <option value="medium" selected>Medium — Normal</option>
-                        <option value="high">High — Urgent</option>
-                    </select>
+                    <label>Priority</label>
+                    <div id="priorityPreview" style="padding: 12px; border: 1px solid #2a3a4a; border-radius: 4px; background: #1a2332; color: #fff; min-height: 44px; display: flex; align-items: center;">Auto-assigned when you create the assignment</div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="category">Category <span style="color: #e74c3c;">*</span></label>
-                <select id="category" name="category">
-                    <option value="">None</option>
-                    <option value="Game">Game</option>
-                    <option value="School">School</option>
-                    <option value="Work">Work</option>
-                </select>
-            </div>
-
             <div class="button-group">
-                <button type="submit" class="submit-btn">Create Task</button>
+                <button type="submit" class="submit-btn">Create Assignment</button>
                 <button type="button" class="cancel-btn" onclick="window.location.href='dashboard.html'">Cancel</button>
             </div>
         </form>
@@ -392,11 +378,11 @@
 
     <div class="modal-overlay" id="confirmModal">
         <div class="modal">
-            <h2>Confirm Task Details</h2>
-            <p class="modal-subtitle">Please review your task before creating it.</p>
+            <h2>Confirm Assignment Details</h2>
+            <p class="modal-subtitle">Please review your assignment before creating it.</p>
             <div id="confirmDetails"></div>
             <div class="modal-buttons">
-                <button class="confirm-btn" id="confirmCreateBtn">Yes, Create Task</button>
+                <button class="confirm-btn" id="confirmCreateBtn">Yes, Create Assignment</button>
                 <button class="goback-btn" id="cancelModalBtn">Go Back</button>
             </div>
         </div>
@@ -414,17 +400,50 @@
         const createTaskForm = document.getElementById('createTaskForm');
         const alertDiv = document.getElementById('alert');
 
+        function calculatePriority(taskName, taskDescription, deadline) {
+            let score = 0;
+            const text = `${taskName} ${taskDescription}`.toLowerCase();
+            const keywords = ['exam', 'test', 'quiz', 'midterm', 'final', 'presentation', 'project', 'urgent'];
+
+            if (deadline) {
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+                const due = new Date(deadline);
+                due.setHours(0, 0, 0, 0);
+                const daysUntilDue = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+
+                if (daysUntilDue <= 1) score += 3;
+                else if (daysUntilDue <= 3) score += 2;
+                else if (daysUntilDue <= 7) score += 1;
+            }
+
+            if (keywords.some(keyword => text.includes(keyword))) {
+                score += 2;
+            }
+
+            if (taskDescription && taskDescription.length > 200) {
+                score += 1;
+            }
+
+            if (score >= 4) return 'high';
+            if (score >= 2) return 'medium';
+            return 'low';
+        }
+
+        function formatPriorityLabel(priority) {
+            return priority.charAt(0).toUpperCase() + priority.slice(1);
+        }
+
         createTaskForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const taskName = document.getElementById('title').value.trim();
             const taskDescription = document.getElementById('description').value;
             const deadline = document.getElementById('dueDate').value;
-            const priority = document.getElementById('priority').value;
-            const category = document.getElementById('category').value;
+            const priority = calculatePriority(taskName, taskDescription, deadline);
 
             if (!deadline) {
-                showAlert('Please set a deadline for your task.', 'error');
+                showAlert('Please set a deadline for your assignment.', 'error');
                 return;
             }
 
@@ -432,11 +451,6 @@
             today.setHours(0, 0, 0, 0);
             if (new Date(deadline) < today) {
                 showAlert('You cannot set a deadline in the past. Please choose a future date.', 'error');
-                return;
-            }
-
-            if (!category) {
-                showAlert('Please select a category for your task.', 'error');
                 return;
             }
 
@@ -451,7 +465,7 @@
                         t => t.task_name.toLowerCase() === taskName.toLowerCase()
                     );
                     if (duplicate) {
-                        showAlert('A task with this title already exists. Please use a different title.', 'error');
+                        showAlert('An assignment with this title already exists. Please use a different title.', 'error');
                         return;
                     }
                 }
@@ -460,11 +474,10 @@
             }
 
             // Show confirmation modal
-            showConfirmModal({ taskName, taskDescription, deadline, priority, category });
+            showConfirmModal({ taskName, taskDescription, deadline, priority });
         });
 
         function showConfirmModal(taskData) {
-            const priorityLabels = { low: 'Low', medium: 'Medium', high: 'High' };
             const details = document.getElementById('confirmDetails');
             details.innerHTML = `
                 <div class="confirm-detail">
@@ -481,11 +494,7 @@
                 </div>
                 <div class="confirm-detail">
                     <span class="confirm-label">Priority</span>
-                    <span class="confirm-value">${priorityLabels[taskData.priority] || taskData.priority}</span>
-                </div>
-                <div class="confirm-detail">
-                    <span class="confirm-label">Category</span>
-                    <span class="confirm-value">${escapeHtml(taskData.category)}</span>
+                    <span class="confirm-value">${formatPriorityLabel(taskData.priority)}</span>
                 </div>
             `;
             document.getElementById('confirmModal').classList.add('active');
@@ -502,7 +511,7 @@
             return div.innerHTML;
         }
 
-        async function submitTask({ taskName, taskDescription, deadline, priority, category }) {
+        async function submitTask({ taskName, taskDescription, deadline, priority }) {
             document.getElementById('confirmModal').classList.remove('active');
 
             try {
@@ -517,19 +526,18 @@
                         taskDescription,
                         deadline,
                         priority,
-                        category,
                     }),
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    showAlert('Task created successfully!', 'success');
+                    showAlert('Assignment created successfully!', 'success');
                     setTimeout(() => {
                         window.location.href = 'dashboard.html';
                     }, 1500);
                 } else {
-                    showAlert(data.message || 'Failed to create task', 'error');
+                    showAlert(data.message || 'Failed to create assignment', 'error');
                 }
             } catch (error) {
                 showAlert('An error occurred. Please try again.', 'error');

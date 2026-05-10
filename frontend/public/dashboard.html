@@ -601,7 +601,7 @@
         <div class="header">
             <div>
                 <h2 id="welcomeHeader">Welcome</h2>
-                <p style="color: #888; font-size: 13px; margin-top: 4px;">Track your tasks, prioritize what matters, and hit every deadline.</p>
+                <p style="color: #888; font-size: 13px; margin-top: 4px;">Track your assignments, prioritize what matters, and hit every deadline.</p>
             </div>
             <a href="create-task.html" class="create-btn">+ Create Task</a>
         </div>
@@ -615,7 +615,7 @@
             </div>
             <div class="stat-card stat-pending">
                 <span class="stat-number" id="statPending">0</span>
-                <span class="stat-label">Pending</span>
+                <span class="stat-label">Not Submitted</span>
             </div>
             <div class="stat-card stat-overdue">
                 <span class="stat-number" id="statOverdue">0</span>
@@ -623,12 +623,12 @@
             </div>
             <div class="stat-card stat-completed">
                 <span class="stat-number" id="statDone">0</span>
-                <span class="stat-label">Completed</span>
+                <span class="stat-label">Submitted</span>
             </div>
         </div>
 
         <div class="filters">
-            <div class="filters-heading">🔍 Filter your tasks</div>
+            <div class="filters-heading">🔍 Filter your assignments</div>
             <div class="filter-group">
                 <label for="priorityFilter">Priority:</label>
                 <select id="priorityFilter" onchange="filterTasks()">
@@ -642,29 +642,20 @@
                 <label for="statusFilter">Status:</label>
                 <select id="statusFilter" onchange="filterTasks()">
                     <option value="">All</option>
-                    <option value="pending">Pending</option>
-                    <option value="completed">Completed</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="categoryFilter">Category:</label>
-                <select id="categoryFilter" onchange="filterTasks()">
-                    <option value="">All</option>
-                    <option value="Game">Game</option>
-                    <option value="School">School</option>
-                    <option value="Work">Work</option>
+                    <option value="not_submitted">Not Submitted</option>
+                    <option value="submitted">Submitted</option>
                 </select>
             </div>
         </div>
 
         <div id="tasksContainer" class="tasks-container">
             <div class="empty-state">
-                <h3>Loading tasks...</h3>
+                <h3>Loading assignments...</h3>
             </div>
         </div>
 
         <button class="completed-toggle-btn" id="completedToggleBtn" onclick="toggleCompletedSection()" style="display:none;">
-            <span>✅ Completed Tasks (<span id="completedCount">0</span>)</span>
+            <span>✅ Submitted Assignments (<span id="completedCount">0</span>)</span>
             <span class="toggle-arrow">▼</span>
         </button>
         <div class="completed-section" id="completedSection">
@@ -692,8 +683,8 @@
             <div class="form-group">
                 <label for="editTaskStatus">Status</label>
                 <select id="editTaskStatus">
-                    <option value="pending">Pending</option>
-                    <option value="completed">Completed</option>
+                    <option value="not_submitted">Not Submitted</option>
+                    <option value="submitted">Submitted</option>
                 </select>
             </div>
             <div class="form-group">
@@ -702,15 +693,6 @@
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="editTaskCategory">Category</label>
-                <select id="editTaskCategory">
-                    <option value="">None</option>
-                    <option value="Game">Game</option>
-                    <option value="School">School</option>
-                    <option value="Work">Work</option>
                 </select>
             </div>
             <div class="modal-btns">
@@ -723,6 +705,17 @@
     <script>
         const API_BASE = '';
         let allTasks = [];
+
+        function normalizeStatus(status) {
+            if (status === 'submitted' || status === 'completed') {
+                return 'submitted';
+            }
+            return 'not_submitted';
+        }
+
+        function displayStatus(status) {
+            return normalizeStatus(status) === 'submitted' ? 'Submitted' : 'Not Submitted';
+        }
 
         // Decode JWT to get username
         function getUsername() {
@@ -788,8 +781,8 @@
             const completedCountEl = document.getElementById('completedCount');
             const statsDiv = document.getElementById('taskStats');
 
-            const activeTasks = tasks.filter(t => t.status !== 'completed');
-            const completedTasks = tasks.filter(t => t.status === 'completed');
+            const activeTasks = tasks.filter(t => normalizeStatus(t.status) !== 'submitted');
+            const completedTasks = tasks.filter(t => normalizeStatus(t.status) === 'submitted');
 
             // Calculate overdue count
             const now = new Date();
@@ -815,15 +808,15 @@
             if (activeTasks.length === 0 && completedTasks.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <h3>📋 No tasks yet</h3>
-                        <p>Click <strong>"+ Create Task"</strong> above to add your first task and start tracking your deadlines.</p>
+                        <h3>📋 No assignments yet</h3>
+                        <p>Click <strong>"+ Create Task"</strong> above to add your first assignment and start tracking your deadlines.</p>
                     </div>
                 `;
             } else if (activeTasks.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <h3>🎉 All caught up!</h3>
-                        <p>You have no pending tasks. Great job staying on top of things!</p>
+                        <p>You have no not submitted assignments. Great job staying on top of things!</p>
                     </div>
                 `;
             } else {
@@ -868,8 +861,7 @@
                             <div class="task-meta">
                                 ${task.deadline ? `<span>📅 ${new Date(task.deadline).toLocaleDateString()}</span>` : ''}
                                 <span class="badge priority-${task.priority || 'medium'}">${task.priority ? task.priority.charAt(0).toUpperCase() + task.priority.slice(1) : 'Medium'}</span>
-                                <span class="badge status-completed">Completed</span>
-                                ${task.category ? `<span class="badge category-badge">${escapeHtml(task.category)}</span>` : ''}
+                                <span class="badge status-submitted">Submitted</span>
                             </div>
                         </div>
                     </div>
@@ -884,18 +876,17 @@
                         <div class="task-meta">
                             ${task.deadline ? `<span>📅 ${new Date(task.deadline).toLocaleDateString()}</span>` : ''}
                             <span class="badge priority-${task.priority || 'medium'}">${task.priority ? task.priority.charAt(0).toUpperCase() + task.priority.slice(1) : 'Medium'}</span>
-                            <span class="badge status-${task.status || 'pending'}">${task.status ? task.status.charAt(0).toUpperCase() + task.status.slice(1) : 'Pending'}</span>
-                            ${task.category ? `<span class="badge category-badge">${escapeHtml(task.category)}</span>` : ''}
+                            <span class="badge status-${normalizeStatus(task.status)}">${displayStatus(task.status)}</span>
                         </div>
                     </div>
                     <div class="task-actions">
                         <button class="kebab-btn" onclick="toggleMenu(event, ${task.id})" title="Actions">⋮</button>
                         <div class="dropdown-menu" id="menu-${task.id}">
-                            <button class="dropdown-item" onclick="openEditModal(${task.id}, '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${task.status || 'pending'}', '${task.priority || 'medium'}', '${escapeAttr(task.category || '')}')">
+                            <button class="dropdown-item" onclick="openEditModal(${task.id}, '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${normalizeStatus(task.status)}', '${task.priority || 'medium'}')">
                                 ✏️ Edit
                             </button>
-                            <button class="dropdown-item" onclick="toggleTask(${task.id}, '${task.status || 'pending'}', '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${task.priority || 'medium'}', '${escapeAttr(task.category || '')}')">
-                                ✅ Complete
+                            <button class="dropdown-item" onclick="toggleTask(${task.id}, '${normalizeStatus(task.status)}', '${escapeAttr(task.task_name)}', '${escapeAttr(task.task_description || '')}', '${task.deadline || ''}', '${task.priority || 'medium'}')">
+                                ✅ Toggle Submission
                             </button>
                             <button class="dropdown-item delete" onclick="deleteTask(${task.id})">
                                 🗑️ Delete
@@ -916,21 +907,19 @@
         function filterTasks() {
             const priorityFilter = document.getElementById('priorityFilter').value;
             const statusFilter = document.getElementById('statusFilter').value;
-            const categoryFilter = document.getElementById('categoryFilter').value;
 
             const filtered = allTasks.filter(task => {
                 const priorityMatch = !priorityFilter || task.priority === priorityFilter;
-                const statusMatch = !statusFilter || task.status === statusFilter;
-                const categoryMatch = !categoryFilter || task.category === categoryFilter;
-                return priorityMatch && statusMatch && categoryMatch;
+                const statusMatch = !statusFilter || normalizeStatus(task.status) === statusFilter;
+                return priorityMatch && statusMatch;
             });
 
             renderTasks(filtered);
         }
 
-        async function toggleTask(taskId, currentStatus, taskName, taskDescription, deadline, priority, category) {
+        async function toggleTask(taskId, currentStatus, taskName, taskDescription, deadline, priority) {
             try {
-                const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
+                const newStatus = normalizeStatus(currentStatus) === 'submitted' ? 'not_submitted' : 'submitted';
                 
                 const response = await fetch(`${API_BASE}/api/tasks/${taskId}`, {
                     method: 'PUT',
@@ -938,7 +927,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     },
-                    body: JSON.stringify({ taskName, taskDescription, deadline, status: newStatus, priority, category }),
+                    body: JSON.stringify({ taskName, taskDescription, deadline, status: newStatus, priority }),
                 });
 
                 if (response.ok) {
@@ -1017,15 +1006,14 @@
             }
         }
 
-        function openEditModal(taskId, name, description, deadline, status, priority, category) {
+        function openEditModal(taskId, name, description, deadline, status, priority) {
             document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
             document.getElementById('editTaskId').value = taskId;
             document.getElementById('editTaskName').value = name;
             document.getElementById('editTaskDescription').value = description;
             document.getElementById('editTaskDeadline').value = deadline ? deadline.split('T')[0] : '';
-            document.getElementById('editTaskStatus').value = status;
+            document.getElementById('editTaskStatus').value = normalizeStatus(status);
             document.getElementById('editTaskPriority').value = priority || 'medium';
-            document.getElementById('editTaskCategory').value = category || '';
             document.getElementById('editModal').classList.add('show');
         }
 
@@ -1040,7 +1028,6 @@
             const deadline = document.getElementById('editTaskDeadline').value;
             const status = document.getElementById('editTaskStatus').value;
             const priority = document.getElementById('editTaskPriority').value;
-            const category = document.getElementById('editTaskCategory').value;
 
             if (!taskName) {
                 alert('Task name is required');
@@ -1054,7 +1041,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     },
-                    body: JSON.stringify({ taskName, taskDescription, deadline, status, priority, category }),
+                    body: JSON.stringify({ taskName, taskDescription, deadline, status, priority }),
                 });
 
                 if (response.ok) {

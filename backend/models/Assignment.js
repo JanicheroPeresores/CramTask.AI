@@ -1,16 +1,17 @@
 const { getDatabase } = require('./db');
 
 const Assignment = {
-  create: async (userId, course, assignmentTitle, dueDate, subject, priority, description) => {
+  create: async (userId, course, assignmentTitle, dueDate, subject, priority, submissionStatus, description) => {
     const sql = await getDatabase();
     const p = priority || 'medium';
     const s = subject || null;
     const dd = dueDate || null;
+    const ss = submissionStatus || 'not_submitted';
     const desc = description || null;
     
     const rows = await sql(
       'INSERT INTO assignments (user_id, course, assignment_title, due_date, subject, priority, description, submission_status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-      [userId, course, assignmentTitle, dd, s, p, desc, 'not_submitted']
+      [userId, course, assignmentTitle, dd, s, p, desc, ss]
     );
     
     return rows[0];

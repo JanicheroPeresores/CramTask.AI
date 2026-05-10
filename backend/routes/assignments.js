@@ -8,7 +8,7 @@ const router = express.Router();
 // Create assignment
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const { course, assignmentTitle, dueDate, subject, priority, description } = req.body;
+    const { course, assignmentTitle, dueDate, subject, priority, submissionStatus, description } = req.body;
     const userId = req.userId;
 
     if (!course || !assignmentTitle) {
@@ -22,6 +22,7 @@ router.post('/', authMiddleware, async (req, res) => {
       dueDate,
       subject,
       priority,
+      submissionStatus,
       description
     );
 
