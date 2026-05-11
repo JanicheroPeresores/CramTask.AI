@@ -1,127 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assignment Tracker - Simple Study Planning</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            color: #fff;
-        }
-
-        .container {
-            background-color: rgba(26, 35, 50, 0.8);
-            border: 1px solid #2a3a4a;
-            padding: 60px 40px;
-            border-radius: 8px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-        }
-
-        h1 {
-            color: #fff;
-            font-size: 36px;
-            margin-bottom: 30px;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 14px 32px;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background-color: #0896ee;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #0682d6;
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(8, 150, 238, 0.3);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: #0896ee;
-            border: 2px solid #0896ee;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(8, 150, 238, 0.1);
-            transform: translateY(-3px);
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 40px 20px;
-            }
-
-            h1 {
-                font-size: 28px;
-            }
-
-            .logo {
-                font-size: 36px;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Assignment Tracker</h1>
-
-        <div class="button-group">
-            <a href="login.html" class="btn btn-primary">Sign In</a>
-            <a href="register.html" class="btn btn-secondary">Create Account</a>
-        </div>
-    </div>
-
-    <script>
-        // Redirect if already logged in
-        window.addEventListener('load', () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                window.location.href = 'dashboard.html';
-            }
-        });
-    </script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1a2332" />
+    <title>TaskKeeper</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run TaskKeeper.</noscript>
+    <div id="root"></div>
+  </body>
 </html>

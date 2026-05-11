@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AssignmentTable from '../components/AssignmentTable';
 import CreateAssignmentModal from '../components/CreateAssignmentModal';
+import GoogleClassroomConnect from '../components/GoogleClassroomConnect';
+import GoogleClassroomAssignments from '../components/GoogleClassroomAssignments';
 import { sendDashboardAssistantMessage } from '../utils/dashboardAssistant';
 import './DashboardPage.css';
 
@@ -29,6 +31,7 @@ function DashboardPage({ user, onLogout }) {
   const [assistantInput, setAssistantInput] = useState('');
   const [assistantLoading, setAssistantLoading] = useState(false);
   const [chatOpen, setChatOpen] = useState(true);
+  const [googleClassroomRefresh, setGoogleClassroomRefresh] = useState(0);
   const navigate = useNavigate();
   const assistantScrollRef = useRef(null);
   const token = localStorage.getItem('token');
@@ -150,6 +153,14 @@ function DashboardPage({ user, onLogout }) {
           <div className="dashboard-main-layout">
             <div className="assignments-section">
               {error && <div className="alert alert-error">{error}</div>}
+
+              <GoogleClassroomConnect 
+                onSync={() => setGoogleClassroomRefresh(prev => prev + 1)}
+              />
+
+              <GoogleClassroomAssignments 
+                key={googleClassroomRefresh}
+              />
 
               {loading ? (
                 <div className="loading">

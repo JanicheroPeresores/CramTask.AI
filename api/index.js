@@ -9,6 +9,8 @@ try { require('dotenv').config({ path: envPath }); } catch (e) { /* dotenv optio
 const { initDatabase } = require('../backend/models/db');
 const authRoutes = require('../backend/routes/auth');
 const taskRoutes = require('../backend/routes/tasks');
+const assignmentRoutes = require('../backend/routes/assignments');
+const googleClassroomRoutes = require('../backend/routes/googleClassroom');
 
 const app = express();
 
@@ -38,6 +40,8 @@ app.use(express.json());
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/assignments', assignmentRoutes);
+app.use('/api/google-classroom', googleClassroomRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

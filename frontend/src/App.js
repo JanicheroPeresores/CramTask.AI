@@ -16,9 +16,21 @@ function App() {
     const userData = localStorage.getItem('user');
     
     if (token && userData) {
-      setIsAuthenticated(true);
-      setUser(JSON.parse(userData));
+      try {
+        const parsedUser = JSON.parse(userData);
+        setIsAuthenticated(true);
+        setUser(parsedUser);
+      } catch (err) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setIsAuthenticated(false);
+        setUser(null);
+      }
+    } else if (token || userData) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
     }
+
     setLoading(false);
   }, []);
 

@@ -89,6 +89,36 @@ const initDatabase = async () => {
     await sql(`ALTER TABLE assignments ALTER COLUMN submission_status SET DEFAULT 'not_submitted'`);
   } catch(e) {}
 
+  // Create Google Classroom credentials table
+  await sql(`CREATE TABLE IF NOT EXISTS google_classroom_credentials (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+    access_token TEXT NOT NULL,
+    refresh_token TEXT,
+    token_expiry TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  // Create Google Classroom assignments table
+  await sql(`CREATE TABLE IF NOT EXISTS google_classroom_assignments (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    google_classroom_id TEXT NOT NULL,
+    course_id TEXT NOT NULL,
+    course_name TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    due_date TIMESTAMP,
+    due_time TEXT,
+    state TEXT,
+    alternate_link TEXT,
+    last_synced TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, google_classroom_id)
+  )`);
+
   console.log('Database initialized successfully');
 };
 

@@ -4,10 +4,11 @@
  * Returns: 'high', 'medium', or 'low'
  */
 
+import { generateGeminiContent, getGeminiApiKey } from './geminiClient';
+
 export const calculatePriorityWithGemini = async (assignmentData) => {
   try {
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
-    if (!apiKey) {
+    if (!getGeminiApiKey()) {
       console.warn('Gemini API key not found, using rule-based priority');
       return calculatePriorityRuleBased(assignmentData);
     }
@@ -34,28 +35,7 @@ Consider:
 
 Respond with ONLY the priority level: HIGH, MEDIUM, or LOW`;
 
-    // Append API key to URL
-    const url = new URL('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent');
-    url.searchParams.append('key', apiKey);
-
-    const geminiResponse = await fetch(url.toString(), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text: prompt }]
-        }]
-      })
-    });
-
-    if (!geminiResponse.ok) {
-      throw new Error(`Gemini API error: ${geminiResponse.status}`);
-    }
-
-    const data = await geminiResponse.json();
-    const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const content = await generateGeminiContent({ prompt });
     
     // Extract priority from response
     if (content.includes('HIGH')) return 'high';

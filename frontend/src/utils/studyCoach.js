@@ -1,3 +1,5 @@
+import { generateGeminiContent, getGeminiApiKey } from './geminiClient';
+
 const buildFallbackFeedback = ({ isCorrect, correctAnswer, mode }) => {
   if (mode === 'hint') {
     return {
@@ -20,8 +22,7 @@ const buildFallbackFeedback = ({ isCorrect, correctAnswer, mode }) => {
 };
 
 export const reviewAnswerWithGemini = async ({ question, userAnswer, correctAnswer, isCorrect, questionType, mode = 'review' }) => {
-  const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
-  if (!apiKey) {
+  if (!getGeminiApiKey()) {
     return buildFallbackFeedback({ isCorrect, correctAnswer, mode });
   }
 
@@ -32,32 +33,10 @@ export const reviewAnswerWithGemini = async ({ question, userAnswer, correctAnsw
       : `You are a helpful study coach. The student answered incorrectly.\n\nQuestion: ${question}\nQuestion type: ${questionType || 'free-response'}\nStudent answer: ${userAnswer}\nCorrect answer: ${correctAnswer}\n\nGive a short, encouraging hint that nudges the student toward the correct answer without directly repeating it. Do not reveal the full answer. Keep it to 2-4 sentences.`;
 
   try {
-    const url = new URL('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent');
-    url.searchParams.append('key', apiKey);
-
-    const response = await fetch(url.toString(), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: prompt }],
-          },
-        ],
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Gemini API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    const text = await generateGeminiContent({ prompt });
 
     if (!text) {
-      return buildFallbackFeedback(isCorrect, question, userAnswer, correctAnswer);
+      return buildFallbackFeedback({ isCorrect, correctAnswer, mode });
     }
 
     return {
@@ -66,6 +45,6 @@ export const reviewAnswerWithGemini = async ({ question, userAnswer, correctAnsw
     };
   } catch (error) {
     console.error('Error calling Gemini study coach:', error);
-    return buildFallbackFeedback(isCorrect, question, userAnswer, correctAnswer);
+    return buildFallbackFeedback({ isCorrect, correctAnswer, mode });
   }
 };
