@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import './GoogleClassroomAssignments.css';
 
@@ -9,11 +9,7 @@ function GoogleClassroomAssignments() {
 
   const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    fetchAssignments();
-  }, []);
-
-  const fetchAssignments = async () => {
+  const fetchAssignments = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get('/api/google-classroom/assignments', {
@@ -27,7 +23,11 @@ function GoogleClassroomAssignments() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    fetchAssignments();
+  }, [fetchAssignments]);
 
   const formatDate = (dateString) => {
     if (!dateString) return 'No due date';

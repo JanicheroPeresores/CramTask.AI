@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import './GoogleClassroomConnect.css';
 
@@ -12,12 +12,7 @@ function GoogleClassroomConnect({ onSync }) {
 
   const token = localStorage.getItem('token');
 
-  // Check connection status on component mount
-  useEffect(() => {
-    checkConnectionStatus();
-  }, []);
-
-  const checkConnectionStatus = async () => {
+  const checkConnectionStatus = useCallback(async () => {
     try {
       const response = await axios.get('/api/google-classroom/status', {
         headers: { Authorization: `Bearer ${token}` },
@@ -29,7 +24,12 @@ function GoogleClassroomConnect({ onSync }) {
     } catch (err) {
       console.error('Error checking connection status:', err);
     }
-  };
+  }, [token]);
+
+  // Check connection status on component mount
+  useEffect(() => {
+    checkConnectionStatus();
+  }, [checkConnectionStatus]);
 
   const handleConnect = async () => {
     try {
