@@ -2,9 +2,16 @@ const path = require('path');
 const express = require('express');
 const cors = require('cors');
 
-// Load .env file for local dev; on Vercel env vars are injected automatically
+/**
+ * Local dev: load backend/.env if it exists.
+ * Vercel: environment variables are injected automatically, no .env file is present.
+ */
 const envPath = path.join(__dirname, '../backend/.env');
-try { require('dotenv').config({ path: envPath }); } catch (e) { /* dotenv optional */ }
+try {
+  require('dotenv').config({ path: envPath, override: false });
+} catch {
+  // dotenv optional in Vercel
+}
 
 const { initDatabase } = require('../backend/models/db');
 const authRoutes = require('../backend/routes/auth');
@@ -23,7 +30,22 @@ app.use(async (req, res, next) => {
       dbInitialized = true;
     } catch (err) {
       console.error('Database init error:', err.message, err.stack);
-      console.error('DATABASE_URL set:', !!process.env.DATABASE_URL);
+      const databaseUrl = process.env.DATABASE_URL;
+
+      if (!databaseUrl) {
+        console.error('DATABASE_URL set:', false);
+      } else {
+        try {
+          const u = new URL(databaseUrl);
+          // don’t print user/pass; just print host (and port if present)
+          console.error('DATABASE_URL set:', true);
+          console.error('DATABASE host:', u.host);
+        } catch (parseErr) {
+          console.error('DATABASE_URL set:', true);
+          console.error('DATABASE_URL parse error:', (parseErr && parseErr.message) ? parseErr.message : String(parseErr));
+        }
+      }
+
       return res.status(500).json({ message: 'Database connection failed', error: err.message });
     }
   }
