@@ -97,10 +97,21 @@ app.get('/api/debug-env', (req, res) => {
   const databaseKeys = keys.filter(k => k.toLowerCase().includes('database'));
   const databaseUrl = process.env.DATABASE_URL;
 
+  let databaseHost = null;
+  try {
+    if (databaseUrl) {
+      const u = new URL(databaseUrl);
+      databaseHost = u.host;
+    }
+  } catch {
+    databaseHost = 'parse-error';
+  }
+
   res.json({
     hasDatabaseUrl: typeof databaseUrl === 'string' && databaseUrl.length > 0,
     databaseUrlLen: typeof databaseUrl === 'string' ? databaseUrl.length : 0,
     databaseKeys,
+    databaseHost,
   });
 });
 
