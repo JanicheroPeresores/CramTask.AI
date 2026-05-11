@@ -46,7 +46,23 @@ app.use(async (req, res, next) => {
         }
       }
 
-      return res.status(500).json({ message: 'Database connection failed', error: err.message });
+      let databaseHost = null;
+
+      try {
+        const databaseUrl = process.env.DATABASE_URL;
+        if (databaseUrl) {
+          const u = new URL(databaseUrl);
+          databaseHost = u.host;
+        }
+      } catch {
+        // ignore parse errors here
+      }
+
+      return res.status(500).json({
+        message: 'Database connection failed',
+        error: err.message,
+        databaseHost,
+      });
     }
   }
   next();
