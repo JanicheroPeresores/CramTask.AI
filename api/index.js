@@ -24,6 +24,11 @@ const app = express();
 // Initialize database tables on first request
 let dbInitialized = false;
 app.use(async (req, res, next) => {
+  // Skip DB init for these endpoints so we can inspect runtime env safely
+  if (req.path === '/api/health' || req.path === '/api/debug-env') {
+    return next();
+  }
+
   if (!dbInitialized) {
     try {
       await initDatabase();
