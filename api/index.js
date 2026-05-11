@@ -13,6 +13,20 @@ try {
   // dotenv optional in Vercel
 }
 
+// If DATABASE_URL is present but clearly not a postgres URL (e.g. someone accidentally set it),
+// attempt to load backend/.env as a fallback. Vercel includes backend/** via vercel.json.
+if (typeof process.env.DATABASE_URL === 'string') {
+  const v = process.env.DATABASE_URL.trim();
+  const looksLikePostgres = v.startsWith('postgresql://') || v.startsWith('postgres://');
+  if (!looksLikePostgres) {
+    try {
+      require('dotenv').config({ path: envPath, override: true });
+    } catch {
+      // ignore
+    }
+  }
+}
+
 const { initDatabase } = require('../backend/models/db');
 const authRoutes = require('../backend/routes/auth');
 const taskRoutes = require('../backend/routes/tasks');
