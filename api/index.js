@@ -107,11 +107,20 @@ app.get('/api/debug-env', (req, res) => {
     databaseHost = 'parse-error';
   }
 
+  const databaseUrlStr = typeof databaseUrl === 'string' ? databaseUrl : '';
+  // show a safe prefix only (avoid credentials by not printing the whole string)
+  const databaseUrlPrefix = databaseUrlStr.length > 35 ? `${databaseUrlStr.slice(0, 35)}…` : databaseUrlStr;
+  const startsWithPostgres = databaseUrlStr.startsWith('postgresql://') || databaseUrlStr.startsWith('postgres://');
+  const databaseUrlHasAt = databaseUrlStr.includes('@');
+
   res.json({
-    hasDatabaseUrl: typeof databaseUrl === 'string' && databaseUrl.length > 0,
-    databaseUrlLen: typeof databaseUrl === 'string' ? databaseUrl.length : 0,
+    hasDatabaseUrl: typeof databaseUrlStr === 'string' && databaseUrlStr.length > 0,
+    databaseUrlLen: databaseUrlStr.length,
     databaseKeys,
     databaseHost,
+    startsWithPostgres,
+    databaseUrlHasAt,
+    databaseUrlPrefix,
   });
 });
 
