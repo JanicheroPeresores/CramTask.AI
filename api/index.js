@@ -104,5 +104,31 @@ app.get('/api/debug-env', (req, res) => {
   });
 });
 
+// Explicitly test DB init in Vercel runtime (returns detailed error)
+app.get('/api/debug-init-db', async (req, res) => {
+  try {
+    await initDatabase();
+    res.status(200).json({ ok: true });
+  } catch (err) {
+    let databaseHost = null;
+    const databaseUrl = process.env.DATABASE_URL;
+
+    try {
+      if (databaseUrl) {
+        const u = new URL(databaseUrl);
+        databaseHost = u.host;
+      }
+    } catch {
+      // ignore
+    }
+
+    res.status(500).json({
+      ok: false,
+      error: err && err.message ? err.message : String(err),
+      databaseHost,
+    });
+  }
+});
+
 // Export for Vercel serverless
 module.exports = app;
