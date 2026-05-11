@@ -86,5 +86,18 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'Server is running', env: process.env.NODE_ENV || 'development' });
 });
 
+// Debug env (temporary) to confirm which env vars are available in Vercel runtime
+app.get('/api/debug-env', (req, res) => {
+  const keys = Object.keys(process.env || {});
+  const databaseKeys = keys.filter(k => k.toLowerCase().includes('database'));
+  const databaseUrl = process.env.DATABASE_URL;
+
+  res.json({
+    hasDatabaseUrl: typeof databaseUrl === 'string' && databaseUrl.length > 0,
+    databaseUrlLen: typeof databaseUrl === 'string' ? databaseUrl.length : 0,
+    databaseKeys,
+  });
+});
+
 // Export for Vercel serverless
 module.exports = app;
