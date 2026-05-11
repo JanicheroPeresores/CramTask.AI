@@ -1,16 +1,30 @@
-const { neon } = require('@neondatabase/serverless');
+const { Pool } = require('pg');
 
 let sql = null;
+let pool = null;
 
 const getDatabase = () => {
   if (sql) return Promise.resolve(sql);
 
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
-    throw new Error('DATABASE_URL environment variable is not set. Get one free at https://neon.tech');
+    throw new Error('DATABASE_URL environment variable is not set. Add a PostgreSQL connection string from Supabase or Neon.');
   }
 
-  sql = neon(connectionString);
+  pool = new Pool({
+    connectionString,
+    ssl: connectionString.includes('localhost')
+      ? false
+      : {
+          rejectUnauthorized: false,
+        },
+  });
+
+  sql = async (query, params = []) => {
+    const result = await pool.query(query, params);
+    return result.rows;
+  };
+
   return Promise.resolve(sql);
 };
 
