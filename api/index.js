@@ -41,11 +41,18 @@ let dbInitialized = false;
 app.use(async (req, res, next) => {
   // Skip DB init for these endpoints so we can inspect runtime env safely
   // (AI routes must work even if DB isn't configured yet in Vercel)
-  if (
-    req.path === '/api/health' ||
-    req.path === '/api/debug-env' ||
-    req.path.startsWith('/api/ai/')
-  ) {
+  const originalUrl = typeof req.originalUrl === 'string' ? req.originalUrl : '';
+  const url = typeof req.url === 'string' ? req.url : '';
+  const isAiRoute =
+    originalUrl.startsWith('/api/ai/') ||
+    originalUrl.startsWith('/api/ai') ||
+    url.startsWith('/api/ai/') ||
+    url.startsWith('/api/ai') ||
+    originalUrl.includes('/api/ai/') ||
+    originalUrl.includes('/api/ai') ||
+    url.includes('/api/ai/');
+
+  if (req.path === '/api/health' || req.path === '/api/debug-env' || isAiRoute) {
     return next();
   }
 
