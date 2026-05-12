@@ -58,7 +58,21 @@ app.use(async (req, res, next) => {
     url.includes('api/ai') ||
     path.includes('api/ai');
 
-  if (req.path === '/api/health' || req.path === '/api/debug-env' || isAiRoute) {
+  const isAuthRoute =
+    path.startsWith('/api/auth') ||
+    originalUrl.startsWith('/api/auth') ||
+    url.includes('/api/auth');
+
+  const isDebugRoute =
+    originalUrl.startsWith('/api/debug') ||
+    url.includes('/api/debug') ||
+    path.startsWith('/api/debug');
+
+  // If DB is misconfigured, we still want the app to be reachable:
+  // - allow /api/health + /api/debug-* to work
+  // - allow /api/auth/* + /api/ai/* so UI can load & show helpful errors
+  // - still initialize DB for other API routes that truly require it
+  if (req.path === '/api/health' || req.path === '/api/debug-env' || isAiRoute || isAuthRoute || isDebugRoute) {
     return next();
   }
 
