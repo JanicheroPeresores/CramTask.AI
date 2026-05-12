@@ -1,34 +1,74 @@
 const { Pool } = require('pg');
 
 let sql = null;
-let pool = null;
 
-const getDatabase = () => {
-  if (sql) return Promise.resolve(sql);
+const stripQuotes = (value) => {
+  if (typeof value !== 'string') return value;
+  return value.trim().replace(/^["']|["']$/g, '');
+};
 
-  let connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
-    throw new Error('DATABASE_URL environment variable is not set. Add a PostgreSQL connection string from Supabase or Neon.');
+const buildCandidates = (connectionString) => {
+  const cs = stripQuotes(connectionString);
+  const trimmed = typeof cs === 'string' ? cs.trim() : cs;
+  if (!trimmed) return [];
+
+  const candidates = [trimmed];
+
+  // Try common Supabase port differences.
+  // Supabase connection strings are typically 6543, but some setups use 5432.
+  if (trimmed.includes(':5432/')) {
+    candidates.push(trimmed.replace(':5432/', ':6543/'));
+  } else if (trimmed.includes(':6543/')) {
+    candidates.push(trimmed.replace(':6543/', ':5432/'));
   }
 
-  // Vercel env vars sometimes end up wrapped in quotes.
-  // Strip leading/trailing quotes and trim whitespace to avoid DNS/connect failures.
-  if (typeof connectionString === 'string') {
-    connectionString = connectionString.trim().replace(/^["']|["']$/g, '');
-  }
+  return [...new Set(candidates)];
+};
 
-  pool = new Pool({
-    connectionString,
-    ssl: connectionString.includes('localhost')
+const createPool = (connectionString) => {
+  const cs = stripQuotes(connectionString);
+
+  return new Pool({
+    connectionString: cs,
+    ssl: typeof cs === 'string' && cs.includes('localhost')
       ? false
       : {
           rejectUnauthorized: false,
         },
   });
+};
+
+const getDatabase = () => {
+  if (sql) return Promise.resolve(sql);
+
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    throw new Error(
+      'DATABASE_URL environment variable is not set. Add a PostgreSQL connection string from Supabase or Neon.'
+    );
+  }
+
+  const candidates = buildCandidates(databaseUrl);
+  if (!candidates.length) {
+    throw new Error('DATABASE_URL could not be processed into a valid connection string.');
+  }
 
   sql = async (query, params = []) => {
-    const result = await pool.query(query, params);
-    return result.rows;
+    let lastErr = null;
+
+    for (const cs of candidates) {
+      const pool = createPool(cs);
+      try {
+        const result = await pool.query(query, params);
+        await pool.end().catch(() => {});
+        return result.rows;
+      } catch (e) {
+        lastErr = e;
+        await pool.end().catch(() => {});
+      }
+    }
+
+    throw lastErr || new Error('Database connection failed');
   };
 
   return Promise.resolve(sql);
@@ -65,32 +105,32 @@ const initDatabase = async () => {
   // Add priority column if missing (existing databases)
   try {
     await sql(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS priority TEXT DEFAULT 'medium'`);
-  } catch(e) {}
+  } catch (e) {}
 
   // Add category column if missing (existing databases)
   try {
     await sql(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS category TEXT DEFAULT NULL`);
-  } catch(e) {}
+  } catch (e) {}
 
   // Add priority score inputs if missing (existing databases)
   try {
     await sql(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS importance REAL DEFAULT 5`);
     await sql(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS urgency REAL DEFAULT 5`);
     await sql(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS priority_score REAL DEFAULT 5`);
-  } catch(e) {}
+  } catch (e) {}
 
   // Add deadline_notified column if missing (existing databases)
   try {
     await sql(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS deadline_notified BOOLEAN DEFAULT false`);
-  } catch(e) {}
+  } catch (e) {}
 
   // Add reset token columns if missing (existing databases)
   try {
     await sql(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token TEXT`);
     await sql(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMP`);
-  } catch(e) {}
+  } catch (e) {}
 
-  // Create assignments table for school assignments
+  // Create assignments table
   await sql(`CREATE TABLE IF NOT EXISTS assignments (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id),
@@ -107,7 +147,7 @@ const initDatabase = async () => {
 
   try {
     await sql(`ALTER TABLE assignments ALTER COLUMN submission_status SET DEFAULT 'not_submitted'`);
-  } catch(e) {}
+  } catch (e) {}
 
   // Create Google Classroom credentials table
   await sql(`CREATE TABLE IF NOT EXISTS google_classroom_credentials (
@@ -147,5 +187,5 @@ const saveDatabase = () => {};
 module.exports = {
   getDatabase,
   initDatabase,
-  saveDatabase
+  saveDatabase,
 };
