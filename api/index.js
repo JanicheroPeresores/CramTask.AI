@@ -156,7 +156,6 @@ app.get('/api/debug-env', (req, res) => {
   }
 
   const databaseUrlStr = typeof databaseUrl === 'string' ? databaseUrl : '';
-  // show a safe prefix only (avoid credentials by not printing the whole string)
   const databaseUrlPrefix = databaseUrlStr.length > 35 ? `${databaseUrlStr.slice(0, 35)}…` : databaseUrlStr;
   const startsWithPostgres = databaseUrlStr.startsWith('postgresql://') || databaseUrlStr.startsWith('postgres://');
   const databaseUrlHasAt = databaseUrlStr.includes('@');
@@ -169,6 +168,25 @@ app.get('/api/debug-env', (req, res) => {
     startsWithPostgres,
     databaseUrlHasAt,
     databaseUrlPrefix,
+  });
+});
+
+app.get('/api/debug-env-runtime', (req, res) => {
+  const databaseUrl = process.env.DATABASE_URL;
+  const jwtSecret = process.env.JWT_SECRET;
+
+  const safePrefix = (s) => {
+    if (typeof s !== 'string') return null;
+    return s.length > 30 ? `${s.slice(0, 30)}…` : s;
+  };
+
+  res.json({
+    nodeEnv: process.env.NODE_ENV || null,
+    vercelEnv: process.env.VERCEL_ENV || null,
+    hasDatabaseUrl: typeof databaseUrl === 'string' && databaseUrl.length > 0,
+    databaseUrlPrefix: safePrefix(databaseUrl),
+    hasJwtSecret: typeof jwtSecret === 'string' && jwtSecret.length > 0,
+    jwtSecretPrefix: safePrefix(jwtSecret),
   });
 });
 
