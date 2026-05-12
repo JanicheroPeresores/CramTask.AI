@@ -32,6 +32,7 @@ const authRoutes = require('../backend/routes/auth');
 const taskRoutes = require('../backend/routes/tasks');
 const assignmentRoutes = require('../backend/routes/assignments');
 const googleClassroomRoutes = require('../backend/routes/googleClassroom');
+const aiAgentRoutes = require('../backend/routes/aiAgent');
 
 const app = express();
 
@@ -99,6 +100,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/assignments', assignmentRoutes);
 app.use('/api/google-classroom', googleClassroomRoutes);
+app.use('/api/ai', aiAgentRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
