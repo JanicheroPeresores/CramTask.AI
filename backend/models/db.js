@@ -6,9 +6,15 @@ let pool = null;
 const getDatabase = () => {
   if (sql) return Promise.resolve(sql);
 
-  const connectionString = process.env.DATABASE_URL;
+  let connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error('DATABASE_URL environment variable is not set. Add a PostgreSQL connection string from Supabase or Neon.');
+  }
+
+  // Vercel env vars sometimes end up wrapped in quotes.
+  // Strip leading/trailing quotes and trim whitespace to avoid DNS/connect failures.
+  if (typeof connectionString === 'string') {
+    connectionString = connectionString.trim().replace(/^["']|["']$/g, '');
   }
 
   pool = new Pool({
