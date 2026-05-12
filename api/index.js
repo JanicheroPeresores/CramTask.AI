@@ -172,6 +172,20 @@ app.get('/api/debug-env', (req, res) => {
   });
 });
 
+app.get('/api/debug-database-url-host', (req, res) => {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl || typeof databaseUrl !== 'string') {
+    return res.json({ hasDatabaseUrl: false, host: null });
+  }
+
+  try {
+    const u = new URL(databaseUrl);
+    return res.json({ hasDatabaseUrl: true, host: u.host });
+  } catch {
+    return res.json({ hasDatabaseUrl: true, host: 'parse-error' });
+  }
+});
+
 // Explicitly test DB init in Vercel runtime (returns detailed error)
 app.get('/api/debug-init-db', async (req, res) => {
   try {
