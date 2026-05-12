@@ -40,7 +40,12 @@ const app = express();
 let dbInitialized = false;
 app.use(async (req, res, next) => {
   // Skip DB init for these endpoints so we can inspect runtime env safely
-  if (req.path === '/api/health' || req.path === '/api/debug-env') {
+  // (AI routes must work even if DB isn't configured yet in Vercel)
+  if (
+    req.path === '/api/health' ||
+    req.path === '/api/debug-env' ||
+    req.path.startsWith('/api/ai/')
+  ) {
     return next();
   }
 
