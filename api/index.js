@@ -43,14 +43,20 @@ app.use(async (req, res, next) => {
   // (AI routes must work even if DB isn't configured yet in Vercel)
   const originalUrl = typeof req.originalUrl === 'string' ? req.originalUrl : '';
   const url = typeof req.url === 'string' ? req.url : '';
+  const path = typeof req.path === 'string' ? req.path : '';
+
+  // Vercel rewrites can change how Express populates req.path/originalUrl.
+  // So we skip DB init if *any* URL field clearly indicates AI routes.
   const isAiRoute =
-    originalUrl.startsWith('/api/ai/') ||
-    originalUrl.startsWith('/api/ai') ||
-    url.startsWith('/api/ai/') ||
-    url.startsWith('/api/ai') ||
-    originalUrl.includes('/api/ai/') ||
     originalUrl.includes('/api/ai') ||
-    url.includes('/api/ai/');
+    url.includes('/api/ai') ||
+    path.includes('/api/ai') ||
+    originalUrl.startsWith('/ai/') ||
+    url.startsWith('/ai/') ||
+    path.startsWith('/ai/') ||
+    originalUrl.includes('api/ai') ||
+    url.includes('api/ai') ||
+    path.includes('api/ai');
 
   if (req.path === '/api/health' || req.path === '/api/debug-env' || isAiRoute) {
     return next();
