@@ -205,6 +205,38 @@ app.get('/api/debug-database-url-host', (req, res) => {
 });
 
 // Explicitly test DB init in Vercel runtime (returns detailed error)
+app.get('/api/debug-auth-config', (req, res) => {
+  const databaseUrl = process.env.DATABASE_URL;
+  const jwtSecret = process.env.JWT_SECRET;
+
+  let databaseHost = null;
+  let startsWithPostgres = false;
+  let databaseUrlHasAt = false;
+
+  if (typeof databaseUrl === 'string') {
+    startsWithPostgres = databaseUrl.startsWith('postgresql://') || databaseUrl.startsWith('postgres://');
+    databaseUrlHasAt = databaseUrl.includes('@');
+
+    try {
+      const u = new URL(databaseUrl);
+      databaseHost = u.host;
+    } catch {
+      databaseHost = 'parse-error';
+    }
+  }
+
+  res.json({
+    hasDatabaseUrl: typeof databaseUrl === 'string' && databaseUrl.length > 0,
+    startsWithPostgres,
+    databaseUrlHasAt,
+    databaseHost,
+    hasJwtSecret: typeof jwtSecret === 'string' && jwtSecret.length > 0,
+    jwtSecretLen: typeof jwtSecret === 'string' ? jwtSecret.length : 0,
+    vercelEnv: process.env.VERCEL_ENV || null,
+  });
+});
+
+// Explicitly test DB init in Vercel runtime (returns detailed error)
 app.get('/api/debug-init-db', async (req, res) => {
   try {
     await initDatabase();
