@@ -1,6 +1,7 @@
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
+const dns = require('dns');
 
 /**
  * Local dev: load backend/.env if it exists.
@@ -39,14 +40,10 @@ const app = express();
 // Initialize database tables on first request
 let dbInitialized = false;
 app.use(async (req, res, next) => {
-  // Skip DB init for these endpoints so we can inspect runtime env safely
-  // (AI routes must work even if DB isn't configured yet in Vercel)
   const originalUrl = typeof req.originalUrl === 'string' ? req.originalUrl : '';
   const url = typeof req.url === 'string' ? req.url : '';
   const path = typeof req.path === 'string' ? req.path : '';
 
-  // Vercel rewrites can change how Express populates req.path/originalUrl.
-  // So we skip DB init if *any* URL field clearly indicates AI routes.
   const isAiRoute =
     originalUrl.includes('/api/ai') ||
     url.includes('/api/ai') ||
@@ -68,10 +65,6 @@ app.use(async (req, res, next) => {
     url.includes('/api/debug') ||
     path.startsWith('/api/debug');
 
-  // If DB is misconfigured, we still want the app to be reachable:
-  // - allow /api/health + /api/debug-* to work
-  // - allow /api/auth/* + /api/ai/* so UI can load & show helpful errors
-  // - still initialize DB for other API routes that truly require it
   if (req.path === '/api/health' || req.path === '/api/debug-env' || isAiRoute || isAuthRoute || isDebugRoute) {
     return next();
   }
@@ -81,38 +74,19 @@ app.use(async (req, res, next) => {
       await initDatabase();
       dbInitialized = true;
     } catch (err) {
-      console.error('Database init error:', err.message, err.stack);
       const databaseUrl = process.env.DATABASE_URL;
 
-      if (!databaseUrl) {
-        console.error('DATABASE_URL set:', false);
-      } else {
-        try {
-          const u = new URL(databaseUrl);
-          // don’t print user/pass; just print host (and port if present)
-          console.error('DATABASE_URL set:', true);
-          console.error('DATABASE host:', u.host);
-        } catch (parseErr) {
-          console.error('DATABASE_URL set:', true);
-          console.error('DATABASE_URL parse error:', (parseErr && parseErr.message) ? parseErr.message : String(parseErr));
-        }
-      }
-
       let databaseHost = null;
-
       try {
-        const databaseUrl = process.env.DATABASE_URL;
         if (databaseUrl) {
           const u = new URL(databaseUrl);
           databaseHost = u.host;
         }
-      } catch {
-        // ignore parse errors here
-      }
+      } catch {}
 
       return res.status(500).json({
         message: 'Database connection failed',
-        error: err.message,
+        error: err && err.message ? err.message : String(err),
         databaseHost,
       });
     }
@@ -121,10 +95,7 @@ app.use(async (req, res, next) => {
 });
 
 // Middleware
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 // API Routes
@@ -139,7 +110,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'Server is running', env: process.env.NODE_ENV || 'development' });
 });
 
-// Debug env (temporary) to confirm which env vars are available in Vercel runtime
+// Debug env (temporary)
 app.get('/api/debug-env', (req, res) => {
   const keys = Object.keys(process.env || {});
   const databaseKeys = keys.filter(k => k.toLowerCase().includes('database'));
@@ -158,7 +129,6 @@ app.get('/api/debug-env', (req, res) => {
   const databaseUrlStr = typeof databaseUrl === 'string' ? databaseUrl : '';
   const databaseUrlPrefix = databaseUrlStr.length > 35 ? `${databaseUrlStr.slice(0, 35)}…` : databaseUrlStr;
   const startsWithPostgres = databaseUrlStr.startsWith('postgresql://') || databaseUrlStr.startsWith('postgres://');
-  const databaseUrlHasAt = databaseUrlStr.includes('@');
 
   res.json({
     hasDatabaseUrl: typeof databaseUrlStr === 'string' && databaseUrlStr.length > 0,
@@ -166,73 +136,31 @@ app.get('/api/debug-env', (req, res) => {
     databaseKeys,
     databaseHost,
     startsWithPostgres,
-    databaseUrlHasAt,
     databaseUrlPrefix,
   });
 });
 
-app.get('/api/debug-env-runtime', (req, res) => {
+app.get('/api/debug-dns-db', async (req, res) => {
   const databaseUrl = process.env.DATABASE_URL;
-  const jwtSecret = process.env.JWT_SECRET;
-
-  const safePrefix = (s) => {
-    if (typeof s !== 'string') return null;
-    return s.length > 30 ? `${s.slice(0, 30)}…` : s;
-  };
-
-  res.json({
-    nodeEnv: process.env.NODE_ENV || null,
-    vercelEnv: process.env.VERCEL_ENV || null,
-    hasDatabaseUrl: typeof databaseUrl === 'string' && databaseUrl.length > 0,
-    databaseUrlPrefix: safePrefix(databaseUrl),
-    hasJwtSecret: typeof jwtSecret === 'string' && jwtSecret.length > 0,
-    jwtSecretPrefix: safePrefix(jwtSecret),
-  });
-});
-
-app.get('/api/debug-database-url-host', (req, res) => {
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl || typeof databaseUrl !== 'string') {
-    return res.json({ hasDatabaseUrl: false, host: null });
+  if (!databaseUrl) {
+    return res.json({ ok: false, reason: 'DATABASE_URL missing' });
   }
 
+  let hostname = null;
   try {
     const u = new URL(databaseUrl);
-    return res.json({ hasDatabaseUrl: true, host: u.host });
+    hostname = u.hostname;
   } catch {
-    return res.json({ hasDatabaseUrl: true, host: 'parse-error' });
-  }
-});
-
-// Explicitly test DB init in Vercel runtime (returns detailed error)
-app.get('/api/debug-auth-config', (req, res) => {
-  const databaseUrl = process.env.DATABASE_URL;
-  const jwtSecret = process.env.JWT_SECRET;
-
-  let databaseHost = null;
-  let startsWithPostgres = false;
-  let databaseUrlHasAt = false;
-
-  if (typeof databaseUrl === 'string') {
-    startsWithPostgres = databaseUrl.startsWith('postgresql://') || databaseUrl.startsWith('postgres://');
-    databaseUrlHasAt = databaseUrl.includes('@');
-
-    try {
-      const u = new URL(databaseUrl);
-      databaseHost = u.host;
-    } catch {
-      databaseHost = 'parse-error';
-    }
+    return res.json({ ok: false, reason: 'DATABASE_URL parse failed' });
   }
 
-  res.json({
-    hasDatabaseUrl: typeof databaseUrl === 'string' && databaseUrl.length > 0,
-    startsWithPostgres,
-    databaseUrlHasAt,
-    databaseHost,
-    hasJwtSecret: typeof jwtSecret === 'string' && jwtSecret.length > 0,
-    jwtSecretLen: typeof jwtSecret === 'string' ? jwtSecret.length : 0,
-    vercelEnv: process.env.VERCEL_ENV || null,
+  return new Promise((resolve) => {
+    dns.lookup(hostname, { all: true }, (err, addresses) => {
+      if (err) {
+        return resolve(res.json({ ok: false, hostname, dnsError: err.message }));
+      }
+      return resolve(res.json({ ok: true, hostname, addresses }));
+    });
   });
 });
 
@@ -250,9 +178,7 @@ app.get('/api/debug-init-db', async (req, res) => {
         const u = new URL(databaseUrl);
         databaseHost = u.host;
       }
-    } catch {
-      // ignore
-    }
+    } catch {}
 
     res.status(500).json({
       ok: false,
