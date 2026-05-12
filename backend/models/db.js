@@ -57,14 +57,17 @@ const getDatabase = () => {
     let lastErr = null;
 
     for (const cs of candidates) {
-      const pool = createPool(cs);
+      const safeCs = typeof cs === 'string' ? cs.replace(/\/\/([^:]+):([^@]+)@/,'//$1:***@') : cs;
+
       try {
+        const pool = createPool(cs);
         const result = await pool.query(query, params);
         await pool.end().catch(() => {});
         return result.rows;
       } catch (e) {
         lastErr = e;
-        await pool.end().catch(() => {});
+        // Useful for deployed logs; avoids leaking passwords.
+        console.error('[db] query failed; candidate:', safeCs, 'error:', e && e.message ? e.message : String(e));
       }
     }
 
