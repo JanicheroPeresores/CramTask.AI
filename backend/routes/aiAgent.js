@@ -84,37 +84,41 @@ router.post('/dashboard-assistant', authMiddleware, async (req, res) => {
   try {
     const { messages = [], userName = 'Student' } = req.body || {};
 
-    const transcript = Array.isArray(messages)
-      ? messages.slice(-10).map((m) => `${m.role === 'user' ? 'Student' : 'Coach'}: ${safeTrim(m.content)}`).join('\n')
-      : '';
+    const safeMessages = Array.isArray(messages)
+      ? messages
+          .slice(-14)
+          .map((m) => ({
+            role: m.role === 'user' ? 'user' : 'assistant',
+            content: safeTrim(m.content),
+          }))
+          .filter((m) => m.content)
+      : [];
 
-    const prompt = `You are the AI assistant for Assignment Tracker. Help students organize assignments, prioritize work, and plan study time. Be concise, encouraging, and practical. Avoid long explanations and end with a clear next step when helpful.
+    const system = `You are the AI assistant for Assignment Tracker (a student study coach).
+Be friendly and conversational. Help the student organize assignments, prioritize work, and plan study time.
+Keep replies short (3-6 sentences), practical, and encourage the next step.
+If the student asks for help planning, propose a concrete first action. If the student asks a question, answer it directly.`;
 
-Student name: ${safeTrim(userName)}
-
-Conversation:
-${transcript}
-
-Reply with 3-6 short sentences.`;
+    const payload = {
+      model: OPENAI_MODEL,
+      temperature: 0.7,
+      max_tokens: 220,
+      messages: [
+        { role: 'system', content: system },
+        ...safeMessages,
+        { role: 'user', content: `Student name: ${safeTrim(userName)}. Respond now:` },
+      ],
+    };
 
     const openAiKey = process.env.OPENAI_API_KEY;
     if (!openAiKey) {
       return res.status(500).json({ message: 'AI not configured' });
     }
 
-    const payload = {
-      model: OPENAI_MODEL,
-      temperature: 0.7,
-      max_tokens: 256,
-      messages: [buildChatMessage({ role: 'user', content: prompt })],
-    };
-
     const response = await postJson(
       OPENAI_API_URL,
       payload,
-      {
-        Authorization: `Bearer ${openAiKey}`,
-      }
+      { Authorization: `Bearer ${openAiKey}` }
     );
 
     if (!response.ok || !response.data) {
@@ -123,7 +127,7 @@ Reply with 3-6 short sentences.`;
     }
 
     const text = response.data?.choices?.[0]?.message?.content?.trim();
-    return res.json({ content: text || 'I can help you organize your next steps.' });
+    return res.json({ content: text || 'Tell me what you’re working on and I’ll suggest the next step.' });
   } catch (err) {
     console.error('Dashboard assistant error:', err);
     return res.status(500).json({ message: 'AI error' });
