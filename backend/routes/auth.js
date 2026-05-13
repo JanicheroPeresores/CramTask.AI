@@ -57,15 +57,35 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Username/email and password are required' });
     }
 
+    console.log('[auth/login] identifier:', identifier);
+
     const user = await User.findByUsernameOrEmail(identifier);
     if (!user) {
+      console.warn('[auth/login] user not found for:', identifier);
       return res.status(401).json({ message: 'Invalid username/email or password' });
     }
 
-    const isPasswordValid = bcrypt.compareSync(password, user.password);
+    if (typeof user.password !== 'string' || !user.password.length) {
+      console.warn('[auth/login] user password missing/invalid in DB. userId:', user.id, 'email:', user.email);
+      return res.status(401).json({ message: 'Invalid username or password' });
+    }
+
+    const looksLikeBcryptHash = user.password.startsWith('$2');
+    console.log('[auth/login] password format:', looksLikeBcryptHash ? 'bcrypt' : 'legacy/plaintext');
+
+    const isPasswordValid = looksLikeBcryptHash
+      ? bcrypt.compareSync(password, user.password)
+      : password === user.password; // legacy plaintext fallback
 
     if (!isPasswordValid) {
+      console.warn('[auth/login] password mismatch. userId:', user.id, 'email:', user.email);
       return res.status(401).json({ message: 'Invalid username or password' });
+    }
+
+    // If legacy plaintext matched, upgrade it to a bcrypt hash now.
+    if (!looksLikeBcryptHash) {
+      console.log('[auth/login] upgrading legacy plaintext password to bcrypt. userId:', user.id);
+      await User.updatePassword(user.email, password);
     }
 
     const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, {

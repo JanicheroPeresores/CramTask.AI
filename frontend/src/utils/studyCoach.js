@@ -17,7 +17,7 @@ const buildFallbackFeedback = ({ isCorrect, correctAnswer, mode }) => {
 
   return {
     summary: 'Not quite yet.',
-    hint: `Compare your answer with the expected answer: ${correctAnswer}. Focus on the part of the question that your answer may have missed.`,
+    hint: 'Compare your answer with the key idea the question is testing, then re-check where your reasoning diverged.',
   };
 };
 
