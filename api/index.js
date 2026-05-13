@@ -37,74 +37,6 @@ const aiAgentRoutes = require('../backend/routes/aiAgent');
 
 const app = express();
 
-// Initialize database tables on first request
-let dbInitialized = false;
-app.use(async (req, res, next) => {
-  const originalUrl = typeof req.originalUrl === 'string' ? req.originalUrl : '';
-  const url = typeof req.url === 'string' ? req.url : '';
-  const path = typeof req.path === 'string' ? req.path : '';
-
-  const isAiRoute =
-    originalUrl.includes('/api/ai') ||
-    url.includes('/api/ai') ||
-    path.includes('/api/ai') ||
-    originalUrl.startsWith('/ai/') ||
-    url.startsWith('/ai/') ||
-    path.startsWith('/ai/') ||
-    originalUrl.includes('api/ai') ||
-    url.includes('api/ai') ||
-    path.includes('api/ai');
-
-  const isAuthRoute =
-    path.startsWith('/api/auth') ||
-    originalUrl.startsWith('/api/auth') ||
-    url.includes('/api/auth');
-
-  const isDebugRoute =
-    originalUrl.startsWith('/api/debug') ||
-    url.includes('/api/debug') ||
-    path.startsWith('/api/debug');
-
-  if (req.path === '/api/health' || req.path === '/api/debug-env' || isDebugRoute) {
-    return next();
-  }
-
-  if (!dbInitialized) {
-    try {
-      await initDatabase();
-      dbInitialized = true;
-    } catch (err) {
-      const databaseUrl = process.env.DATABASE_URL;
-
-      let databaseHost = null;
-      try {
-        if (databaseUrl) {
-          const u = new URL(databaseUrl);
-          databaseHost = u.host;
-        }
-      } catch {}
-
-      return res.status(500).json({
-        message: 'Database connection failed',
-        error: err && err.message ? err.message : String(err),
-        databaseHost,
-      });
-    }
-  }
-  next();
-});
-
-// Middleware
-app.use(cors({ origin: true, credentials: true }));
-app.use(express.json());
-
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/tasks', taskRoutes);
-app.use('/api/assignments', assignmentRoutes);
-app.use('/api/google-classroom', googleClassroomRoutes);
-app.use('/api/ai', aiAgentRoutes);
-
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Server is running', env: process.env.NODE_ENV || 'development' });
@@ -187,6 +119,60 @@ app.get('/api/debug-init-db', async (req, res) => {
     });
   }
 });
+
+// Initialize database tables on first request
+let dbInitialized = false;
+app.use(async (req, res, next) => {
+  console.log('[db-middleware] path:', req.path, 'url:', req.url, 'originalUrl:', req.originalUrl);
+
+  const originalUrl = typeof req.originalUrl === 'string' ? req.originalUrl : '';
+  const url = typeof req.url === 'string' ? req.url : '';
+  const path = typeof req.path === 'string' ? req.path : '';
+
+  const isDebugRoute =
+    originalUrl.startsWith('/api/debug') ||
+    url.includes('/api/debug') ||
+    path.startsWith('/api/debug');
+
+  if (req.path === '/api/health' || req.path === '/api/debug-env' || isDebugRoute) {
+    return next();
+  }
+
+  if (!dbInitialized) {
+    try {
+      await initDatabase();
+      dbInitialized = true;
+    } catch (err) {
+      const databaseUrl = process.env.DATABASE_URL;
+
+      let databaseHost = null;
+      try {
+        if (databaseUrl) {
+          const u = new URL(databaseUrl);
+          databaseHost = u.host;
+        }
+      } catch {}
+
+      return res.status(500).json({
+        message: 'Database connection failed',
+        error: err && err.message ? err.message : String(err),
+        databaseHost,
+      });
+    }
+  }
+  next();
+});
+
+// Middleware
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.json());
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/assignments', assignmentRoutes);
+app.use('/api/google-classroom', googleClassroomRoutes);
+app.use('/api/ai', aiAgentRoutes);
 
 // Export for Vercel serverless
 module.exports = app;
