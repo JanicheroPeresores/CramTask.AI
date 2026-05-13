@@ -100,17 +100,28 @@ app.get('/api/debug-openai', async (req, res) => {
       messages: [{ role: 'user', content: 'Say hello in one word.' }],
     };
 
-    const response = await postJson(
-      'https://api.openai.com/v1/chat/completions',
-      payload,
-      { Authorization: `Bearer ${openAiKey}` }
-    );
+    // Simple fetch-based postJson
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${openAiKey}`,
+      },
+      body: JSON.stringify(payload),
+    });
+    const text = await response.text();
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      parsed = null;
+    }
 
     res.json({
       ok: response.ok,
       status: response.status,
-      data: response.data,
-      text: response.text,
+      data: parsed,
+      text,
     });
   } catch (err) {
     res.json({ error: err.message });
