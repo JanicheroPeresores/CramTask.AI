@@ -58,6 +58,17 @@ const buildOAuthCallbackHtml = ({ code = '', error = '', targetOrigin }) => `<!d
 router.get('/auth/url', (req, res) => {
   try {
     const url = getAuthorizationUrl(encodeOAuthState({ origin: getRequestOrigin(req) }));
+
+    try {
+      const parsed = new URL(url);
+      const redirectUri = parsed.searchParams.get('redirect_uri');
+      const clientId = parsed.searchParams.get('client_id');
+      console.log('[googleClassroom/auth/url] redirect_uri:', redirectUri);
+      console.log('[googleClassroom/auth/url] client_id:', clientId);
+    } catch (e) {
+      console.log('[googleClassroom/auth/url] authUrl:', url);
+    }
+
     res.json({ authUrl: url });
   } catch (err) {
     console.error('Error getting auth URL:', err);
