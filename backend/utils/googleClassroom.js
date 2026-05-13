@@ -10,22 +10,38 @@ const SCOPES = [
 
 // Initialize OAuth2 client
 const getOAuth2Client = () => {
-  return new OAuth2Client(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    process.env.GOOGLE_REDIRECT_URI
-  );
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI;
+
+  if (!clientId || !clientSecret) {
+    throw new Error('Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET');
+  }
+
+  if (!redirectUri) {
+    throw new Error('Missing GOOGLE_REDIRECT_URI (required for Google OAuth redirect_uri parameter)');
+  }
+
+  return new OAuth2Client(clientId, clientSecret, redirectUri);
 };
 
 // Generate authorization URL
+// Generate authorization URL
 const getAuthorizationUrl = (state) => {
   const oauth2Client = getOAuth2Client();
+
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI;
+  if (!redirectUri) {
+    // Extra safeguard: guarantees we never generate an auth URL missing redirect_uri
+    throw new Error('Missing GOOGLE_REDIRECT_URI (required for OAuth URL redirect_uri parameter)');
+  }
 
   const url = oauth2Client.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
     include_granted_scopes: true,
     scope: SCOPES,
+    redirect_uri: redirectUri,
     ...(state ? { state } : {}),
   });
 
