@@ -53,14 +53,9 @@ function GoogleClassroomConnect({ onSync }) {
         return;
       }
 
-      const expectedAuthOrigin = new URL(authUrl).origin;
-
       // Listen for message from auth window
       const handleMessage = (event) => {
-        if (
-          ![window.location.origin, expectedAuthOrigin].includes(event.origin) ||
-          event.data?.type !== 'google-classroom-auth'
-        ) {
+        if (event.data?.type !== 'google-classroom-auth') {
           return;
         }
 
