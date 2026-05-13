@@ -1,8 +1,12 @@
 const { Pool } = require('pg');
-const sqlite3 = require('sqlite3').verbose();
-const { open } = require('sqlite');
 
 let sql = null;
+
+const loadSqlite = async () => {
+  const sqlite3 = require('sqlite3').verbose();
+  const { open } = require('sqlite');
+  return { sqlite3, open };
+};
 
 const stripQuotes = (value) => {
   if (typeof value !== 'string') return value;
@@ -40,8 +44,8 @@ const createPool = (connectionString) => {
   });
 };
 
-const getDatabase = () => {
-  if (sql) return Promise.resolve(sql);
+const getDatabase = async () => {
+  if (sql) return sql;
 
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) {
@@ -53,6 +57,7 @@ const getDatabase = () => {
   if (databaseUrl.startsWith('sqlite://')) {
     // SQLite setup
     const dbPath = databaseUrl.replace('sqlite://', '');
+    const { sqlite3, open } = await loadSqlite();
     return open({
       filename: dbPath,
       driver: sqlite3.Database,
