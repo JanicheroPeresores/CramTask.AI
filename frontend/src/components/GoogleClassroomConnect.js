@@ -92,7 +92,7 @@ function GoogleClassroomConnect({ onSync }) {
       }, 1000);
     } catch (err) {
       console.error('Error connecting to Google Classroom:', err);
-      setError('Error connecting to Google Classroom. Please try again.');
+      setError(err?.response?.data?.message || 'Error connecting to Google Classroom. Please try again.');
       setLoading(false);
     }
   };
