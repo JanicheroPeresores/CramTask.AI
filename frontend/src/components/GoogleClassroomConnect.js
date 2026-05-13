@@ -138,16 +138,25 @@ function GoogleClassroomConnect({ onSync }) {
       }
     } catch (err) {
       console.error('Error syncing assignments:', err);
-      const details = err?.response?.data?.details;
-      setError(
-        err.response?.data?.message
-          ? err.response.data.message
-          : details
-          ? typeof details === 'string'
+
+      const payload = err?.response?.data;
+      const message = payload?.message;
+      const details = payload?.details;
+
+      let nextError = 'Error syncing assignments';
+
+      if (message) nextError = message;
+      if (!message && details) {
+        nextError =
+          typeof details === 'string'
             ? `Error syncing assignments: ${details}`
-            : `Error syncing assignments: ${JSON.stringify(details)}`
-          : 'Error syncing assignments'
-      );
+            : `Error syncing assignments: ${JSON.stringify(details)}`;
+      }
+      if (!message && !details && payload) {
+        nextError = `Error syncing assignments: ${JSON.stringify(payload)}`;
+      }
+
+      setError(nextError);
     } finally {
       setSyncing(false);
     }
