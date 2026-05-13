@@ -158,7 +158,10 @@ router.post('/sync', authMiddleware, async (req, res) => {
     const details = err?.response?.data || err?.message || String(err);
 
     res.status(status).json({
-      message: 'Error syncing assignments',
+      message:
+        (err?.response?.data && err.response.data.message) ||
+        err?.message ||
+        (typeof details === 'string' ? details : JSON.stringify(details)),
       details,
     });
   }
