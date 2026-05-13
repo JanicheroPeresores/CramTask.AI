@@ -28,6 +28,16 @@ if (typeof process.env.DATABASE_URL === 'string') {
   }
 }
 
+function getOpenAiKeyName() {
+  if (process.env.OPENAI_API_KEY) return 'OPENAI_API_KEY';
+  if (process.env.OPENAI_KEY) return 'OPENAI_KEY';
+  if (process.env.OPENAI_SECRET) return 'OPENAI_SECRET';
+  if (process.env.OPENAI_API_KEY_ALT) return 'OPENAI_API_KEY_ALT';
+  if (process.env.OPENAI_KEY_SECRET) return 'OPENAI_KEY_SECRET';
+  if (process.env.OPENAI) return 'OPENAI';
+  return null;
+}
+
 const { initDatabase } = require('../backend/models/db');
 const authRoutes = require('../backend/routes/auth');
 const taskRoutes = require('../backend/routes/tasks');
@@ -61,6 +71,7 @@ app.get('/api/debug-env', (req, res) => {
   const databaseUrlStr = typeof databaseUrl === 'string' ? databaseUrl : '';
   const databaseUrlPrefix = databaseUrlStr.length > 35 ? `${databaseUrlStr.slice(0, 35)}…` : databaseUrlStr;
   const startsWithPostgres = databaseUrlStr.startsWith('postgresql://') || databaseUrlStr.startsWith('postgres://');
+  const openAiKeyName = getOpenAiKeyName();
 
   res.json({
     hasDatabaseUrl: typeof databaseUrlStr === 'string' && databaseUrlStr.length > 0,
@@ -69,6 +80,8 @@ app.get('/api/debug-env', (req, res) => {
     databaseHost,
     startsWithPostgres,
     databaseUrlPrefix,
+    hasOpenAIKey: Boolean(openAiKeyName),
+    openAIKeyName: openAiKeyName,
   });
 });
 

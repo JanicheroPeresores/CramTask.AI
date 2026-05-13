@@ -6,6 +6,17 @@ const router = express.Router();
 const OPENAI_API_URL = process.env.OPENAI_API_URL || 'https://api.openai.com/v1/chat/completions';
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 
+function getOpenAiApiKey() {
+  return (
+    process.env.OPENAI_API_KEY ||
+    process.env.OPENAI_KEY ||
+    process.env.OPENAI_SECRET ||
+    process.env.OPENAI_API_KEY_ALT ||
+    process.env.OPENAI_KEY_SECRET ||
+    process.env.OPENAI
+  );
+}
+
 // Minimal internal helper (uses global fetch if available, otherwise falls back to https)
 async function postJson(url, body, headers) {
   const resolvedHeaders = headers || {};
@@ -110,9 +121,9 @@ If the student asks for help planning, propose a concrete first action. If the s
       ],
     };
 
-    const openAiKey = process.env.OPENAI_API_KEY;
+    const openAiKey = getOpenAiApiKey();
     if (!openAiKey) {
-      return res.status(500).json({ message: 'AI not configured' });
+      return res.status(500).json({ message: 'AI not configured. Set OPENAI_API_KEY in your backend environment.' });
     }
 
     const response = await postJson(
@@ -159,9 +170,9 @@ router.post('/study-coach', authMiddleware, async (req, res) => {
       prompt = `You are a helpful study coach. The student answered incorrectly.\n\nQuestion: ${safeQuestion}\nQuestion type: ${safeQuestionType}\nStudent answer: ${safeUserAnswer}\nCorrect answer: ${safeCorrectAnswer}\n\nGive a short, encouraging hint that nudges the student toward the correct answer without directly repeating it. Do not reveal the full answer. Keep it to 2-4 sentences.`;
     }
 
-    const openAiKey = process.env.OPENAI_API_KEY;
+    const openAiKey = getOpenAiApiKey();
     if (!openAiKey) {
-      return res.status(500).json({ message: 'AI not configured' });
+      return res.status(500).json({ message: 'AI not configured. Set OPENAI_API_KEY in your backend environment.' });
     }
 
     const payload = {
