@@ -85,6 +85,38 @@ app.get('/api/debug-env', (req, res) => {
   });
 });
 
+// Debug OpenAI test (temporary)
+app.get('/api/debug-openai', async (req, res) => {
+  try {
+    const openAiKey = process.env.OPENAI_API_KEY || process.env.OPENAI_KEY || process.env.OPENAI_SECRET || process.env.OPENAI_API_KEY_ALT || process.env.OPENAI_KEY_SECRET || process.env.OPENAI;
+    if (!openAiKey) {
+      return res.json({ error: 'No OpenAI key found' });
+    }
+
+    const payload = {
+      model: 'gpt-4o-mini',
+      temperature: 0.7,
+      max_tokens: 50,
+      messages: [{ role: 'user', content: 'Say hello in one word.' }],
+    };
+
+    const response = await postJson(
+      'https://api.openai.com/v1/chat/completions',
+      payload,
+      { Authorization: `Bearer ${openAiKey}` }
+    );
+
+    res.json({
+      ok: response.ok,
+      status: response.status,
+      data: response.data,
+      text: response.text,
+    });
+  } catch (err) {
+    res.json({ error: err.message });
+  }
+});
+
 app.get('/api/debug-dns-db', async (req, res) => {
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) {
