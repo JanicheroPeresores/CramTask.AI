@@ -133,34 +133,42 @@ const syncAllAssignments = async (credentials, userId) => {
 
       for (const work of coursework) {
         // Filter out non-assignment work items (e.g., quizzes, materials)
-        if (work.workType === 'ASSIGNMENT' || work.workType === 'COURSEWORK') {
-          const assignment = {
-            googleClassroomId: work.id,
-            courseId: course.id,
-            courseName: course.name,
-            title: work.title,
-            description: work.description || '',
-            dueDate: work.dueDate
-              ? new Date(
-                  `${work.dueDate.year}-${String(work.dueDate.month).padStart(
-                    2,
-                    '0'
-                  )}-${String(work.dueDate.day).padStart(2, '0')}`
-                )
-              : null,
-            dueTime: work.dueTime
-              ? work.dueTime.hours +
-                ':' +
-                String(work.dueTime.minutes).padStart(2, '0')
-              : null,
-            creationTime: new Date(work.creationTime),
-            updateTime: new Date(work.updateTime),
-            state: work.state,
-            alternateLink: work.alternateLink,
-          };
-
-          allAssignments.push(assignment);
+        if (work.workType !== 'ASSIGNMENT' && work.workType !== 'COURSEWORK') {
+          continue;
         }
+
+        // Defensive guards: DB insert requires googleClassroomId, courseId, and title
+        if (!work?.id || !course?.id) {
+          continue;
+        }
+        if (typeof work?.title !== 'string' || !work.title.trim()) {
+          continue;
+        }
+
+        const assignment = {
+          googleClassroomId: work.id,
+          courseId: course.id,
+          courseName: course.name,
+          title: work.title,
+          description: work.description || '',
+          dueDate: work.dueDate
+            ? new Date(
+                `${work.dueDate.year}-${String(work.dueDate.month).padStart(
+                  2,
+                  '0'
+                )}-${String(work.dueDate.day).padStart(2, '0')}`
+              )
+            : null,
+          dueTime: work.dueTime
+            ? work.dueTime.hours + ':' + String(work.dueTime.minutes).padStart(2, '0')
+            : null,
+          creationTime: new Date(work.creationTime),
+          updateTime: new Date(work.updateTime),
+          state: work.state,
+          alternateLink: work.alternateLink,
+        };
+
+        allAssignments.push(assignment);
       }
     }
 
