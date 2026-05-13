@@ -3,11 +3,26 @@ const { getDatabase } = require('./db');
 const GoogleClassroomAssignment = {
   saveMultiple: async (userId, assignments) => {
     const sql = await getDatabase();
-    
+
+    // Defensive programming: skip any invalid mappings that would break INSERT/UPDATE.
+    const safeAssignments = Array.isArray(assignments)
+      ? assignments.filter((a) => {
+          const idOk = Boolean(a?.googleClassroomId);
+          const courseOk = Boolean(a?.courseId);
+          const titleOk = typeof a?.title === 'string';
+          return idOk && courseOk && titleOk;
+        })
+      : [];
+
+    const skipped = Array.isArray(assignments) ? assignments.length - safeAssignments.length : 0;
+    if (skipped > 0) {
+      console.warn('[GoogleClassroomAssignment.saveMultiple] skipped invalid assignments:', skipped);
+    }
+
     try {
       const savedAssignments = [];
-      
-      for (const assignment of assignments) {
+
+      for (const assignment of safeAssignments) {
         const rows = await sql(
           `INSERT INTO google_classroom_assignments 
            (user_id, google_classroom_id, course_id, course_name, title, description, 
