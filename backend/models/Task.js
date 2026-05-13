@@ -52,14 +52,19 @@ const Task = {
 
   getUpcomingDeadlines: async () => {
     const sql = await getDatabase();
+    const isSQLite = process.env.DATABASE_URL.startsWith('sqlite://');
+    
+    const now = isSQLite ? "datetime('now')" : 'NOW()';
+    const oneDayLater = isSQLite ? "datetime('now', '+1 day')" : "NOW() + INTERVAL '1 day'";
+    
     return await sql(
       `SELECT t.*, u.email FROM tasks t
        JOIN users u ON t.user_id = u.id
        WHERE t.deadline IS NOT NULL
          AND t.status != 'completed'
          AND t.deadline_notified = false
-         AND t.deadline > NOW()
-         AND t.deadline <= NOW() + INTERVAL '1 day'`
+         AND t.deadline > ${now}
+         AND t.deadline <= ${oneDayLater}`
     );
   },
 
