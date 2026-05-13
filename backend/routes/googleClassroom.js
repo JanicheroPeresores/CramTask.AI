@@ -61,7 +61,9 @@ router.get('/auth/url', (req, res) => {
     res.json({ authUrl: url });
   } catch (err) {
     console.error('Error getting auth URL:', err);
-    res.status(500).json({ message: 'Error generating authorization URL' });
+    res.status(500).json({
+      message: err?.message || 'Error generating authorization URL',
+    });
   }
 });
 
