@@ -65,7 +65,7 @@ app.use(async (req, res, next) => {
     url.includes('/api/debug') ||
     path.startsWith('/api/debug');
 
-  if (req.path === '/api/health' || req.path === '/api/debug-env' || isAiRoute || isAuthRoute || isDebugRoute) {
+  if (req.path === '/api/health' || req.path === '/api/debug-env' || isDebugRoute) {
     return next();
   }
 
