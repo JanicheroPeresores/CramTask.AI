@@ -48,13 +48,15 @@ const getDatabase = async () => {
   if (sql) return sql;
 
   const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) {
+  const databaseUrlUnpooled = process.env.DATABASE_URL_UNPOOLED;
+  
+  if (!databaseUrl && !databaseUrlUnpooled) {
     throw new Error(
-      'DATABASE_URL environment variable is not set. Add a database connection string.'
+      'DATABASE_URL or DATABASE_URL_UNPOOLED environment variable is not set. Add a database connection string.'
     );
   }
 
-  if (databaseUrl.startsWith('sqlite://')) {
+  if (databaseUrl && databaseUrl.startsWith('sqlite://')) {
     // SQLite setup
     const dbPath = databaseUrl.replace('sqlite://', '');
     const { sqlite3, open } = await loadSqlite();
@@ -69,10 +71,17 @@ const getDatabase = async () => {
       return sql;
     });
   } else {
-    // PostgreSQL setup
-    const candidates = buildCandidates(databaseUrl);
+    // PostgreSQL setup - try both DATABASE_URL and DATABASE_URL_UNPOOLED
+    const candidates = [];
+    if (databaseUrl) {
+      candidates.push(...buildCandidates(databaseUrl));
+    }
+    if (databaseUrlUnpooled && databaseUrlUnpooled !== databaseUrl) {
+      candidates.push(...buildCandidates(databaseUrlUnpooled));
+    }
+    
     if (!candidates.length) {
-      throw new Error('DATABASE_URL could not be processed into a valid connection string.');
+      throw new Error('DATABASE_URL and DATABASE_URL_UNPOOLED could not be processed into valid connection strings.');
     }
 
     sql = async (query, params = []) => {
