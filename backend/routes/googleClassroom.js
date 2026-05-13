@@ -153,7 +153,14 @@ router.post('/sync', authMiddleware, async (req, res) => {
     });
   } catch (err) {
     console.error('Error syncing assignments:', err);
-    res.status(500).json({ message: 'Error syncing assignments' });
+
+    const status = err?.response?.status || 500;
+    const details = err?.response?.data || err?.message || String(err);
+
+    res.status(status).json({
+      message: 'Error syncing assignments',
+      details,
+    });
   }
 });
 
