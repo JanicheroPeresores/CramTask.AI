@@ -96,6 +96,14 @@ const getCoursework = async (authClient, courseId) => {
 
     return response.data.courseWork || [];
   } catch (err) {
+    const status = err?.response?.status;
+
+    // If the authenticated user cannot access this course, skip it and continue syncing others.
+    if (status === 403) {
+      console.warn(`Skipping courseWork for course ${courseId} due to 403 (no permission).`);
+      return [];
+    }
+
     console.error(`Error fetching coursework for course ${courseId}:`, err);
     throw err;
   }
