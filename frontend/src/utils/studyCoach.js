@@ -50,6 +50,16 @@ export const reviewAnswerWithGemini = async ({
     return { summary, hint };
   } catch (error) {
     console.error('Error calling AI study coach:', error);
+
+    const backendMessage = error?.response?.data?.message;
+    if (typeof backendMessage === 'string' && backendMessage.trim()) {
+      const trimmed = backendMessage.trim();
+      return {
+        summary: 'Rate limited.',
+        hint: trimmed,
+      };
+    }
+
     return buildFallbackFeedback({ isCorrect, correctAnswer, mode });
   }
 };
