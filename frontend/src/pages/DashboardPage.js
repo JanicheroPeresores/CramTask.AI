@@ -288,6 +288,12 @@ function DashboardPage({ user, onLogout }) {
         </div>
       </div>
 
+      <div className="logout-float">
+        <button type="button" className="logout-float-btn" onClick={handleLogout} title="Logout">
+          ⎋ Logout
+        </button>
+      </div>
+
       {showModal && (
         <CreateAssignmentModal
           onClose={() => setShowModal(false)}

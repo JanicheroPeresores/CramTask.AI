@@ -190,6 +190,38 @@
   }
 }
 
+/* Bottom-left logout (brutalist-fancy) */
+.logout-float {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 1000;
+}
+
+.logout-float-btn {
+  border-radius: 16px;
+  border: 3px solid rgba(0, 0, 0, 0.45);
+  background: #f0f0f0;
+  color: #101010;
+  font-weight: 1000;
+  letter-spacing: 0.2px;
+  padding: 12px 14px;
+  cursor: pointer;
+  box-shadow: 0 16px 0 rgba(0, 0, 0, 0.22);
+  transition: transform 0.12s ease;
+  min-width: 160px;
+  text-align: center;
+}
+
+.logout-float-btn:hover {
+  transform: translateY(-1px);
+}
+
+.logout-float-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 12px 0 rgba(0, 0, 0, 0.22);
+}
+
 .dashboard-header {
   background-color: transparent;
   border-bottom: none;
