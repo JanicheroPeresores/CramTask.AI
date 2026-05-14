@@ -3,19 +3,9 @@ const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
 
-const OPENAI_API_URL = process.env.OPENAI_API_URL || 'https://api.openai.com/v1/chat/completions';
-const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
-
-function getOpenAiApiKey() {
-  return (
-    process.env.OPENAI_API_KEY ||
-    process.env.OPENAI_KEY ||
-    process.env.OPENAI_SECRET ||
-    process.env.OPENAI_API_KEY_ALT ||
-    process.env.OPENAI_KEY_SECRET ||
-    process.env.OPENAI
-  );
-}
+// Gemini (backend env vars)
+const GEMINI_API_VERSION = process.env.GEMINI_API_VERSION || 'v1beta';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 
 // Minimal internal helper (uses global fetch if available, otherwise falls back to https)
 async function postJson(url, body, headers) {
@@ -29,6 +19,7 @@ async function postJson(url, body, headers) {
       },
       body: JSON.stringify(body),
     });
+
     const text = await response.text();
     let parsed;
     try {
@@ -71,7 +62,12 @@ async function postJson(url, body, headers) {
           } catch {
             parsed = null;
           }
-          resolve({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode, data: parsed, text: out });
+          resolve({
+            ok: res.statusCode >= 200 && res.statusCode < 300,
+            status: res.statusCode,
+            data: parsed,
+            text: out,
+          });
         });
       }
     );
@@ -82,13 +78,57 @@ async function postJson(url, body, headers) {
   });
 }
 
-function buildChatMessage({ role, content }) {
-  return { role, content };
-}
-
 function safeTrim(value) {
   if (typeof value !== 'string') return '';
   return value.trim();
+}
+
+function buildGeminiUrl({ apiKey }) {
+  // Gemini API key is sent as ?key=... (matches Google docs style)
+  return `https://generativelanguage.googleapis.com/${GEMINI_API_VERSION}/models/${encodeURIComponent(
+    GEMINI_MODEL
+  )}:generateContent?key=${encodeURIComponent(apiKey)}`;
+}
+
+function buildGeminiContent(prompt) {
+  return {
+    contents: [{ parts: [{ text: prompt }] }],
+  };
+}
+
+function extractGeminiText(data) {
+  // Typical response: { candidates: [{ content: { parts: [{ text: '...' }]}}]}
+  const text =
+    data?.candidates?.[0]?.content?.parts?.map((p) => p?.text || '').join('') ||
+    data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+    '';
+  return typeof text === 'string' ? text.trim() : '';
+}
+
+async function callGemini({ apiKey, prompt, temperature = 0.7, maxOutputTokens = 220 }) {
+  const url = buildGeminiUrl({ apiKey });
+
+  const body = {
+    ...buildGeminiContent(prompt),
+    generationConfig: {
+      temperature,
+      maxOutputTokens,
+    },
+  };
+
+  const response = await postJson(url, body, {});
+  if (!response.ok) {
+    console.error('Gemini error:', response.status, response.text);
+    return { ok: false, status: response.status, data: response.data, text: response.text };
+  }
+
+  const text = extractGeminiText(response.data);
+  if (!text) {
+    console.error('Gemini empty text response:', response.data);
+    return { ok: false, status: response.status, data: response.data, text: response.text };
+  }
+
+  return { ok: true, status: response.status, text, data: response.data };
 }
 
 router.post('/dashboard-assistant', authMiddleware, async (req, res) => {
@@ -110,35 +150,35 @@ Be friendly and conversational. Help the student organize assignments, prioritiz
 Keep replies short (3-6 sentences), practical, and encourage the next step.
 If the student asks for help planning, propose a concrete first action. If the student asks a question, answer it directly.`;
 
-    const payload = {
-      model: OPENAI_MODEL,
-      temperature: 0.7,
-      max_tokens: 220,
-      messages: [
-        { role: 'system', content: system },
-        ...safeMessages,
-        { role: 'user', content: `Student name: ${safeTrim(userName)}. Respond now:` },
-      ],
-    };
+    // Gemini doesn't use role-based chat completions in the same way as OpenAI;
+    // flatten into a single prompt.
+    const chatHistory = safeMessages
+      .map((m) => `${m.role === 'user' ? 'Student' : 'Assistant'}: ${m.content}`)
+      .join('\n');
 
-    const openAiKey = getOpenAiApiKey();
-    if (!openAiKey) {
-      return res.status(500).json({ message: 'AI not configured. Set OPENAI_API_KEY in your backend environment.' });
+    const prompt = `${system}\n\n${chatHistory ? chatHistory + '\n\n' : ''}Student name: ${safeTrim(
+      userName
+    )}. Respond now:`;
+
+    const geminiKey = process.env.GEMINI_API_KEY;
+    if (!geminiKey) {
+      return res
+        .status(500)
+        .json({ message: 'AI not configured. Set GEMINI_API_KEY in your backend environment.' });
     }
 
-    const response = await postJson(
-      OPENAI_API_URL,
-      payload,
-      { Authorization: `Bearer ${openAiKey}` }
-    );
+    const geminiResponse = await callGemini({
+      apiKey: geminiKey,
+      prompt,
+      temperature: 0.7,
+      maxOutputTokens: 220,
+    });
 
-    if (!response.ok || !response.data) {
-      console.error('OpenAI error:', response.status, response.text);
+    if (!geminiResponse.ok) {
       return res.status(502).json({ message: 'AI request failed' });
     }
 
-    const text = response.data?.choices?.[0]?.message?.content?.trim();
-    return res.json({ content: text || 'Tell me what you’re working on and I’ll suggest the next step.' });
+    return res.json({ content: geminiResponse.text });
   } catch (err) {
     console.error('Dashboard assistant error:', err);
     return res.status(500).json({ message: 'AI error' });
@@ -163,47 +203,63 @@ router.post('/study-coach', authMiddleware, async (req, res) => {
 
     let prompt;
     if (mode === 'hint') {
-      prompt = `You are a helpful study coach. Give a short hint without revealing the full answer.\n\nQuestion: ${safeQuestion}\nQuestion type: ${safeQuestionType}\nStudent answer: ${safeUserAnswer || 'Not provided'}\nCorrect answer: ${safeCorrectAnswer || 'Not provided'}\n\nRespond with a concise hint in 2-4 sentences. Do not reveal the final answer.`;
+      prompt = `You are a helpful study coach. Give a short hint without revealing the full answer.
+
+Question: ${safeQuestion}
+Question type: ${safeQuestionType}
+Student answer: ${safeUserAnswer || 'Not provided'}
+Correct answer: ${safeCorrectAnswer || 'Not provided'}
+
+Respond with a concise hint in 2-4 sentences. Do not reveal the final answer.`;
     } else if (isCorrect === true) {
-      prompt = `You are a helpful study coach. The student answered correctly.\n\nQuestion: ${safeQuestion}\nQuestion type: ${safeQuestionType}\nStudent answer: ${safeUserAnswer}\nCorrect answer: ${safeCorrectAnswer}\n\nGive a short congratulatory confirmation and one brief follow-up insight that helps the student deepen understanding. Do not be verbose.`;
+      prompt = `You are a helpful study coach. The student answered correctly.
+
+Question: ${safeQuestion}
+Question type: ${safeQuestionType}
+Student answer: ${safeUserAnswer}
+Correct answer: ${safeCorrectAnswer}
+
+Give a short congratulatory confirmation and one brief follow-up insight that helps the student deepen understanding. Do not be verbose.`;
     } else {
-      prompt = `You are a helpful study coach. The student answered incorrectly.\n\nQuestion: ${safeQuestion}\nQuestion type: ${safeQuestionType}\nStudent answer: ${safeUserAnswer}\nCorrect answer: ${safeCorrectAnswer}\n\nGive a short, encouraging hint that nudges the student toward the correct answer without directly repeating it. Do not reveal the full answer. Keep it to 2-4 sentences.`;
+      prompt = `You are a helpful study coach. The student answered incorrectly.
+
+Question: ${safeQuestion}
+Question type: ${safeQuestionType}
+Student answer: ${safeUserAnswer}
+Correct answer: ${safeCorrectAnswer}
+
+Give a short, encouraging hint that nudges the student toward the correct answer without directly repeating it. Do not reveal the full answer. Keep it to 2-4 sentences.`;
     }
 
-    const openAiKey = getOpenAiApiKey();
-    if (!openAiKey) {
-      return res.status(500).json({ message: 'AI not configured. Set OPENAI_API_KEY in your backend environment.' });
+    const geminiKey = process.env.GEMINI_API_KEY;
+    if (!geminiKey) {
+      return res
+        .status(500)
+        .json({ message: 'AI not configured. Set GEMINI_API_KEY in your backend environment.' });
     }
 
-    const payload = {
-      model: OPENAI_MODEL,
+    const geminiResponse = await callGemini({
+      apiKey: geminiKey,
+      prompt,
       temperature: 0.7,
-      max_tokens: 220,
-      messages: [buildChatMessage({ role: 'user', content: prompt })],
-    };
+      maxOutputTokens: 220,
+    });
 
-    const response = await postJson(
-      OPENAI_API_URL,
-      payload,
-      {
-        Authorization: `Bearer ${openAiKey}`,
-      }
-    );
-
-    if (!response.ok || !response.data) {
-      console.error('OpenAI error:', response.status, response.text);
+    if (!geminiResponse.ok) {
       return res.status(502).json({ message: 'AI request failed' });
     }
 
-    const text = response.data?.choices?.[0]?.message?.content?.trim();
-
-    if (!text) {
-      return res.json({ summary: isCorrect === true ? 'Correct answer.' : 'Not quite yet.', hint: 'Try again—focus on the key idea.' });
+    const hintText = geminiResponse.text;
+    if (!hintText) {
+      return res.json({
+        summary: isCorrect === true ? 'Correct answer.' : 'Not quite yet.',
+        hint: 'Try again—focus on the key idea.',
+      });
     }
 
     return res.json({
       summary: isCorrect === true ? 'Correct answer.' : 'Not quite yet.',
-      hint: text,
+      hint: hintText,
     });
   } catch (err) {
     console.error('Study coach error:', err);
