@@ -105,7 +105,7 @@ function extractGeminiText(data) {
   return typeof text === 'string' ? text.trim() : '';
 }
 
-async function callGemini({ apiKey, prompt, temperature = 0.7, maxOutputTokens = 140 }) {
+async function callGemini({ apiKey, prompt, temperature = 0.7, maxOutputTokens = 800 }) {
   const url = buildGeminiUrl({ apiKey });
 
   const body = {
@@ -207,7 +207,7 @@ If the student asks for help planning, propose a concrete first action. If the s
       apiKey: geminiKey,
       prompt,
       temperature: 0.7,
-      maxOutputTokens: 140,
+      maxOutputTokens: 800,
     });
 
     if (!geminiResponse.ok) {
@@ -292,7 +292,7 @@ Give a short, encouraging hint that nudges the student toward the correct answer
       apiKey: geminiKey,
       prompt,
       temperature: 0.7,
-      maxOutputTokens: 140,
+      maxOutputTokens: 800,
     });
 
     if (!geminiResponse.ok) {

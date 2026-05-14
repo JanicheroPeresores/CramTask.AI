@@ -35,7 +35,10 @@ Consider:
 
 Respond with ONLY the priority level: HIGH, MEDIUM, or LOW`;
 
-    const content = await generateGeminiContent({ prompt });
+    const content = await generateGeminiContent({
+      prompt,
+      generationConfig: { temperature: 0.7, maxOutputTokens: 800 },
+    });
     
     // Extract priority from response
     if (content.includes('HIGH')) return 'high';

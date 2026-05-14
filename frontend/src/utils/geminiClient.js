@@ -15,6 +15,16 @@ export const generateGeminiContent = async ({ prompt, generationConfig }) => {
   );
   url.searchParams.append('key', apiKey);
 
+  const defaultGenerationConfig = {
+    temperature: 0.7,
+    maxOutputTokens: 800,
+  };
+
+  const mergedGenerationConfig = {
+    ...defaultGenerationConfig,
+    ...(generationConfig || {}),
+  };
+
   const response = await fetch(url.toString(), {
     method: 'POST',
     headers: {
@@ -26,7 +36,7 @@ export const generateGeminiContent = async ({ prompt, generationConfig }) => {
           parts: [{ text: prompt }],
         },
       ],
-      ...(generationConfig ? { generationConfig } : {}),
+      generationConfig: mergedGenerationConfig,
     }),
   });
 
