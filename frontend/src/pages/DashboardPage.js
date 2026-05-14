@@ -32,6 +32,7 @@ function DashboardPage({ user, onLogout }) {
   const [assistantLoading, setAssistantLoading] = useState(false);
   const [chatOpen, setChatOpen] = useState(true);
   const [googleClassroomRefresh, setGoogleClassroomRefresh] = useState(0);
+  const [showIntro, setShowIntro] = useState(true);
   const navigate = useNavigate();
   const assistantScrollRef = useRef(null);
   const token = localStorage.getItem('token');
@@ -89,6 +90,12 @@ function DashboardPage({ user, onLogout }) {
     navigate('/');
   };
 
+  const handleBackToDashboard = () => {
+    // Keep route stable; this is mostly for the intro overlay UX.
+    navigate('/dashboard');
+    setShowIntro(false);
+  };
+
   const handleAssistantSend = async (overrideMessage) => {
     const nextMessage = (overrideMessage ?? assistantInput).trim();
 
@@ -144,10 +151,66 @@ function DashboardPage({ user, onLogout }) {
           <button onClick={() => setShowModal(true)} className="btn-primary create-btn">
             CREATE
           </button>
-          <button onClick={() => navigate('/coach')} className="btn-secondary coach-btn">
-            STUDY COACH
-          </button>
         </div>
+
+        {showIntro && (
+          <div className="dashboard-intro-overlay" role="dialog" aria-modal="true">
+            <div className="dashboard-intro">
+              <div className="dashboard-intro-top">
+                <div className="dashboard-intro-badge">WELCOME</div>
+                <h1 className="dashboard-intro-title">Your next study session starts here.</h1>
+                <p className="dashboard-intro-subtitle">
+                  Brutal. Simple. Helpful. Pick a priority, then let the Assignment Coach guide you.
+                </p>
+              </div>
+
+              <div className="dashboard-intro-actions">
+                <button
+                  type="button"
+                  className="intro-primary"
+                  onClick={() => setShowIntro(false)}
+                >
+                  Enter Dashboard
+                </button>
+                <button
+                  type="button"
+                  className="intro-secondary"
+                  onClick={() => {
+                    setChatOpen(true);
+                    setShowIntro(false);
+                  }}
+                >
+                  Open Coach Chat
+                </button>
+              </div>
+
+              <div className="dashboard-intro-hints">
+                <div className="intro-hint-card">
+                  <div className="intro-hint-title">Step 1</div>
+                  <div className="intro-hint-text">Sync Google Classroom (if you use it).</div>
+                </div>
+                <div className="intro-hint-card">
+                  <div className="intro-hint-title">Step 2</div>
+                  <div className="intro-hint-text">Create an assignment when needed.</div>
+                </div>
+                <div className="intro-hint-card">
+                  <div className="intro-hint-title">Step 3</div>
+                  <div className="intro-hint-text">Ask the coach what to do first.</div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="intro-close-x"
+              onClick={() => setShowIntro(false)}
+              aria-label="Close intro"
+              title="Close"
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         <div className="dashboard-main">
           <div className="dashboard-main-layout">
@@ -245,6 +308,14 @@ function DashboardPage({ user, onLogout }) {
               </div>
             )}
           </div>
+        </div>
+        <div className="floating-intro-buttons">
+          <button type="button" className="floating-btn" onClick={handleBackToDashboard} title="Back to dashboard">
+            ◀ Dashboard
+          </button>
+          <button type="button" className="floating-btn logout" onClick={handleLogout} title="Logout">
+            ⎋ Logout
+          </button>
         </div>
       </div>
 
