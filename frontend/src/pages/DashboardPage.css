@@ -182,57 +182,11 @@
   transform: translateY(-1px);
 }
 
-.floating-intro-buttons {
-  position: fixed;
-  left: 16px;
-  bottom: 16px;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.floating-btn {
-  border-radius: 16px;
-  border: 3px solid rgba(0, 0, 0, 0.45);
-  background: #f0f0f0;
-  color: #101010;
-  font-weight: 1000;
-  letter-spacing: 0.2px;
-  padding: 12px 14px;
-  cursor: pointer;
-  box-shadow: 0 16px 0 rgba(0, 0, 0, 0.22);
-  transition: transform 0.12s ease;
-  min-width: 160px;
-  text-align: left;
-}
-
-.floating-btn:hover {
-  transform: translateY(-1px);
-}
-
-.floating-btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 12px 0 rgba(0, 0, 0, 0.22);
-}
-
-.floating-btn.logout {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.22);
-}
 
 /* Make sure overlay layout stays sane on mobile */
 @media (max-width: 900px) {
   .dashboard-intro-hints {
     grid-template-columns: 1fr;
-  }
-  .floating-intro-buttons {
-    left: 12px;
-    bottom: 12px;
-  }
-  .floating-btn {
-    min-width: 140px;
   }
 }
 

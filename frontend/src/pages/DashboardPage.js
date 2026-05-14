@@ -8,7 +8,6 @@ import GoogleClassroomAssignments from '../components/GoogleClassroomAssignments
 import { sendDashboardAssistantMessage } from '../utils/dashboardAssistant';
 import './DashboardPage.css';
 
-const FRONTEND_BUILD_SHA = 'c49ad1e';
 
 const INITIAL_ASSISTANT_MESSAGES = [
   {
@@ -92,11 +91,6 @@ function DashboardPage({ user, onLogout }) {
     navigate('/');
   };
 
-  const handleBackToDashboard = () => {
-    // Keep route stable; this is mostly for the intro overlay UX.
-    navigate('/dashboard');
-    setShowIntro(false);
-  };
 
   const handleAssistantSend = async (overrideMessage) => {
     const nextMessage = (overrideMessage ?? assistantInput).trim();
@@ -142,7 +136,6 @@ function DashboardPage({ user, onLogout }) {
         <div className="header-content">
           <div>
             <h1>Welcome, {user?.username || 'Student'}</h1>
-            <div className="dashboard-build-sha">UI build: {FRONTEND_BUILD_SHA}</div>
           </div>
           <button onClick={handleLogout} className="btn-secondary">
             Logout
@@ -176,16 +169,6 @@ function DashboardPage({ user, onLogout }) {
                   onClick={() => setShowIntro(false)}
                 >
                   Enter Dashboard
-                </button>
-                <button
-                  type="button"
-                  className="intro-secondary"
-                  onClick={() => {
-                    setChatOpen(true);
-                    setShowIntro(false);
-                  }}
-                >
-                  Open Coach Chat
                 </button>
               </div>
 
@@ -301,26 +284,7 @@ function DashboardPage({ user, onLogout }) {
               </div>
             </aside>}
 
-            {!chatOpen && (
-              <div className="chat-toggle-button-container">
-                <button
-                  className="chat-toggle-button"
-                  onClick={() => setChatOpen(true)}
-                  title="Open Study Coach Chat"
-                >
-                  💬
-                </button>
-              </div>
-            )}
           </div>
-        </div>
-        <div className="floating-intro-buttons">
-          <button type="button" className="floating-btn" onClick={handleBackToDashboard} title="Back to dashboard">
-            ◀ Dashboard
-          </button>
-          <button type="button" className="floating-btn logout" onClick={handleLogout} title="Logout">
-            ⎋ Logout
-          </button>
         </div>
       </div>
 
