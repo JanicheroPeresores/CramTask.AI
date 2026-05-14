@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './LoginPage.css';
 
+const FRONTEND_BUILD_SHA = 'c49ad1e';
+
 function LoginPage({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -34,7 +36,8 @@ function LoginPage({ onLogin }) {
     <div className="login-container">
       <div className="login-box">
         <h1>WELCOME TO THE TASK REMINDER</h1>
-        
+        <div className="login-build-sha">UI build: {FRONTEND_BUILD_SHA}</div>
+
         <form onSubmit={handleLogin} className="login-form">
           <h2>LOGIN</h2>
 

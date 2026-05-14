@@ -8,6 +8,8 @@ import GoogleClassroomAssignments from '../components/GoogleClassroomAssignments
 import { sendDashboardAssistantMessage } from '../utils/dashboardAssistant';
 import './DashboardPage.css';
 
+const FRONTEND_BUILD_SHA = 'c49ad1e';
+
 const INITIAL_ASSISTANT_MESSAGES = [
   {
     id: 'assistant-welcome',
@@ -138,7 +140,10 @@ function DashboardPage({ user, onLogout }) {
     <div className="dashboard-container">
       <header className="dashboard-header">
         <div className="header-content">
-          <h1>Welcome, {user?.username || 'Student'}</h1>
+          <div>
+            <h1>Welcome, {user?.username || 'Student'}</h1>
+            <div className="dashboard-build-sha">UI build: {FRONTEND_BUILD_SHA}</div>
+          </div>
           <button onClick={handleLogout} className="btn-secondary">
             Logout
           </button>
