@@ -105,7 +105,7 @@ function extractGeminiText(data) {
   return typeof text === 'string' ? text.trim() : '';
 }
 
-async function callGemini({ apiKey, prompt, temperature = 0.7, maxOutputTokens = 220 }) {
+async function callGemini({ apiKey, prompt, temperature = 0.7, maxOutputTokens = 140 }) {
   const url = buildGeminiUrl({ apiKey });
 
   const body = {
@@ -116,19 +116,55 @@ async function callGemini({ apiKey, prompt, temperature = 0.7, maxOutputTokens =
     },
   };
 
-  const response = await postJson(url, body, {});
-  if (!response.ok) {
-    console.error('Gemini error:', response.status, response.text);
-    return { ok: false, status: response.status, data: response.data, text: response.text };
+  const maxAttempts = 3;
+  const baseRetryMs = 2000;
+  const maxRetryDelayMs = 5000;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const response = await postJson(url, body, {});
+    if (!response.ok) {
+      const status = response.status;
+
+      // Gemini quota/rate limiting: retry a couple times
+      const isRetryable429 = status === 429;
+
+      if (isRetryable429 && attempt < maxAttempts) {
+        const retryDelayRaw = response?.data?.error?.details?.[2]?.retryDelay;
+        const retryDelayMsCalculated = typeof retryDelayRaw === 'string'
+          ? Math.ceil(parseFloat(retryDelayRaw.replace('s', '')) * 1000) || baseRetryMs
+          : baseRetryMs;
+
+        const retryDelayMs = Math.min(retryDelayMsCalculated, maxRetryDelayMs);
+
+        console.warn(`Gemini 429 received. Retrying attempt ${attempt + 1}/${maxAttempts} in ${retryDelayMs}ms...`);
+        await new Promise((r) => setTimeout(r, retryDelayMs));
+        continue;
+      }
+
+      const retryDelayRaw =
+        response?.data?.error?.details?.[2]?.retryDelay ||
+        response?.data?.error?.retryDelay;
+
+      const retryAfterMs =
+        typeof retryDelayRaw === 'string'
+          ? Math.ceil(parseFloat(retryDelayRaw.replace('s', '')) * 1000) || undefined
+          : undefined;
+
+      console.error('Gemini error:', status, response.text);
+      return { ok: false, status, data: response.data, text: response.text, retryAfterMs };
+    }
+
+    const text = extractGeminiText(response.data);
+    if (!text) {
+      console.error('Gemini empty text response:', response.data);
+      return { ok: false, status: response.status, data: response.data, text: response.text };
+    }
+
+    return { ok: true, status: response.status, text, data: response.data };
   }
 
-  const text = extractGeminiText(response.data);
-  if (!text) {
-    console.error('Gemini empty text response:', response.data);
-    return { ok: false, status: response.status, data: response.data, text: response.text };
-  }
-
-  return { ok: true, status: response.status, text, data: response.data };
+  // Should be unreachable due to returns, but keeps TS/linters happy.
+  return { ok: false, status: 500, data: null, text: 'Gemini request failed after retries.' };
 }
 
 router.post('/dashboard-assistant', authMiddleware, async (req, res) => {
@@ -171,10 +207,24 @@ If the student asks for help planning, propose a concrete first action. If the s
       apiKey: geminiKey,
       prompt,
       temperature: 0.7,
-      maxOutputTokens: 220,
+      maxOutputTokens: 140,
     });
 
     if (!geminiResponse.ok) {
+      if (geminiResponse.status === 429) {
+        const seconds =
+          typeof geminiResponse.retryAfterMs === 'number'
+            ? Math.ceil(geminiResponse.retryAfterMs / 1000)
+            : undefined;
+
+        return res.status(429).json({
+          message: seconds
+            ? `Rate limited by Gemini. Retry in ${seconds}s.`
+            : 'Rate limited by Gemini. Please try again shortly.',
+          retryAfterSeconds: seconds,
+        });
+      }
+
       return res.status(502).json({ message: 'AI request failed' });
     }
 
@@ -242,10 +292,24 @@ Give a short, encouraging hint that nudges the student toward the correct answer
       apiKey: geminiKey,
       prompt,
       temperature: 0.7,
-      maxOutputTokens: 220,
+      maxOutputTokens: 140,
     });
 
     if (!geminiResponse.ok) {
+      if (geminiResponse.status === 429) {
+        const seconds =
+          typeof geminiResponse.retryAfterMs === 'number'
+            ? Math.ceil(geminiResponse.retryAfterMs / 1000)
+            : undefined;
+
+        return res.status(429).json({
+          message: seconds
+            ? `Rate limited by Gemini. Retry in ${seconds}s.`
+            : 'Rate limited by Gemini. Please try again shortly.',
+          retryAfterSeconds: seconds,
+        });
+      }
+
       return res.status(502).json({ message: 'AI request failed' });
     }
 
