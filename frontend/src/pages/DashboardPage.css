@@ -264,7 +264,7 @@
 }
 
 .dashboard-sidebar {
-  width: 1700px;
+  width: 170px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
