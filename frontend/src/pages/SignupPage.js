@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import LanguageSwitch from '../components/LanguageSwitch';
+import { useLanguage } from '../i18n/LanguageContext';
 import './SignupPage.css';
 
 function SignupPage({ onSignup }) {
+  const { t, translateServerMessage } = useLanguage();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -28,7 +31,7 @@ function SignupPage({ onSignup }) {
     setLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('errors.passwordsMatch'));
       setLoading(false);
       return;
     }
@@ -44,7 +47,7 @@ function SignupPage({ onSignup }) {
       onSignup(response.data.token, response.data.user);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Signup failed. Please try again.');
+      setError(translateServerMessage(err.response?.data?.message, 'errors.signupFailed'));
     } finally {
       setLoading(false);
     }
@@ -52,14 +55,15 @@ function SignupPage({ onSignup }) {
 
   return (
     <div className="signup-container">
+      <LanguageSwitch className="auth-language-switch" />
       <div className="signup-box">
-        <h1>CREATE YOUR ACCOUNT</h1>
+        <h1>{t('auth.createAccountTitle')}</h1>
 
         <form onSubmit={handleSignup} className="signup-form">
           {error && <div className="alert alert-error">{error}</div>}
 
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username">{t('auth.username')}</label>
             <input
               type="text"
               id="username"
@@ -71,7 +75,7 @@ function SignupPage({ onSignup }) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">{t('auth.email')}</label>
             <input
               type="email"
               id="email"
@@ -81,12 +85,12 @@ function SignupPage({ onSignup }) {
               required
             />
             <small style={{ color: '#f1c40f', marginTop: '5px', display: 'block' }}>
-              💡 Use a personal email (Gmail, Outlook) — school emails may block password reset emails.
+              {t('auth.emailHint')}
             </small>
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">{t('auth.password')}</label>
             <input
               type="password"
               id="password"
@@ -98,7 +102,7 @@ function SignupPage({ onSignup }) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
+            <label htmlFor="confirmPassword">{t('auth.confirmPassword')}</label>
             <input
               type="password"
               id="confirmPassword"
@@ -110,12 +114,12 @@ function SignupPage({ onSignup }) {
           </div>
 
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Creating account...' : 'SIGN UP'}
+            {loading ? t('auth.creatingAccount') : t('auth.signup')}
           </button>
         </form>
 
         <div className="login-link">
-          Already have an account? <Link to="/">Login</Link>
+          {t('auth.hasAccount')} <Link to="/">{t('auth.login')}</Link>
         </div>
       </div>
     </div>

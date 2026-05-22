@@ -4,7 +4,10 @@
   align-items: center;
   min-height: 100vh;
   padding: 20px;
-  background: #0f1419;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(0, 255, 200, 0.14), transparent 28%),
+    radial-gradient(circle at 82% 20%, rgba(255, 209, 102, 0.12), transparent 28%),
+    #0f1419;
 }
 
 .login-box {
@@ -14,7 +17,7 @@
   padding: 40px 34px;
   max-width: 420px;
   width: 100%;
-  box-shadow: 0 20px 0 rgba(0, 0, 0, 0.35), 0 30px 90px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 20px 0 rgba(0, 0, 0, 0.35), 0 0 0 3px rgba(0, 255, 200, 0.15), 0 30px 90px rgba(0, 0, 0, 0.55);
   position: relative;
 }
 
@@ -22,7 +25,7 @@
   content: '';
   position: absolute;
   inset: 10px;
-  border: 3px dashed rgba(255, 255, 255, 0.35);
+  border: 3px dashed rgba(0, 255, 200, 0.22);
   border-radius: 14px;
   pointer-events: none;
 }
@@ -104,7 +107,7 @@
 .login-form button {
   width: 100%;
   padding: 14px 12px;
-  background: #00c853; /* solid green */
+  background: linear-gradient(135deg, #00ffc8, #00d4ff);
   color: #08110a;
   border: 3px solid #000;
   border-radius: 12px;

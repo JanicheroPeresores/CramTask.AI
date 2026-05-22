@@ -5,30 +5,24 @@ import AssignmentTable from '../components/AssignmentTable';
 import CreateAssignmentModal from '../components/CreateAssignmentModal';
 import GoogleClassroomConnect from '../components/GoogleClassroomConnect';
 import GoogleClassroomAssignments from '../components/GoogleClassroomAssignments';
+import LanguageSwitch from '../components/LanguageSwitch';
+import { useLanguage } from '../i18n/LanguageContext';
 import { sendDashboardAssistantMessage } from '../utils/dashboardAssistant';
 import './DashboardPage.css';
 
-
-const INITIAL_ASSISTANT_MESSAGES = [
-  {
-    id: 'assistant-welcome',
-    role: 'assistant',
-    content: 'Ask me what to work on first, how to handle an overdue assignment, or how to plan a study session.',
-  },
-];
-
-const QUICK_PROMPTS = [
-  'What should I do first today?',
-  'How do I catch up on overdue work?',
-  'Make me a short study plan for tonight.',
-];
-
 function DashboardPage({ user, onLogout }) {
+  const { language, t } = useLanguage();
   const [assignments, setAssignments] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [assistantMessages, setAssistantMessages] = useState(INITIAL_ASSISTANT_MESSAGES);
+  const [assistantMessages, setAssistantMessages] = useState(() => [
+    {
+      id: 'assistant-welcome',
+      role: 'assistant',
+      content: t('dashboard.welcomeMessage'),
+    },
+  ]);
   const [assistantInput, setAssistantInput] = useState('');
   const [assistantLoading, setAssistantLoading] = useState(false);
   const [chatOpen, setChatOpen] = useState(true);
@@ -37,6 +31,11 @@ function DashboardPage({ user, onLogout }) {
   const navigate = useNavigate();
   const assistantScrollRef = useRef(null);
   const token = localStorage.getItem('token');
+  const quickPrompts = [
+    t('dashboard.quickFirst'),
+    t('dashboard.quickOverdue'),
+    t('dashboard.quickPlan'),
+  ];
 
   const fetchAssignments = async () => {
     try {
@@ -46,7 +45,7 @@ function DashboardPage({ user, onLogout }) {
       });
       setAssignments(response.data.assignments || []);
     } catch (err) {
-      setError('Error fetching assignments');
+      setError(t('errors.fetchAssignments'));
     } finally {
       setLoading(false);
     }
@@ -55,7 +54,22 @@ function DashboardPage({ user, onLogout }) {
   useEffect(() => {
     fetchAssignments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [language]);
+
+  useEffect(() => {
+    setAssistantMessages((currentMessages) => {
+      if (currentMessages.length === 1 && currentMessages[0].id === 'assistant-welcome') {
+        return [
+          {
+            id: 'assistant-welcome',
+            role: 'assistant',
+            content: t('dashboard.welcomeMessage'),
+          },
+        ];
+      }
+      return currentMessages;
+    });
+  }, [language, t]);
 
   useEffect(() => {
     if (assistantScrollRef.current) {
@@ -71,7 +85,7 @@ function DashboardPage({ user, onLogout }) {
       setAssignments([...assignments, response.data.assignment]);
       setShowModal(false);
     } catch (err) {
-      setError('Error creating assignment');
+      setError(t('errors.createAssignment'));
     }
   };
 
@@ -82,7 +96,7 @@ function DashboardPage({ user, onLogout }) {
       });
       setAssignments(assignments.filter((assignment) => assignment.id !== assignmentId));
     } catch (err) {
-      setError('Error deleting assignment');
+      setError(t('errors.deleteAssignment'));
     }
   };
 
@@ -90,7 +104,6 @@ function DashboardPage({ user, onLogout }) {
     onLogout();
     navigate('/');
   };
-
 
   const handleAssistantSend = async (overrideMessage) => {
     const nextMessage = (overrideMessage ?? assistantInput).trim();
@@ -114,7 +127,8 @@ function DashboardPage({ user, onLogout }) {
     try {
       const result = await sendDashboardAssistantMessage({
         messages: conversation,
-        userName: user?.username || 'Student',
+        userName: user?.username || t('common.student'),
+        language,
       });
 
       setAssistantMessages((currentMessages) => [
@@ -135,19 +149,20 @@ function DashboardPage({ user, onLogout }) {
       <header className="dashboard-header">
         <div className="header-content">
           <div>
-            <h1>Welcome, {user?.username || 'Student'}</h1>
+            <h1>{t('dashboard.welcome', { name: user?.username || t('common.student') })}</h1>
           </div>
+          <LanguageSwitch className="dashboard-language-switch" />
           <button onClick={handleLogout} className="btn-secondary">
-            Logout
+            {t('common.logout')}
           </button>
         </div>
       </header>
 
       <div className="dashboard-content">
         <div className="dashboard-sidebar">
-          <div className="sidebar-label">MANAGE ASSIGNMENTS</div>
+          <div className="sidebar-label">{t('dashboard.sidebarLabel')}</div>
           <button onClick={() => setShowModal(true)} className="btn-primary create-btn">
-            CREATE
+            {t('dashboard.create')}
           </button>
         </div>
 
@@ -155,10 +170,10 @@ function DashboardPage({ user, onLogout }) {
           <div className="dashboard-intro-overlay" role="dialog" aria-modal="true">
             <div className="dashboard-intro">
               <div className="dashboard-intro-top">
-                <div className="dashboard-intro-badge">WELCOME</div>
-                <h1 className="dashboard-intro-title">Your next study session starts here.</h1>
+                <div className="dashboard-intro-badge">{t('dashboard.introBadge')}</div>
+                <h1 className="dashboard-intro-title">{t('dashboard.introTitle')}</h1>
                 <p className="dashboard-intro-subtitle">
-                  Brutal. Simple. Helpful. Pick a priority, then let the Assignment Coach guide you.
+                  {t('dashboard.introSubtitle')}
                 </p>
               </div>
 
@@ -168,22 +183,22 @@ function DashboardPage({ user, onLogout }) {
                   className="intro-primary"
                   onClick={() => setShowIntro(false)}
                 >
-                  Enter Dashboard
+                  {t('dashboard.enterDashboard')}
                 </button>
               </div>
 
               <div className="dashboard-intro-hints">
                 <div className="intro-hint-card">
-                  <div className="intro-hint-title">Step 1</div>
-                  <div className="intro-hint-text">Sync Google Classroom (if you use it).</div>
+                  <div className="intro-hint-title">{t('dashboard.step1Title')}</div>
+                  <div className="intro-hint-text">{t('dashboard.step1Text')}</div>
                 </div>
                 <div className="intro-hint-card">
-                  <div className="intro-hint-title">Step 2</div>
-                  <div className="intro-hint-text">Create an assignment when needed.</div>
+                  <div className="intro-hint-title">{t('dashboard.step2Title')}</div>
+                  <div className="intro-hint-text">{t('dashboard.step2Text')}</div>
                 </div>
                 <div className="intro-hint-card">
-                  <div className="intro-hint-title">Step 3</div>
-                  <div className="intro-hint-text">Ask the coach what to do first.</div>
+                  <div className="intro-hint-title">{t('dashboard.step3Title')}</div>
+                  <div className="intro-hint-text">{t('dashboard.step3Text')}</div>
                 </div>
               </div>
             </div>
@@ -192,10 +207,10 @@ function DashboardPage({ user, onLogout }) {
               type="button"
               className="intro-close-x"
               onClick={() => setShowIntro(false)}
-              aria-label="Close intro"
-              title="Close"
+              aria-label={t('dashboard.closeIntro')}
+              title={t('dashboard.closeIntro')}
             >
-              ×
+              x
             </button>
           </div>
         )}
@@ -205,11 +220,11 @@ function DashboardPage({ user, onLogout }) {
             <div className="assignments-section">
               {error && <div className="alert alert-error">{error}</div>}
 
-              <GoogleClassroomConnect 
-                onSync={() => setGoogleClassroomRefresh(prev => prev + 1)}
+              <GoogleClassroomConnect
+                onSync={() => setGoogleClassroomRefresh((prev) => prev + 1)}
               />
 
-              <GoogleClassroomAssignments 
+              <GoogleClassroomAssignments
                 key={googleClassroomRefresh}
               />
 
@@ -222,75 +237,78 @@ function DashboardPage({ user, onLogout }) {
               )}
             </div>
 
-            {chatOpen && <aside className="assistant-card">
-              <div className="assistant-card-header">
-                <div>
-                  <p className="assistant-eyebrow">AI chat box</p>
-                  <h2>Assignment Coach</h2>
-                </div>
-                <button
-                  className="assistant-close-btn"
-                  onClick={() => setChatOpen(false)}
-                  title="Minimize Chat"
-                >
-                  −
-                </button>
-              </div>
-
-              <div className="assistant-messages" ref={assistantScrollRef}>
-                {assistantMessages.map((message) => (
-                  <div key={message.id} className={`assistant-message ${message.role}`}>
-                    <div className="assistant-message-role">{message.role === 'user' ? 'You' : 'Coach'}</div>
-                    <p>{message.content}</p>
+            {chatOpen && (
+              <aside className="assistant-card">
+                <div className="assistant-card-header">
+                  <div>
+                    <p className="assistant-eyebrow">{t('dashboard.assistantEyebrow')}</p>
+                    <h2>{t('dashboard.assistantTitle')}</h2>
                   </div>
-                ))}
-                {assistantLoading && (
-                  <div className="assistant-message assistant">
-                    <div className="assistant-message-role">Coach</div>
-                    <p>Thinking through the next step...</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="assistant-quick-prompts">
-                {QUICK_PROMPTS.map((prompt) => (
-                  <button key={prompt} type="button" onClick={() => handleAssistantSend(prompt)}>
-                    {prompt}
+                  <button
+                    className="assistant-close-btn"
+                    onClick={() => setChatOpen(false)}
+                    title={t('dashboard.minimizeChat')}
+                  >
+                    -
                   </button>
-                ))}
-              </div>
+                </div>
 
-              <div className="assistant-input-box">
-                <textarea
-                  value={assistantInput}
-                  onChange={(e) => setAssistantInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleAssistantSend();
-                    }
-                  }}
-                  placeholder="Ask the AI about priorities, deadlines, or study planning..."
-                  rows="4"
-                />
-                <button
-                  type="button"
-                  className="assistant-send-btn"
-                  onClick={() => handleAssistantSend()}
-                  disabled={assistantLoading}
-                >
-                  {assistantLoading ? 'Sending...' : 'Send'}
-                </button>
-              </div>
-            </aside>}
+                <div className="assistant-messages" ref={assistantScrollRef}>
+                  {assistantMessages.map((message) => (
+                    <div key={message.id} className={`assistant-message ${message.role}`}>
+                      <div className="assistant-message-role">
+                        {message.role === 'user' ? t('dashboard.you') : t('dashboard.coach')}
+                      </div>
+                      <p>{message.content}</p>
+                    </div>
+                  ))}
+                  {assistantLoading && (
+                    <div className="assistant-message assistant">
+                      <div className="assistant-message-role">{t('dashboard.coach')}</div>
+                      <p>{t('dashboard.thinking')}</p>
+                    </div>
+                  )}
+                </div>
 
+                <div className="assistant-quick-prompts">
+                  {quickPrompts.map((prompt) => (
+                    <button key={prompt} type="button" onClick={() => handleAssistantSend(prompt)}>
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="assistant-input-box">
+                  <textarea
+                    value={assistantInput}
+                    onChange={(e) => setAssistantInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleAssistantSend();
+                      }
+                    }}
+                    placeholder={t('dashboard.assistantPlaceholder')}
+                    rows="4"
+                  />
+                  <button
+                    type="button"
+                    className="assistant-send-btn"
+                    onClick={() => handleAssistantSend()}
+                    disabled={assistantLoading}
+                  >
+                    {assistantLoading ? t('dashboard.sending') : t('dashboard.send')}
+                  </button>
+                </div>
+              </aside>
+            )}
           </div>
         </div>
       </div>
 
       <div className="logout-float">
-        <button type="button" className="logout-float-btn" onClick={handleLogout} title="Logout">
-          ⎋ Logout
+        <button type="button" className="logout-float-btn" onClick={handleLogout} title={t('common.logout')}>
+          {t('common.logout')}
         </button>
       </div>
 

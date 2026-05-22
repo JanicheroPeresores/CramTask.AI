@@ -169,7 +169,7 @@ async function callGemini({ apiKey, prompt, temperature = 0.7, maxOutputTokens =
 
 router.post('/dashboard-assistant', authMiddleware, async (req, res) => {
   try {
-    const { messages = [], userName = 'Student' } = req.body || {};
+    const { messages = [], userName = 'Student', language = 'en' } = req.body || {};
 
     const safeMessages = Array.isArray(messages)
       ? messages
@@ -181,10 +181,16 @@ router.post('/dashboard-assistant', authMiddleware, async (req, res) => {
           .filter((m) => m.content)
       : [];
 
+    const responseLanguage =
+      language === 'tl'
+        ? 'Respond in natural Filipino/Taglish. Keep common technical terms in English when they are clearer.'
+        : 'Respond in simple, clear English.';
+
     const system = `You are the AI assistant for Assignment Tracker (a student study coach).
 Be friendly and conversational. Help the student organize assignments, prioritize work, and plan study time.
 Keep replies short (3-6 sentences), practical, and encourage the next step.
-If the student asks for help planning, propose a concrete first action. If the student asks a question, answer it directly.`;
+If the student asks for help planning, propose a concrete first action. If the student asks a question, answer it directly.
+${responseLanguage}`;
 
     // Gemini doesn't use role-based chat completions in the same way as OpenAI;
     // flatten into a single prompt.

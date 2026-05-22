@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
+import { useLanguage } from '../i18n/LanguageContext';
 import './GoogleClassroomAssignments.css';
 
 function GoogleClassroomAssignments() {
+  const { language, t } = useLanguage();
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -19,19 +21,19 @@ function GoogleClassroomAssignments() {
       setError('');
     } catch (err) {
       console.error('Error fetching assignments:', err);
-      setError('Error loading Google Classroom assignments');
+      setError(t('errors.loadClassroom'));
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, t]);
 
   useEffect(() => {
     fetchAssignments();
   }, [fetchAssignments]);
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'No due date';
-    return new Date(dateString).toLocaleDateString('en-US', {
+    if (!dateString) return t('common.noDueDate');
+    return new Date(dateString).toLocaleDateString(language === 'tl' ? 'fil-PH' : 'en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -48,12 +50,11 @@ function GoogleClassroomAssignments() {
     const today = new Date();
     const due = new Date(dueDate);
     const diff = due - today;
-    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    return days;
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
   };
 
   if (loading) {
-    return <div className="loading">Loading Google Classroom assignments...</div>;
+    return <div className="loading">{t('classroom.loadingAssignments')}</div>;
   }
 
   if (error) {
@@ -63,13 +64,12 @@ function GoogleClassroomAssignments() {
   if (assignments.length === 0) {
     return (
       <div className="no-assignments">
-        <p>No assignments from Google Classroom yet.</p>
-        <p className="hint">Use the "Sync Assignments" button to fetch your assignments.</p>
+        <p>{t('classroom.empty')}</p>
+        <p className="hint">{t('classroom.emptyHint')}</p>
       </div>
     );
   }
 
-  // Group assignments by course
   const groupedByClass = {};
   assignments.forEach((assignment) => {
     if (!groupedByClass[assignment.course_name]) {
@@ -80,7 +80,7 @@ function GoogleClassroomAssignments() {
 
   return (
     <div className="google-classroom-assignments">
-      <h3>Google Classroom Assignments</h3>
+      <h3>{t('classroom.assignmentsTitle')}</h3>
 
       {Object.entries(groupedByClass).map(([courseName, courseAssignments]) => (
         <div key={courseName} className="course-section">
@@ -104,9 +104,9 @@ function GoogleClassroomAssignments() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="view-button"
-                        title="View in Google Classroom"
+                        title={t('classroom.viewTitle')}
                       >
-                        Open
+                        {t('common.open')}
                       </a>
                     )}
                   </div>
@@ -120,8 +120,8 @@ function GoogleClassroomAssignments() {
 
                   <div className="assignment-meta">
                     <span className="due-date">
-                      📅 {formatDate(assignment.due_date)}
-                      {assignment.due_time && <span> at {assignment.due_time}</span>}
+                      {formatDate(assignment.due_date)}
+                      {assignment.due_time && <span> {t('common.at')} {assignment.due_time}</span>}
                     </span>
 
                     {daysUntilDue !== null && (
@@ -135,10 +135,10 @@ function GoogleClassroomAssignments() {
                         }`}
                       >
                         {daysUntilDue < 0
-                          ? `${Math.abs(daysUntilDue)} days overdue`
+                          ? t('classroom.daysOverdue', { count: Math.abs(daysUntilDue) })
                           : daysUntilDue === 0
-                          ? 'Due today'
-                          : `${daysUntilDue} days left`}
+                          ? t('classroom.dueToday')
+                          : t('classroom.daysLeft', { count: daysUntilDue })}
                       </span>
                     )}
 

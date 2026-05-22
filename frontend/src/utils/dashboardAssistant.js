@@ -5,13 +5,20 @@ const FALLBACK_REPLY = {
     'I can help you prioritize assignments, turn a deadline into a study plan, or break a big project into the next three steps. What are you working on right now?',
 };
 
-export const sendDashboardAssistantMessage = async ({ messages = [], userName = 'Student' }) => {
+const FALLBACK_REPLY_TL = {
+  content:
+    'Matutulungan kitang ayusin ang priorities, gawing study plan ang deadline, o hatiin ang malaking project sa susunod na tatlong steps. Ano ang ginagawa mo ngayon?',
+};
+
+export const sendDashboardAssistantMessage = async ({ messages = [], userName = 'Student', language = 'en' }) => {
+  const fallback = language === 'tl' ? FALLBACK_REPLY_TL : FALLBACK_REPLY;
+
   try {
     const token = localStorage.getItem('token');
 
     const response = await axios.post(
       '/api/ai/dashboard-assistant',
-      { messages, userName },
+      { messages, userName, language },
       {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       }
@@ -22,7 +29,7 @@ export const sendDashboardAssistantMessage = async ({ messages = [], userName = 
 
     // If backend sent a structured error but no `content`, surface it.
     const message = response?.data?.message?.trim();
-    return message ? { content: message } : FALLBACK_REPLY;
+    return message ? { content: message } : fallback;
   } catch (error) {
     console.error('Error calling dashboard assistant AI:', error);
 
@@ -31,6 +38,6 @@ export const sendDashboardAssistantMessage = async ({ messages = [], userName = 
       return { content: backendMessage.trim() };
     }
 
-    return FALLBACK_REPLY;
+    return fallback;
   }
 };

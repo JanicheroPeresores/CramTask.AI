@@ -235,6 +235,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 30px;
+  gap: 16px;
 }
 
 .dashboard-header h1 {
@@ -247,6 +248,11 @@
 
 .dashboard-header button {
   display: none;
+}
+
+.dashboard-header .dashboard-language-switch {
+  display: inline-grid;
+  margin-left: auto;
 }
 
 .dashboard-content {
@@ -549,6 +555,10 @@
     flex-direction: column;
   }
 
+  .header-content {
+    padding: 0 16px;
+  }
+
   .dashboard-sidebar {
     width: 100%;
     border-right: none;
@@ -569,6 +579,19 @@
 
   .dashboard-main {
     padding: 20px;
+  }
+}
+
+@media (max-width: 520px) {
+  .dashboard-header h1 {
+    max-width: 46vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .logout-float-btn {
+    min-width: 120px;
   }
 }
 

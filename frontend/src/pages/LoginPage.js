@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import LanguageSwitch from '../components/LanguageSwitch';
+import { useLanguage } from '../i18n/LanguageContext';
 import './LoginPage.css';
 
 function LoginPage({ onLogin }) {
+  const { t, translateServerMessage } = useLanguage();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -24,7 +27,7 @@ function LoginPage({ onLogin }) {
       onLogin(response.data.token, response.data.user);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setError(translateServerMessage(err.response?.data?.message, 'errors.loginFailed'));
     } finally {
       setLoading(false);
     }
@@ -32,20 +35,21 @@ function LoginPage({ onLogin }) {
 
   return (
     <div className="login-container">
+      <LanguageSwitch className="auth-language-switch" />
       <div className="login-box">
         <h1>CRAMTASK.AI</h1>
 
         <form onSubmit={handleLogin} className="login-form">
-          <h2>LOGIN</h2>
+          <h2>{t('auth.loginTitle')}</h2>
 
           {error && <div className="alert alert-error">{error}</div>}
 
           <div className="form-group">
-            <label htmlFor="username">Username or Email</label>
+            <label htmlFor="username">{t('auth.usernameEmail')}</label>
             <input
               type="text"
               id="username"
-              placeholder="Username or email"
+              placeholder={t('auth.usernameEmailPlaceholder')}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -53,7 +57,7 @@ function LoginPage({ onLogin }) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">{t('auth.password')}</label>
             <input
               type="password"
               id="password"
@@ -64,16 +68,16 @@ function LoginPage({ onLogin }) {
           </div>
 
           <div className="forgot-password">
-            <Link to="/forgot-password">Forgot Password?</Link>
+            <Link to="/forgot-password">{t('auth.forgotPassword')}</Link>
           </div>
 
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Logging in...' : 'LOGIN'}
+            {loading ? t('auth.loggingIn') : t('auth.login')}
           </button>
         </form>
 
         <div className="signup-link">
-          Don't have an account yet? <Link to="/signup">Create one</Link>
+          {t('auth.noAccount')} <Link to="/signup">{t('auth.createOne')}</Link>
         </div>
       </div>
     </div>

@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
+import { useLanguage } from '../i18n/LanguageContext';
 import './GoogleClassroomConnect.css';
 
 function GoogleClassroomConnect({ onSync }) {
+  const { language, t } = useLanguage();
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -26,58 +28,50 @@ function GoogleClassroomConnect({ onSync }) {
     }
   }, [token]);
 
-  // Check connection status on component mount
   useEffect(() => {
     checkConnectionStatus();
   }, [checkConnectionStatus]);
+
+  const formatDate = (date) =>
+    new Date(date).toLocaleDateString(language === 'tl' ? 'fil-PH' : 'en-US');
 
   const handleConnect = async () => {
     try {
       setLoading(true);
       setError('');
 
-      // Get authorization URL
       const response = await axios.get('/api/google-classroom/auth/url');
-      const authUrl = response.data.authUrl;
-
-      // Open authorization URL in new window
       const authWindow = window.open(
-        authUrl,
+        response.data.authUrl,
         'google-classroom-auth',
         'width=500,height=600'
       );
 
       if (!authWindow) {
-        setError('Popup blocked. Please allow popups and try connecting again.');
+        setError(t('errors.popupBlocked'));
         setLoading(false);
         return;
       }
 
-      // Listen for message from auth window
       const handleMessage = (event) => {
         if (event.data?.type !== 'google-classroom-auth') {
           return;
         }
 
-        if (event.data.type === 'google-classroom-auth') {
-          const code = event.data.code;
-
-          if (code) {
-            // Send authorization code to backend
-            completeAuth(code);
-          } else if (event.data.error) {
-            setError('Authorization failed: ' + event.data.error);
-            setLoading(false);
-          }
-
-          authWindow.close();
-          window.removeEventListener('message', handleMessage);
+        const code = event.data.code;
+        if (code) {
+          completeAuth(code);
+        } else if (event.data.error) {
+          setError(t('errors.authFailed', { error: event.data.error }));
+          setLoading(false);
         }
+
+        authWindow.close();
+        window.removeEventListener('message', handleMessage);
       };
 
       window.addEventListener('message', handleMessage);
 
-      // Fallback: Check if window was closed
       const checkWindow = setInterval(() => {
         if (authWindow.closed) {
           clearInterval(checkWindow);
@@ -87,7 +81,7 @@ function GoogleClassroomConnect({ onSync }) {
       }, 1000);
     } catch (err) {
       console.error('Error connecting to Google Classroom:', err);
-      setError(err?.response?.data?.message || 'Error connecting to Google Classroom. Please try again.');
+      setError(err?.response?.data?.message || t('errors.connectClassroom'));
       setLoading(false);
     }
   };
@@ -104,17 +98,13 @@ function GoogleClassroomConnect({ onSync }) {
 
       setConnected(true);
       setConnectedAt(response.data.credentials.connectedAt);
-      setSuccess('Google Classroom connected successfully!');
+      setSuccess(t('classroom.connectedSuccess'));
       setError('');
       setLoading(false);
-
-      // Automatically sync assignments after connecting
       handleSync();
     } catch (err) {
       console.error('Error completing auth:', err);
-      setError(
-        err.response?.data?.message || 'Error connecting to Google Classroom'
-      );
+      setError(err.response?.data?.message || t('errors.connectClassroom'));
       setLoading(false);
     }
   };
@@ -128,11 +118,8 @@ function GoogleClassroomConnect({ onSync }) {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setSuccess(
-        `Successfully synced ${response.data.count} assignments from Google Classroom!`
-      );
+      setSuccess(t('classroom.synced', { count: response.data.count }));
 
-      // Notify parent component to refresh assignments
       if (onSync) {
         onSync();
       }
@@ -142,18 +129,17 @@ function GoogleClassroomConnect({ onSync }) {
       const payload = err?.response?.data;
       const message = payload?.message;
       const details = payload?.details;
-
-      let nextError = 'Error syncing assignments';
+      let nextError = t('errors.syncAssignments');
 
       if (message) nextError = message;
       if (!message && details) {
         nextError =
           typeof details === 'string'
-            ? `Error syncing assignments: ${details}`
-            : `Error syncing assignments: ${JSON.stringify(details)}`;
+            ? `${t('errors.syncAssignments')}: ${details}`
+            : `${t('errors.syncAssignments')}: ${JSON.stringify(details)}`;
       }
       if (!message && !details && payload) {
-        nextError = `Error syncing assignments: ${JSON.stringify(payload)}`;
+        nextError = `${t('errors.syncAssignments')}: ${JSON.stringify(payload)}`;
       }
 
       setError(nextError);
@@ -175,13 +161,11 @@ function GoogleClassroomConnect({ onSync }) {
 
       setConnected(false);
       setConnectedAt(null);
-      setSuccess('Google Classroom disconnected.');
+      setSuccess(t('classroom.disconnectedSuccess'));
       setError('');
     } catch (err) {
       console.error('Error disconnecting:', err);
-      setError(
-        err.response?.data?.message || 'Error disconnecting Google Classroom'
-      );
+      setError(err.response?.data?.message || t('errors.disconnectClassroom'));
     } finally {
       setLoading(false);
     }
@@ -189,7 +173,7 @@ function GoogleClassroomConnect({ onSync }) {
 
   return (
     <div className="google-classroom-connect">
-      <h3>Google Classroom Integration</h3>
+      <h3>{t('classroom.title')}</h3>
 
       {error && <div className="alert alert-error">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}
@@ -197,10 +181,10 @@ function GoogleClassroomConnect({ onSync }) {
       <div className="connection-status">
         {connected ? (
           <>
-            <div className="status-indicator connected">✓ Connected</div>
+            <div className="status-indicator connected">OK {t('common.connected')}</div>
             {connectedAt && (
               <p className="connected-at">
-                Connected on {new Date(connectedAt).toLocaleDateString()}
+                {t('classroom.connectedOn', { date: formatDate(connectedAt) })}
               </p>
             )}
 
@@ -210,32 +194,31 @@ function GoogleClassroomConnect({ onSync }) {
                 disabled={syncing || loading}
                 className="btn btn-primary"
               >
-                {syncing ? 'Syncing...' : 'Sync Assignments'}
+                {syncing ? t('classroom.syncing') : t('classroom.syncAssignments')}
               </button>
               <button
                 onClick={handleDisconnect}
                 disabled={loading || syncing}
                 className="btn btn-secondary"
               >
-                {loading ? 'Disconnecting...' : 'Disconnect'}
+                {loading ? t('classroom.disconnecting') : t('classroom.disconnect')}
               </button>
             </div>
           </>
         ) : (
           <>
             <div className="status-indicator disconnected">
-              ✗ Not Connected
+              X {t('common.notConnected')}
             </div>
             <p className="info-text">
-              Connect your Google Classroom account to automatically sync your
-              assignments.
+              {t('classroom.connectInfo')}
             </p>
             <button
               onClick={handleConnect}
               disabled={loading}
               className="btn btn-primary"
             >
-              {loading ? 'Connecting...' : 'Connect Google Classroom'}
+              {loading ? t('classroom.connecting') : t('classroom.connect')}
             </button>
           </>
         )}

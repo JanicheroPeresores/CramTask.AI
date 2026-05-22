@@ -1,0 +1,362 @@
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+
+const STORAGE_KEY = 'taskkeeper-language';
+
+const translations = {
+  en: {
+    languageName: 'English',
+    languageShort: 'EN',
+    switchTo: 'Switch to Tagalog',
+    common: {
+      student: 'Student',
+      loading: 'Loading...',
+      cancel: 'Cancel',
+      create: 'Create',
+      logout: 'Logout',
+      open: 'Open',
+      connected: 'Connected',
+      notConnected: 'Not Connected',
+      noDueDate: 'No due date',
+      at: 'at',
+      high: 'High',
+      medium: 'Medium',
+      low: 'Low',
+      submitted: 'Submitted',
+      notSubmitted: 'Not Submitted',
+    },
+    auth: {
+      loginTitle: 'LOGIN',
+      usernameEmail: 'Username or Email',
+      usernameEmailPlaceholder: 'Username or email',
+      password: 'Password',
+      forgotPassword: 'Forgot Password?',
+      login: 'LOGIN',
+      loggingIn: 'Logging in...',
+      noAccount: "Don't have an account yet?",
+      createOne: 'Create one',
+      createAccountTitle: 'CREATE YOUR ACCOUNT',
+      username: 'Username',
+      email: 'Email',
+      emailAddress: 'Email Address',
+      emailHint: 'Tip: Use a personal email like Gmail or Outlook. School emails may block reset messages.',
+      confirmPassword: 'Confirm Password',
+      signup: 'SIGN UP',
+      creatingAccount: 'Creating account...',
+      hasAccount: 'Already have an account?',
+      resetTitle: 'RESET YOUR PASSWORD',
+      sendReset: 'SEND RESET INSTRUCTIONS',
+      sending: 'Sending...',
+      enterNewPassword: 'Enter your new password',
+      newPassword: 'New Password',
+      resetPassword: 'RESET PASSWORD',
+      resetting: 'Resetting...',
+      backToLogin: 'Back to Login',
+    },
+    dashboard: {
+      welcome: 'Welcome, {{name}}',
+      sidebarLabel: 'MANAGE ASSIGNMENTS',
+      create: 'CREATE',
+      introBadge: 'WELCOME',
+      introTitle: 'Your next study session starts here.',
+      introSubtitle: 'Brutal. Simple. Helpful. Pick a priority, then let the Assignment Coach guide you.',
+      enterDashboard: 'Enter Dashboard',
+      step1Title: 'Step 1',
+      step1Text: 'Sync Google Classroom if you use it.',
+      step2Title: 'Step 2',
+      step2Text: 'Create an assignment when needed.',
+      step3Title: 'Step 3',
+      step3Text: 'Ask the coach what to do first.',
+      closeIntro: 'Close intro',
+      assistantEyebrow: 'AI chat box',
+      assistantTitle: 'Assignment Coach',
+      minimizeChat: 'Minimize Chat',
+      you: 'You',
+      coach: 'Coach',
+      thinking: 'Thinking through the next step...',
+      assistantPlaceholder: 'Ask the AI about priorities, deadlines, or study planning...',
+      sending: 'Sending...',
+      send: 'Send',
+      welcomeMessage: 'Ask me what to work on first, how to handle an overdue assignment, or how to plan a study session.',
+      quickFirst: 'What should I do first today?',
+      quickOverdue: 'How do I catch up on overdue work?',
+      quickPlan: 'Make me a short study plan for tonight.',
+    },
+    assignments: {
+      empty: 'No assignments yet. Create one to get started!',
+      course: 'COURSE',
+      assignment: 'ASSIGNMENT',
+      subject: 'SUBJECT',
+      dueDate: 'DUE DATE',
+      priority: 'PRIORITY',
+      status: 'STATUS',
+      action: 'ACTION',
+      deleteTitle: 'Delete assignment',
+      createTitle: 'Create New Assignment',
+      courseLabel: 'Course',
+      coursePlaceholder: 'e.g., Biology 101',
+      titleLabel: 'Assignment Title',
+      titlePlaceholder: 'Enter assignment title',
+      subjectLabel: 'Subject/Topic',
+      subjectPlaceholder: 'e.g., Cell Biology',
+      autoPriority: 'Auto-Assigned Priority',
+      description: 'Description',
+      descriptionPlaceholder: 'Enter assignment description or notes',
+      creating: 'Creating...',
+      createAssignment: 'Create Assignment',
+    },
+    classroom: {
+      title: 'Google Classroom Integration',
+      connectedOn: 'Connected on {{date}}',
+      syncAssignments: 'Sync Assignments',
+      syncing: 'Syncing...',
+      disconnect: 'Disconnect',
+      disconnecting: 'Disconnecting...',
+      connectInfo: 'Connect your Google Classroom account to automatically sync your assignments.',
+      connect: 'Connect Google Classroom',
+      connecting: 'Connecting...',
+      connectedSuccess: 'Google Classroom connected successfully!',
+      disconnectedSuccess: 'Google Classroom disconnected.',
+      synced: 'Successfully synced {{count}} assignments from Google Classroom!',
+      assignmentsTitle: 'Google Classroom Assignments',
+      loadingAssignments: 'Loading Google Classroom assignments...',
+      empty: 'No assignments from Google Classroom yet.',
+      emptyHint: 'Use the Sync Assignments button to fetch your assignments.',
+      viewTitle: 'View in Google Classroom',
+      daysOverdue: '{{count}} days overdue',
+      dueToday: 'Due today',
+      daysLeft: '{{count}} days left',
+    },
+    errors: {
+      fetchAssignments: 'Error fetching assignments',
+      createAssignment: 'Error creating assignment',
+      deleteAssignment: 'Error deleting assignment',
+      loginFailed: 'Login failed. Please try again.',
+      signupFailed: 'Signup failed. Please try again.',
+      passwordsMatch: 'Passwords do not match',
+      resetInstructions: 'Error sending reset instructions',
+      resetPassword: 'Error resetting password',
+      requiredAssignment: 'Course and assignment title are required',
+      popupBlocked: 'Popup blocked. Please allow popups and try connecting again.',
+      authFailed: 'Authorization failed: {{error}}',
+      connectClassroom: 'Error connecting to Google Classroom. Please try again.',
+      disconnectClassroom: 'Error disconnecting Google Classroom',
+      syncAssignments: 'Error syncing assignments',
+      loadClassroom: 'Error loading Google Classroom assignments',
+    },
+    ai: {
+      fallback: 'I can help you prioritize assignments, turn a deadline into a study plan, or break a big project into the next three steps. What are you working on right now?',
+    },
+  },
+  tl: {
+    languageName: 'Tagalog',
+    languageShort: 'TL',
+    switchTo: 'Lumipat sa English',
+    common: {
+      student: 'Student',
+      loading: 'Naglo-load...',
+      cancel: 'Kanselahin',
+      create: 'Gumawa',
+      logout: 'Mag-logout',
+      open: 'Buksan',
+      connected: 'Connected',
+      notConnected: 'Hindi Connected',
+      noDueDate: 'Walang due date',
+      at: 'sa',
+      high: 'High',
+      medium: 'Medium',
+      low: 'Low',
+      submitted: 'Na-submit',
+      notSubmitted: 'Hindi pa Na-submit',
+    },
+    auth: {
+      loginTitle: 'MAG-LOGIN',
+      usernameEmail: 'Username o Email',
+      usernameEmailPlaceholder: 'Username o email',
+      password: 'Password',
+      forgotPassword: 'Nakalimutan ang Password?',
+      login: 'MAG-LOGIN',
+      loggingIn: 'Naglo-login...',
+      noAccount: 'Wala ka pang account?',
+      createOne: 'Gumawa ng account',
+      createAccountTitle: 'GUMAWA NG ACCOUNT',
+      username: 'Username',
+      email: 'Email',
+      emailAddress: 'Email Address',
+      emailHint: 'Tip: Gumamit ng personal email tulad ng Gmail o Outlook. Minsan bina-block ng school emails ang reset messages.',
+      confirmPassword: 'Kumpirmahin ang Password',
+      signup: 'SIGN UP',
+      creatingAccount: 'Ginagawa ang account...',
+      hasAccount: 'May account ka na?',
+      resetTitle: 'I-RESET ANG PASSWORD',
+      sendReset: 'IPADALA ANG RESET INSTRUCTIONS',
+      sending: 'Pinapadala...',
+      enterNewPassword: 'Ilagay ang bagong password',
+      newPassword: 'Bagong Password',
+      resetPassword: 'I-RESET ANG PASSWORD',
+      resetting: 'Nire-reset...',
+      backToLogin: 'Bumalik sa Login',
+    },
+    dashboard: {
+      welcome: 'Welcome, {{name}}',
+      sidebarLabel: 'AYUSIN ANG ASSIGNMENTS',
+      create: 'GUMAWA',
+      introBadge: 'WELCOME',
+      introTitle: 'Dito magsisimula ang next study session mo.',
+      introSubtitle: 'Simple, diretso, at helpful. Pumili ng priority, tapos hayaan ang Assignment Coach na gumabay sa iyo.',
+      enterDashboard: 'Pumasok sa Dashboard',
+      step1Title: 'Step 1',
+      step1Text: 'I-sync ang Google Classroom kung ginagamit mo ito.',
+      step2Title: 'Step 2',
+      step2Text: 'Gumawa ng assignment kapag kailangan.',
+      step3Title: 'Step 3',
+      step3Text: 'Tanungin ang coach kung ano ang uunahin.',
+      closeIntro: 'Isara ang intro',
+      assistantEyebrow: 'AI chat box',
+      assistantTitle: 'Assignment Coach',
+      minimizeChat: 'I-minimize ang Chat',
+      you: 'Ikaw',
+      coach: 'Coach',
+      thinking: 'Iniisip ang next step...',
+      assistantPlaceholder: 'Tanungin ang AI tungkol sa priorities, deadlines, o study plan...',
+      sending: 'Pinapadala...',
+      send: 'Ipadala',
+      welcomeMessage: 'Tanungin mo ako kung ano ang uunahin, paano hahabulin ang overdue assignment, o paano gumawa ng study plan.',
+      quickFirst: 'Ano ang dapat kong unahin ngayon?',
+      quickOverdue: 'Paano ko hahabulin ang overdue work?',
+      quickPlan: 'Gawan mo ako ng maikling study plan para ngayong gabi.',
+    },
+    assignments: {
+      empty: 'Wala pang assignments. Gumawa ng isa para makapagsimula!',
+      course: 'COURSE',
+      assignment: 'ASSIGNMENT',
+      subject: 'SUBJECT',
+      dueDate: 'DUE DATE',
+      priority: 'PRIORITY',
+      status: 'STATUS',
+      action: 'ACTION',
+      deleteTitle: 'I-delete ang assignment',
+      createTitle: 'Gumawa ng Bagong Assignment',
+      courseLabel: 'Course',
+      coursePlaceholder: 'hal., Biology 101',
+      titleLabel: 'Assignment Title',
+      titlePlaceholder: 'Ilagay ang assignment title',
+      subjectLabel: 'Subject/Topic',
+      subjectPlaceholder: 'hal., Cell Biology',
+      autoPriority: 'Auto-Assigned Priority',
+      description: 'Description',
+      descriptionPlaceholder: 'Ilagay ang description o notes ng assignment',
+      creating: 'Ginagawa...',
+      createAssignment: 'Gumawa ng Assignment',
+    },
+    classroom: {
+      title: 'Google Classroom Integration',
+      connectedOn: 'Connected noong {{date}}',
+      syncAssignments: 'I-sync ang Assignments',
+      syncing: 'Nag-sync...',
+      disconnect: 'I-disconnect',
+      disconnecting: 'Nagdi-disconnect...',
+      connectInfo: 'I-connect ang Google Classroom account mo para automatic ma-sync ang assignments.',
+      connect: 'I-connect ang Google Classroom',
+      connecting: 'Nagko-connect...',
+      connectedSuccess: 'Connected na ang Google Classroom!',
+      disconnectedSuccess: 'Disconnected na ang Google Classroom.',
+      synced: 'Na-sync ang {{count}} assignments mula sa Google Classroom!',
+      assignmentsTitle: 'Google Classroom Assignments',
+      loadingAssignments: 'Naglo-load ng Google Classroom assignments...',
+      empty: 'Wala pang assignments mula sa Google Classroom.',
+      emptyHint: 'Gamitin ang Sync Assignments button para kunin ang assignments mo.',
+      viewTitle: 'Tingnan sa Google Classroom',
+      daysOverdue: '{{count}} araw overdue',
+      dueToday: 'Due ngayong araw',
+      daysLeft: '{{count}} araw pa',
+    },
+    errors: {
+      fetchAssignments: 'Hindi ma-load ang assignments',
+      createAssignment: 'Hindi magawa ang assignment',
+      deleteAssignment: 'Hindi ma-delete ang assignment',
+      loginFailed: 'Hindi makapag-login. Subukan ulit.',
+      signupFailed: 'Hindi makapag-sign up. Subukan ulit.',
+      passwordsMatch: 'Hindi tugma ang passwords',
+      resetInstructions: 'Hindi maipadala ang reset instructions',
+      resetPassword: 'Hindi ma-reset ang password',
+      requiredAssignment: 'Kailangan ang course at assignment title',
+      popupBlocked: 'Na-block ang popup. Payagan ang popups at subukan ulit.',
+      authFailed: 'Authorization failed: {{error}}',
+      connectClassroom: 'Hindi ma-connect ang Google Classroom. Subukan ulit.',
+      disconnectClassroom: 'Hindi ma-disconnect ang Google Classroom',
+      syncAssignments: 'Hindi ma-sync ang assignments',
+      loadClassroom: 'Hindi ma-load ang Google Classroom assignments',
+    },
+    ai: {
+      fallback: 'Matutulungan kitang ayusin ang priorities, gawing study plan ang deadline, o hatiin ang malaking project sa susunod na tatlong steps. Ano ang ginagawa mo ngayon?',
+    },
+  },
+};
+
+const serverMessageKeys = {
+  'Passwords do not match': 'errors.passwordsMatch',
+  'Login failed. Please try again.': 'errors.loginFailed',
+  'Signup failed. Please try again.': 'errors.signupFailed',
+  'Error sending reset instructions': 'errors.resetInstructions',
+  'Error resetting password': 'errors.resetPassword',
+  'Course and assignment title are required': 'errors.requiredAssignment',
+};
+
+const LanguageContext = createContext(null);
+
+function readStoredLanguage() {
+  if (typeof window === 'undefined') return 'en';
+  return localStorage.getItem(STORAGE_KEY) === 'tl' ? 'tl' : 'en';
+}
+
+function getValue(path, language) {
+  return path.split('.').reduce((current, key) => current?.[key], translations[language]);
+}
+
+function interpolate(template, values) {
+  if (!values) return template;
+  return Object.entries(values).reduce(
+    (result, [key, value]) => result.replaceAll(`{{${key}}}`, String(value)),
+    template
+  );
+}
+
+export function LanguageProvider({ children }) {
+  const [language, setLanguage] = useState(readStoredLanguage);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, language);
+    document.documentElement.lang = language === 'tl' ? 'tl' : 'en';
+  }, [language]);
+
+  const value = useMemo(() => {
+    const t = (path, values) => {
+      const template = getValue(path, language) ?? getValue(path, 'en') ?? path;
+      return interpolate(template, values);
+    };
+
+    const translateServerMessage = (message, fallbackKey) => {
+      const mappedKey = serverMessageKeys[message];
+      if (mappedKey) return t(mappedKey);
+      return fallbackKey ? t(fallbackKey) : message;
+    };
+
+    return {
+      language,
+      setLanguage,
+      toggleLanguage: () => setLanguage((current) => (current === 'en' ? 'tl' : 'en')),
+      t,
+      translateServerMessage,
+    };
+  }, [language]);
+
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
+}
+
+export function useLanguage() {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error('useLanguage must be used inside LanguageProvider');
+  }
+  return context;
+}

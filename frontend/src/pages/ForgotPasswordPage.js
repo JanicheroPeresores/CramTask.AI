@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import LanguageSwitch from '../components/LanguageSwitch';
+import { useLanguage } from '../i18n/LanguageContext';
 import './ForgotPasswordPage.css';
 
 function ForgotPasswordPage() {
+  const { t, translateServerMessage } = useLanguage();
   const [step, setStep] = useState(1); // 1: email, 2: reset password
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -24,7 +27,7 @@ function ForgotPasswordPage() {
       setMessage(response.data.message);
       setStep(2);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error sending reset instructions');
+      setError(translateServerMessage(err.response?.data?.message, 'errors.resetInstructions'));
     } finally {
       setLoading(false);
     }
@@ -37,7 +40,7 @@ function ForgotPasswordPage() {
     setLoading(true);
 
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('errors.passwordsMatch'));
       setLoading(false);
       return;
     }
@@ -51,7 +54,7 @@ function ForgotPasswordPage() {
       setMessage(response.data.message);
       setTimeout(() => navigate('/'), 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error resetting password');
+      setError(translateServerMessage(err.response?.data?.message, 'errors.resetPassword'));
     } finally {
       setLoading(false);
     }
@@ -59,8 +62,9 @@ function ForgotPasswordPage() {
 
   return (
     <div className="forgot-password-container">
+      <LanguageSwitch className="auth-language-switch" />
       <div className="forgot-password-box">
-        <h1>RESET YOUR PASSWORD</h1>
+        <h1>{t('auth.resetTitle')}</h1>
 
         {step === 1 ? (
           <form onSubmit={handleEmailSubmit} className="forgot-password-form">
@@ -68,7 +72,7 @@ function ForgotPasswordPage() {
             {message && <div className="alert alert-success">{message}</div>}
 
             <div className="form-group">
-              <label htmlFor="email">Email Address</label>
+              <label htmlFor="email">{t('auth.emailAddress')}</label>
               <input
                 type="email"
                 id="email"
@@ -79,7 +83,7 @@ function ForgotPasswordPage() {
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Sending...' : 'SEND RESET INSTRUCTIONS'}
+              {loading ? t('auth.sending') : t('auth.sendReset')}
             </button>
           </form>
         ) : (
@@ -87,10 +91,10 @@ function ForgotPasswordPage() {
             {error && <div className="alert alert-error">{error}</div>}
             {message && <div className="alert alert-success">{message}</div>}
 
-            <p className="info-text">Enter your new password</p>
+            <p className="info-text">{t('auth.enterNewPassword')}</p>
 
             <div className="form-group">
-              <label htmlFor="newPassword">New Password</label>
+              <label htmlFor="newPassword">{t('auth.newPassword')}</label>
               <input
                 type="password"
                 id="newPassword"
@@ -101,7 +105,7 @@ function ForgotPasswordPage() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
+              <label htmlFor="confirmPassword">{t('auth.confirmPassword')}</label>
               <input
                 type="password"
                 id="confirmPassword"
@@ -112,13 +116,13 @@ function ForgotPasswordPage() {
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Resetting...' : 'RESET PASSWORD'}
+              {loading ? t('auth.resetting') : t('auth.resetPassword')}
             </button>
           </form>
         )}
 
         <div className="back-to-login">
-          <Link to="/">Back to Login</Link>
+          <Link to="/">{t('auth.backToLogin')}</Link>
         </div>
       </div>
     </div>
