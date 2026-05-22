@@ -237,7 +237,7 @@ function DashboardPage({ user, onLogout }) {
               )}
             </div>
 
-            {chatOpen && (
+            {chatOpen ? (
               <aside className="assistant-card">
                 <div className="assistant-card-header">
                   <div>
@@ -301,6 +301,18 @@ function DashboardPage({ user, onLogout }) {
                   </button>
                 </div>
               </aside>
+            ) : (
+              <div className="chat-toggle-button-container">
+                <button
+                  type="button"
+                  className="chat-toggle-button"
+                  onClick={() => setChatOpen(true)}
+                  title={t('dashboard.openChat')}
+                  aria-label={t('dashboard.openChat')}
+                >
+                  AI
+                </button>
+              </div>
             )}
           </div>
         </div>
