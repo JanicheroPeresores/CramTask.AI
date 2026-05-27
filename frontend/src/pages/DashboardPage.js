@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AssignmentTable from '../components/AssignmentTable';
+import AssignmentProgressWidget from '../components/AssignmentProgressWidget';
 import CreateAssignmentModal from '../components/CreateAssignmentModal';
 import GoogleClassroomConnect from '../components/GoogleClassroomConnect';
 import GoogleClassroomAssignments from '../components/GoogleClassroomAssignments';
@@ -16,6 +17,7 @@ function DashboardPage({ user, onLogout }) {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [updatingAssignmentIds, setUpdatingAssignmentIds] = useState([]);
   const [assistantMessages, setAssistantMessages] = useState(() => [
     {
       id: 'assistant-welcome',
@@ -82,7 +84,7 @@ function DashboardPage({ user, onLogout }) {
       const response = await axios.post('/api/assignments', assignmentData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAssignments([...assignments, response.data.assignment]);
+      setAssignments((current) => [...current, response.data.assignment]);
       setShowModal(false);
     } catch (err) {
       setError(t('errors.createAssignment'));
@@ -94,9 +96,59 @@ function DashboardPage({ user, onLogout }) {
       await axios.delete(`/api/assignments/${assignmentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAssignments(assignments.filter((assignment) => assignment.id !== assignmentId));
+      setAssignments((current) =>
+        current.filter((assignment) => assignment.id !== assignmentId)
+      );
     } catch (err) {
       setError(t('errors.deleteAssignment'));
+    }
+  };
+
+  const handleToggleAssignmentCompletion = async (assignment) => {
+    if (updatingAssignmentIds.includes(assignment.id)) {
+      return;
+    }
+
+    const currentStatus = assignment.submission_status;
+    const nextStatus = currentStatus === 'submitted' ? 'not_submitted' : 'submitted';
+
+    setError('');
+    setUpdatingAssignmentIds((current) => [...current, assignment.id]);
+    setAssignments((current) =>
+      current.map((item) =>
+        item.id === assignment.id ? { ...item, submission_status: nextStatus } : item
+      )
+    );
+
+    try {
+      await axios.put(
+        `/api/assignments/${assignment.id}`,
+        {
+          course: assignment.course,
+          assignmentTitle: assignment.assignment_title,
+          dueDate: assignment.due_date,
+          subject: assignment.subject,
+          priority: assignment.priority,
+          submissionStatus: nextStatus,
+          description: assignment.description,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+    } catch (err) {
+      setAssignments((current) =>
+        current.map((item) =>
+          item.id === assignment.id && item.submission_status === nextStatus
+            ? { ...item, submission_status: currentStatus }
+            : item
+        )
+      );
+      setError(t('errors.updateAssignment'));
+    } finally {
+      setUpdatingAssignmentIds((current) =>
+        current.filter((assignmentId) => assignmentId !== assignment.id)
+      );
     }
   };
 
@@ -233,7 +285,15 @@ function DashboardPage({ user, onLogout }) {
                   <div className="spinner"></div>
                 </div>
               ) : (
-                <AssignmentTable assignments={assignments} onDelete={handleDeleteAssignment} />
+                <>
+                  <AssignmentTable
+                    assignments={assignments}
+                    onDelete={handleDeleteAssignment}
+                    onToggleComplete={handleToggleAssignmentCompletion}
+                    updatingAssignmentIds={updatingAssignmentIds}
+                  />
+                  <AssignmentProgressWidget assignments={assignments} />
+                </>
               )}
             </div>
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import './TaskTable.css';
 
-function AssignmentTable({ assignments, onDelete }) {
+function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssignmentIds = [] }) {
   const { language, t } = useLanguage();
 
   const formatDate = (dateString) => {
@@ -92,9 +92,23 @@ function AssignmentTable({ assignments, onDelete }) {
                   </span>
                 </td>
                 <td>
-                  <span className={`badge ${getStatusBadgeClass(assignment.submission_status)}`}>
-                    {getStatusDisplayText(assignment.submission_status)}
-                  </span>
+                  <div className="assignment-status-control">
+                    <label className="completion-toggle">
+                      <input
+                        type="checkbox"
+                        checked={assignment.submission_status === 'submitted'}
+                        disabled={updatingAssignmentIds.includes(assignment.id)}
+                        onChange={() => onToggleComplete(assignment)}
+                        aria-label={t('assignments.toggleComplete', {
+                          title: assignment.assignment_title,
+                        })}
+                      />
+                      <span className="completion-checkmark"></span>
+                    </label>
+                    <span className={`badge ${getStatusBadgeClass(assignment.submission_status)}`}>
+                      {getStatusDisplayText(assignment.submission_status)}
+                    </span>
+                  </div>
                 </td>
                 <td>
                   <button

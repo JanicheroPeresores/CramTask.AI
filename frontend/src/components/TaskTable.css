@@ -91,6 +91,64 @@ tbody tr:hover {
   border: 1px solid rgba(46, 204, 113, 0.4);
 }
 
+.assignment-status-control {
+  align-items: center;
+  display: inline-flex;
+  gap: 9px;
+}
+
+.completion-toggle {
+  cursor: pointer;
+  display: inline-flex;
+  height: 18px;
+  position: relative;
+  width: 18px;
+}
+
+.completion-toggle input {
+  height: 1px;
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+}
+
+.completion-checkmark {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(157, 179, 196, 0.62);
+  border-radius: 6px;
+  height: 18px;
+  position: relative;
+  transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  width: 18px;
+}
+
+.completion-toggle input:checked + .completion-checkmark {
+  background: #37dc87;
+  border-color: #37dc87;
+  box-shadow: 0 0 12px rgba(55, 220, 135, 0.32);
+}
+
+.completion-toggle input:checked + .completion-checkmark::after {
+  border: solid #092318;
+  border-width: 0 2px 2px 0;
+  content: '';
+  height: 8px;
+  left: 6px;
+  position: absolute;
+  top: 3px;
+  transform: rotate(45deg);
+  width: 4px;
+}
+
+.completion-toggle input:focus-visible + .completion-checkmark {
+  box-shadow: 0 0 0 3px rgba(0, 255, 200, 0.28);
+}
+
+.completion-toggle input:disabled + .completion-checkmark {
+  cursor: progress;
+  opacity: 0.62;
+}
+
 .priority-high {
   background-color: rgba(231, 76, 60, 0.2);
   color: #e74c3c;
