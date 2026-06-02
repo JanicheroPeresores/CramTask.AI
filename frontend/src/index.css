@@ -44,10 +44,11 @@ select {
 
 button {
   font-weight: 700;
-  border-radius: 18px;
+  border-radius: 999px;
   border: none;
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  padding: 14px 18px;
 }
 
 button:hover:not(:disabled) {
@@ -66,10 +67,10 @@ input,
 textarea,
 select {
   width: 100%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   color: var(--text);
-  border-radius: 18px;
+  border-radius: 20px;
   padding: 14px 16px;
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -78,8 +79,8 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: rgba(0, 212, 255, 0.7);
-  box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.12);
+  border-color: rgba(0, 212, 255, 0.75);
+  box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.14);
 }
 
 textarea {
@@ -87,7 +88,7 @@ textarea {
 }
 
 .alert {
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 16px 20px;
   margin-bottom: 18px;
   font-size: 0.95rem;
@@ -140,12 +141,18 @@ a:hover {
   background: linear-gradient(135deg, var(--primary), #42a5ff);
   color: #07121b;
   border: 1px solid transparent;
+  box-shadow: 0 18px 40px rgba(0, 212, 255, 0.18);
 }
 
 .btn-secondary {
   background: rgba(255, 255, 255, 0.06);
   color: var(--text);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+  box-shadow: 0 22px 48px rgba(0, 212, 255, 0.2);
 }
 
 @media (max-width: 520px) {

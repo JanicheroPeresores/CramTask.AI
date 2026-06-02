@@ -4,39 +4,42 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: radial-gradient(circle at 18% 12%, rgba(0, 212, 255, 0.15), transparent 24%),
-    radial-gradient(circle at 82% 20%, rgba(255, 209, 102, 0.12), transparent 24%),
+  background: radial-gradient(circle at 18% 12%, rgba(0, 212, 255, 0.18), transparent 24%),
+    radial-gradient(circle at 82% 20%, rgba(255, 209, 102, 0.14), transparent 24%),
     #0f1419;
 }
 
 .signup-box {
-  width: min(500px, 100%);
-  padding: 36px;
-  background: rgba(8, 14, 24, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 32px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  width: min(520px, 100%);
+  padding: 40px 36px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 36px;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(18px);
 }
 
 .signup-box h1 {
-  margin: 0 0 26px;
-  font-size: 2rem;
+  margin: 0 0 20px;
+  font-size: 2.6rem;
   color: #ffd166;
   text-align: center;
 }
 
 .signup-form {
   display: grid;
-  gap: 18px;
+  gap: 20px;
 }
 
 .signup-form button {
-  min-height: 52px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  min-height: 56px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  border-radius: 999px;
 }
 
 .login-link {
+  margin-top: 20px;
   text-align: center;
   color: rgba(237, 242, 255, 0.78);
 }

@@ -4,23 +4,24 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: radial-gradient(circle at 18% 12%, rgba(0, 212, 255, 0.15), transparent 24%),
-    radial-gradient(circle at 82% 20%, rgba(255, 209, 102, 0.12), transparent 24%),
+  background: radial-gradient(circle at 18% 12%, rgba(0, 212, 255, 0.18), transparent 24%),
+    radial-gradient(circle at 82% 20%, rgba(255, 209, 102, 0.14), transparent 24%),
     #0f1419;
 }
 
 .login-box {
   width: min(460px, 100%);
-  padding: 36px;
-  background: rgba(8, 14, 24, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 32px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  padding: 40px 36px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 36px;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(18px);
 }
 
 .login-box h1 {
-  margin: 0 0 10px;
-  font-size: 2.4rem;
+  margin: 0 0 14px;
+  font-size: 2.8rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: #ffd166;
@@ -28,7 +29,7 @@
 }
 
 .login-form h2 {
-  margin: 0 0 24px;
+  margin: 0 0 28px;
   font-size: 0.95rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -38,7 +39,7 @@
 
 .login-form {
   display: grid;
-  gap: 18px;
+  gap: 20px;
 }
 
 .form-group {
@@ -56,6 +57,7 @@
 
 .form-group input {
   min-height: 54px;
+  border-radius: 20px;
 }
 
 .forgot-password {
@@ -68,14 +70,16 @@
 }
 
 .login-form button {
-  min-height: 52px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  min-height: 56px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  border-radius: 999px;
 }
 
 .signup-link {
+  margin-top: 20px;
   text-align: center;
-  color: rgba(237, 242, 255, 0.75);
+  color: rgba(237, 242, 255, 0.78);
   font-size: 0.95rem;
 }
 
@@ -86,6 +90,6 @@
 
 @media (max-width: 520px) {
   .login-box {
-    padding: 26px;
+    padding: 28px 24px;
   }
 }

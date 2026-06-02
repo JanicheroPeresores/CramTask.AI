@@ -1,9 +1,10 @@
 .table-wrapper {
   width: 100%;
-  border-radius: 28px;
-  background: rgba(11, 18, 32, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 22px;
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 26px;
+  box-shadow: 0 35px 100px rgba(0, 0, 0, 0.16);
 }
 
 .empty-state {
@@ -11,7 +12,7 @@
   display: grid;
   place-items: center;
   text-align: center;
-  color: #b8c9e1;
+  color: #d8e8ff;
 }
 
 .empty-state p {
@@ -27,18 +28,18 @@
 
 .assignment-card {
   display: grid;
-  gap: 16px;
-  padding: 24px;
-  border-radius: 28px;
-  background: linear-gradient(180deg, rgba(8, 16, 30, 0.98), rgba(7, 12, 22, 0.98));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.24);
+  gap: 18px;
+  padding: 26px;
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.16);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .assignment-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 36px 96px rgba(0, 0, 0, 0.18);
 }
 
 .assignment-card-top {
@@ -62,33 +63,28 @@
 
 .status-pending,
 .priority-medium {
-  background: rgba(255, 209, 102, 0.14);
-  color: #ffe99d;
+  background: rgba(255, 209, 102, 0.16);
+  color: #ffd57f;
   border: 1px solid rgba(255, 209, 102, 0.24);
 }
 
 .status-submitted,
 .priority-low {
-  background: rgba(0, 212, 255, 0.14);
+  background: rgba(0, 212, 255, 0.16);
   color: #9ee7ff;
   border: 1px solid rgba(0, 212, 255, 0.26);
 }
 
 .status-graded,
 .priority-high {
-  background: rgba(255, 107, 124, 0.16);
+  background: rgba(255, 107, 124, 0.18);
   color: #ffb8c6;
   border: 1px solid rgba(255, 107, 124, 0.28);
 }
 
-.priority-high {
-  background: rgba(255, 107, 124, 0.16);
-  color: #ffb8c6;
-}
-
 .assignment-card-title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   color: #f7fbff;
   line-height: 1.2;
 }
@@ -96,7 +92,7 @@
 .assignment-card-course,
 .assignment-card-subject {
   margin: 0;
-  color: #bbc9dc;
+  color: #c7d7ec;
   line-height: 1.6;
 }
 
@@ -126,24 +122,26 @@
 
 .assignment-card-actions button {
   width: 100%;
-  min-height: 48px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  min-height: 50px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   font-size: 0.95rem;
   font-weight: 800;
   cursor: pointer;
+  background: rgba(255, 255, 255, 0.06);
+  color: #edf2ff;
 }
 
 .btn-complete {
-  background: rgba(0, 212, 255, 0.16);
-  color: #e8f9ff;
-  border-color: rgba(0, 212, 255, 0.26);
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.18), rgba(0, 212, 255, 0.08));
+  color: #07121b;
+  border-color: transparent;
 }
 
 .btn-delete {
-  background: rgba(255, 107, 124, 0.14);
-  color: #ffd7dc;
-  border-color: rgba(255, 107, 124, 0.24);
+  background: linear-gradient(135deg, rgba(255, 107, 124, 0.18), rgba(255, 107, 124, 0.08));
+  color: #07121b;
+  border-color: transparent;
 }
 
 .btn-complete:hover,
@@ -157,7 +155,7 @@
   }
 
   .assignment-card {
-    padding: 20px;
+    padding: 22px;
   }
 }
 

@@ -443,6 +443,14 @@ function DashboardPage({ user, onLogout }) {
         <button type="button" onClick={() => setShowModal(true)}>{t('dashboard.create')}</button>
       </nav>
 
+      <button
+        type="button"
+        className="floating-action-button"
+        onClick={() => setShowModal(true)}
+      >
+        {t('dashboard.create')}
+      </button>
+
       {showModal && (
         <CreateAssignmentModal
           onClose={() => setShowModal(false)}
