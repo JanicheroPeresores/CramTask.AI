@@ -10,10 +10,10 @@
 
 .modal {
   width: min(540px, 100%);
-  background: rgba(8, 12, 18, 0.98);
+  background: linear-gradient(180deg, rgba(7, 11, 20, 0.96), rgba(8, 14, 28, 0.98));
   border-radius: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 38px 110px rgba(0, 0, 0, 0.28);
   overflow: hidden;
   animation: slideIn 0.28s ease;
 }
@@ -35,14 +35,58 @@
 
 .modal-header h2 {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   color: #f3f8ff;
+}
+
+.modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 28px 28px 20px;
 }
 
 .modal-body {
   padding: 0 28px 24px;
   display: grid;
   gap: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: rgba(229, 237, 255, 0.88);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  min-height: 52px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #edf2ff;
+  font-size: 0.96rem;
+}
+
+.form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.alert.alert-error {
+  padding: 16px 18px;
+  border-radius: 20px;
+  background: rgba(255, 107, 124, 0.16);
+  color: #ffccd5;
+  border: 1px solid rgba(255, 107, 124, 0.24);
 }
 
 .modal-footer {

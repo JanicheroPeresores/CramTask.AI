@@ -295,17 +295,49 @@ function DashboardPage({ user, onLogout }) {
             <a href="#assistant">{t('dashboard.navAssistant')}</a>
             <a href="#classroom">{t('dashboard.navClassroom')}</a>
           </nav>
-          <button type="button" onClick={() => setShowModal(true)} className="btn-primary create-btn">
-            {t('dashboard.create')}
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="btn-primary create-btn"
+            aria-label={t('dashboard.create')}
+            title={t('dashboard.create')}
+          >
+            <span className="create-icon" aria-hidden>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 5v14M5 12h14" stroke="#07121b" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </span>
+            <span className="create-label">{t('dashboard.create')}</span>
           </button>
         </aside>
 
         <main className="dashboard-main">
           <div className="dashboard-summary">
             <div className="summary-card summary-card-primary">
+              <div className="summary-card-figure">
+                <div className="summary-icon" aria-hidden>
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 7h18M3 12h12M3 17h18" stroke="#07121b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <div className="summary-progress">
+                  {totalAssignments > 0 ? (
+                    <div className="progress-bar" aria-hidden>
+                      <div
+                        className="progress-fill"
+                        style={{ width: `${Math.round((completedAssignments / Math.max(1, totalAssignments)) * 100)}%` }}
+                      />
+                    </div>
+                  ) : null}
+                </div>
+              </div>
               <p className="summary-card-label">{t('dashboard.assignmentsTitle')}</p>
               <h3>{totalAssignments}</h3>
-              <p>{t('assignments.empty')}</p>
+              {totalAssignments === 0 ? (
+                <p>{t('assignments.empty')}</p>
+              ) : (
+                <p>{completedAssignments} {t('common.submitted')} • {overdueAssignments} {t('dashboard.quickOverdue')}</p>
+              )}
             </div>
             <div className="summary-card">
               <p className="summary-card-label">Completed</p>
@@ -447,8 +479,13 @@ function DashboardPage({ user, onLogout }) {
         type="button"
         className="floating-action-button"
         onClick={() => setShowModal(true)}
+        aria-label={t('dashboard.create')}
+        title={t('dashboard.create')}
       >
-        {t('dashboard.create')}
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path d="M12 5v14M5 12h14" stroke="#07121b" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        <span className="fab-label">{t('dashboard.create')}</span>
       </button>
 
       {showModal && (

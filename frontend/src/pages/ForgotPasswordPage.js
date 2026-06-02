@@ -63,67 +63,83 @@ function ForgotPasswordPage() {
   return (
     <div className="forgot-password-container">
       <LanguageSwitch className="auth-language-switch" />
-      <div className="forgot-password-box">
-        <h1>{t('auth.resetTitle')}</h1>
 
-        {step === 1 ? (
-          <form onSubmit={handleEmailSubmit} className="forgot-password-form">
-            {error && <div className="alert alert-error">{error}</div>}
-            {message && <div className="alert alert-success">{message}</div>}
+      <div className="forgot-shell">
+        <section className="forgot-hero">
+          <span className="forgot-hero-eyebrow">CramTask.AI</span>
+          <h1 className="forgot-hero-title">Need to reset your password?</h1>
+          <p className="forgot-hero-copy">Enter your email and we'll send secure reset instructions. Fast, safe, and simple.</p>
 
-            <div className="form-group">
-              <label htmlFor="email">{t('auth.emailAddress')}</label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+          <div className="forgot-hero-kicker">Keep your account secure — we'll walk you through the steps.</div>
+        </section>
+
+        <section className="forgot-card">
+          <div className="forgot-card-header">
+            <div>
+              <p className="forgot-card-eyebrow">Password reset</p>
+              <h2>{t('auth.resetTitle')}</h2>
             </div>
+          </div>
 
-            <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? t('auth.sending') : t('auth.sendReset')}
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handlePasswordReset} className="forgot-password-form">
-            {error && <div className="alert alert-error">{error}</div>}
-            {message && <div className="alert alert-success">{message}</div>}
+          {step === 1 ? (
+            <form onSubmit={handleEmailSubmit} className="forgot-password-form">
+              {error && <div className="alert alert-error">{error}</div>}
+              {message && <div className="alert alert-success">{message}</div>}
 
-            <p className="info-text">{t('auth.enterNewPassword')}</p>
+              <div className="form-group">
+                <label htmlFor="email">{t('auth.emailAddress')}</label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="newPassword">{t('auth.newPassword')}</label>
-              <input
-                type="password"
-                id="newPassword"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-              />
-            </div>
+              <button type="submit" className="btn-primary auth-submit" disabled={loading}>
+                {loading ? t('auth.sending') : t('auth.sendReset')}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handlePasswordReset} className="forgot-password-form">
+              {error && <div className="alert alert-error">{error}</div>}
+              {message && <div className="alert alert-success">{message}</div>}
 
-            <div className="form-group">
-              <label htmlFor="confirmPassword">{t('auth.confirmPassword')}</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
+              <p className="info-text">{t('auth.enterNewPassword')}</p>
 
-            <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? t('auth.resetting') : t('auth.resetPassword')}
-            </button>
-          </form>
-        )}
+              <div className="form-group">
+                <label htmlFor="newPassword">{t('auth.newPassword')}</label>
+                <input
+                  type="password"
+                  id="newPassword"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                />
+              </div>
 
-        <div className="back-to-login">
-          <Link to="/">{t('auth.backToLogin')}</Link>
-        </div>
+              <div className="form-group">
+                <label htmlFor="confirmPassword">{t('auth.confirmPassword')}</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              <button type="submit" className="btn-primary auth-submit" disabled={loading}>
+                {loading ? t('auth.resetting') : t('auth.resetPassword')}
+              </button>
+            </form>
+          )}
+
+          <div className="back-to-login">
+            <Link to="/">{t('auth.backToLogin')}</Link>
+          </div>
+        </section>
       </div>
     </div>
   );
