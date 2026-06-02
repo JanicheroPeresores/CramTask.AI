@@ -67,62 +67,59 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
           <p>{t('assignments.empty')}</p>
         </div>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>{t('assignments.course')}</th>
-              <th>{t('assignments.assignment')}</th>
-              <th>{t('assignments.subject')}</th>
-              <th>{t('assignments.dueDate')}</th>
-              <th>{t('assignments.priority')}</th>
-              <th>{t('assignments.status')}</th>
-              <th>{t('assignments.action')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {assignments.map((assignment) => (
-              <tr key={assignment.id}>
-                <td data-label={t('assignments.course')}>{assignment.course}</td>
-                <td data-label={t('assignments.assignment')}>{assignment.assignment_title}</td>
-                <td data-label={t('assignments.subject')}>{assignment.subject || '-'}</td>
-                <td data-label={t('assignments.dueDate')}>{formatDate(assignment.due_date)}</td>
-                <td data-label={t('assignments.priority')}>
-                  <span className={`badge ${getPriorityBadgeClass(assignment.priority)}`}>
-                    {getPriorityDisplayText(assignment.priority)}
-                  </span>
-                </td>
-                <td data-label={t('assignments.status')}>
-                  <div className="assignment-status-control">
-                    <label className="completion-toggle">
-                      <input
-                        type="checkbox"
-                        checked={assignment.submission_status === 'submitted'}
-                        disabled={updatingAssignmentIds.includes(assignment.id)}
-                        onChange={() => onToggleComplete(assignment)}
-                        aria-label={t('assignments.toggleComplete', {
-                          title: assignment.assignment_title,
-                        })}
-                      />
-                      <span className="completion-checkmark"></span>
-                    </label>
-                    <span className={`badge ${getStatusBadgeClass(assignment.submission_status)}`}>
-                      {getStatusDisplayText(assignment.submission_status)}
-                    </span>
+        <div className="assignments-board">
+          {assignments.map((assignment) => {
+            const statusText = getStatusDisplayText(assignment.submission_status);
+            const statusClass = getStatusBadgeClass(assignment.submission_status);
+            const priorityText = getPriorityDisplayText(assignment.priority);
+            const priorityClass = getPriorityBadgeClass(assignment.priority);
+
+            return (
+              <article key={assignment.id} className="assignment-card">
+                <div className="assignment-card-top">
+                  <span className={`assignment-chip ${priorityClass}`}>{priorityText}</span>
+                  <span className={`assignment-chip ${statusClass}`}>{statusText}</span>
+                </div>
+
+                <h3 className="assignment-card-title">{assignment.assignment_title}</h3>
+                <p className="assignment-card-course">{assignment.course}</p>
+                {assignment.subject && <p className="assignment-card-subject">{assignment.subject}</p>}
+
+                <div className="assignment-card-meta">
+                  <div>
+                    <span className="meta-label">{t('assignments.dueDate')}</span>
+                    <span>{formatDate(assignment.due_date)}</span>
                   </div>
-                </td>
-                <td>
+                  <div>
+                    <span className="meta-label">{t('assignments.subject')}</span>
+                    <span>{assignment.subject || '-'}</span>
+                  </div>
+                </div>
+
+                <div className="assignment-card-actions">
                   <button
-                    onClick={() => onDelete(assignment.id)}
+                    type="button"
+                    className="btn-complete"
+                    onClick={() => onToggleComplete(assignment)}
+                    disabled={updatingAssignmentIds.includes(assignment.id)}
+                  >
+                    {assignment.submission_status === 'submitted'
+                      ? t('common.notSubmitted')
+                      : t('common.submitted')}
+                  </button>
+                  <button
+                    type="button"
                     className="btn-delete"
+                    onClick={() => onDelete(assignment.id)}
                     title={t('assignments.deleteTitle')}
                   >
-                    x
+                    {t('assignments.action')}
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
+              </article>
+            );
+          })}
+        </div>
       )}
     </div>
   );

@@ -177,6 +177,14 @@ function DashboardPage({ user, onLogout }) {
     navigate('/');
   };
 
+  const totalAssignments = assignments.length;
+  const completedAssignments = assignments.filter(
+    (assignment) => assignment.submission_status === 'submitted'
+  ).length;
+  const overdueAssignments = assignments.filter((assignment) => {
+    return assignment.due_date ? new Date(assignment.due_date) < new Date() : false;
+  }).length;
+
   const handleAssistantSend = async (overrideMessage) => {
     const nextMessage = (overrideMessage ?? assistantInput).trim();
 
@@ -293,6 +301,24 @@ function DashboardPage({ user, onLogout }) {
         </aside>
 
         <main className="dashboard-main">
+          <div className="dashboard-summary">
+            <div className="summary-card summary-card-primary">
+              <p className="summary-card-label">{t('dashboard.assignmentsTitle')}</p>
+              <h3>{totalAssignments}</h3>
+              <p>{t('assignments.empty')}</p>
+            </div>
+            <div className="summary-card">
+              <p className="summary-card-label">Completed</p>
+              <h3>{completedAssignments}</h3>
+              <p>{t('common.submitted')}</p>
+            </div>
+            <div className="summary-card">
+              <p className="summary-card-label">Overdue</p>
+              <h3>{overdueAssignments}</h3>
+              <p>{t('dashboard.quickOverdue')}</p>
+            </div>
+          </div>
+
           <div className="dashboard-grid">
             <section id="classroom" className="dashboard-panel dashboard-panel--wide">
               <div className="panel-head">

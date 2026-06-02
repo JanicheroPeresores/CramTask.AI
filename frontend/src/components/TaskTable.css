@@ -1,15 +1,17 @@
 .table-wrapper {
   width: 100%;
-  overflow: hidden;
   border-radius: 28px;
+  background: rgba(11, 18, 32, 0.92);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(13, 22, 37, 0.95);
+  padding: 22px;
 }
 
 .empty-state {
-  padding: 56px 24px;
+  min-height: 220px;
+  display: grid;
+  place-items: center;
   text-align: center;
-  color: #a8bacf;
+  color: #b8c9e1;
 }
 
 .empty-state p {
@@ -17,209 +19,145 @@
   font-size: 1rem;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 100%;
+.assignments-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
 }
 
-thead th {
-  padding: 18px 20px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.65);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+.assignment-card {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(8, 16, 30, 0.98), rgba(7, 12, 22, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.24);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-tbody tr {
-  transition: transform 0.18s ease, background 0.18s ease;
+.assignment-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.28);
 }
 
-tbody tr:hover {
-  background: rgba(255, 255, 255, 0.04);
-  transform: translateY(-1px);
-}
-
-td {
-  padding: 18px 20px;
-  color: #e8efff;
-  font-size: 0.95rem;
-  vertical-align: middle;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.btn-delete {
-  min-width: 48px;
-  min-height: 44px;
-  padding: 0 14px;
-  border-radius: 14px;
-  background: rgba(255, 107, 124, 0.15);
-  color: #ffd9dd;
-  border: 1px solid rgba(255, 107, 124, 0.28);
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.btn-delete:hover {
-  background: rgba(255, 107, 124, 0.24);
-  transform: translateY(-1px);
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: capitalize;
-}
-
-.status-pending {
-  background: rgba(255, 209, 102, 0.16);
-  color: #ffdb7e;
-  border: 1px solid rgba(255, 209, 102, 0.28);
-}
-
-.status-submitted {
-  background: rgba(0, 212, 255, 0.16);
-  color: #9fe5ff;
-  border: 1px solid rgba(0, 212, 255, 0.28);
-}
-
-.status-graded {
-  background: rgba(107, 230, 161, 0.16);
-  color: #b6ffd5;
-  border: 1px solid rgba(107, 230, 161, 0.28);
-}
-
-.assignment-status-control {
+.assignment-card-top {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.completion-toggle {
+.assignment-chip {
   display: inline-flex;
-  width: 18px;
-  height: 18px;
-  position: relative;
-  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
-.completion-toggle input {
-  opacity: 0;
-  position: absolute;
-  width: 1px;
-  height: 1px;
+.status-pending,
+.priority-medium {
+  background: rgba(255, 209, 102, 0.14);
+  color: #ffe99d;
+  border: 1px solid rgba(255, 209, 102, 0.24);
 }
 
-.completion-checkmark {
-  width: 18px;
-  height: 18px;
-  border-radius: 8px;
-  border: 1px solid rgba(157, 179, 196, 0.5);
-  background: rgba(255, 255, 255, 0.05);
-  transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+.status-submitted,
+.priority-low {
+  background: rgba(0, 212, 255, 0.14);
+  color: #9ee7ff;
+  border: 1px solid rgba(0, 212, 255, 0.26);
 }
 
-.completion-toggle input:checked + .completion-checkmark {
-  background: #37dc87;
-  border-color: #37dc87;
-  box-shadow: 0 0 12px rgba(55, 220, 135, 0.24);
-}
-
-.completion-toggle input:checked + .completion-checkmark::after {
-  content: '';
-  width: 5px;
-  height: 9px;
-  border: solid #092318;
-  border-width: 0 2px 2px 0;
-  position: absolute;
-  left: 5px;
-  top: 2px;
-  transform: rotate(45deg);
-}
-
-.completion-toggle input:focus-visible + .completion-checkmark {
-  box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.2);
+.status-graded,
+.priority-high {
+  background: rgba(255, 107, 124, 0.16);
+  color: #ffb8c6;
+  border: 1px solid rgba(255, 107, 124, 0.28);
 }
 
 .priority-high {
   background: rgba(255, 107, 124, 0.16);
-  color: #ffb2bd;
-  border: 1px solid rgba(255, 107, 124, 0.28);
+  color: #ffb8c6;
 }
 
-.priority-medium {
-  background: rgba(255, 209, 102, 0.16);
-  color: #ffe69e;
-  border: 1px solid rgba(255, 209, 102, 0.28);
+.assignment-card-title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #f7fbff;
+  line-height: 1.2;
 }
 
-.priority-low {
-  background: rgba(107, 230, 161, 0.16);
-  color: #c3ffd5;
-  border: 1px solid rgba(107, 230, 161, 0.28);
+.assignment-card-course,
+.assignment-card-subject {
+  margin: 0;
+  color: #bbc9dc;
+  line-height: 1.6;
+}
+
+.assignment-card-meta {
+  display: grid;
+  gap: 12px;
+}
+
+.assignment-card-meta div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #d4e3fb;
+  font-size: 0.92rem;
+}
+
+.meta-label {
+  color: #90b1dd;
+  font-weight: 700;
+  min-width: 90px;
+}
+
+.assignment-card-actions {
+  display: grid;
+  gap: 12px;
+}
+
+.assignment-card-actions button {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-complete {
+  background: rgba(0, 212, 255, 0.16);
+  color: #e8f9ff;
+  border-color: rgba(0, 212, 255, 0.26);
+}
+
+.btn-delete {
+  background: rgba(255, 107, 124, 0.14);
+  color: #ffd7dc;
+  border-color: rgba(255, 107, 124, 0.24);
+}
+
+.btn-complete:hover,
+.btn-delete:hover {
+  transform: translateY(-1px);
 }
 
 @media (max-width: 860px) {
-  .table-wrapper {
-    border: none;
-    background: transparent;
-    box-shadow: none;
+  .assignments-board {
+    grid-template-columns: 1fr;
   }
 
-  table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
-    display: block;
-  }
-
-  thead tr {
-    position: absolute;
-    left: -9999px;
-    top: -9999px;
-  }
-
-  tr {
-    margin-bottom: 16px;
-    padding: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 24px;
-    background: rgba(255, 255, 255, 0.03);
-  }
-
-  td {
-    position: relative;
-    padding: 12px 14px;
-    border: none;
-  }
-
-  td::before {
-    content: attr(data-label);
-    display: block;
-    margin-bottom: 8px;
-    font-size: 0.72rem;
-    color: rgba(255, 255, 255, 0.65);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-  }
-
-  .assignment-status-control {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .btn-delete {
-    width: 100%;
+  .assignment-card {
+    padding: 20px;
   }
 }
 
