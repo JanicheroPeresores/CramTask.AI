@@ -1,10 +1,7 @@
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,19 +9,19 @@
 }
 
 .modal {
-  background: rgba(10, 18, 30, 0.96);
-  border: 3px solid rgba(0, 255, 200, 0.45);
-  border-radius: 16px;
-  max-width: 500px;
-  width: 90%;
-  box-shadow: 0 24px 0 rgba(0, 0, 0, 0.35), 0 0 0 3px rgba(0, 255, 200, 0.12), 0 20px 60px rgba(0, 0, 0, 0.5);
-  animation: slideIn 0.3s ease;
+  width: min(540px, 100%);
+  background: rgba(8, 12, 18, 0.98);
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  animation: slideIn 0.28s ease;
 }
 
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(-18px);
   }
   to {
     opacity: 1;
@@ -33,68 +30,63 @@
 }
 
 .modal-header {
-  padding: 20px;
-  border-bottom: 1px solid rgba(0, 255, 200, 0.25);
+  padding: 28px 28px 20px;
 }
 
 .modal-header h2 {
-  font-size: 20px;
   margin: 0;
+  font-size: 1.4rem;
+  color: #f3f8ff;
 }
 
 .modal-body {
-  padding: 20px;
+  padding: 0 28px 24px;
+  display: grid;
+  gap: 18px;
 }
 
 .modal-footer {
   display: flex;
-  gap: 10px;
+  gap: 14px;
   justify-content: flex-end;
-  padding-top: 20px;
-  border-top: 1px solid rgba(0, 255, 200, 0.25);
-}
-
-.modal-footer button {
-  padding: 10px 20px;
-}
-
-.modal-footer button:first-child {
-  order: 2;
-}
-
-.modal-footer button:last-child {
-  order: 1;
+  padding: 18px 28px 26px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .form-group select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid rgba(0, 255, 200, 0.35);
-  border-radius: 8px;
-  background-color: #1a2332;
-  color: #fff;
-  font-size: 14px;
+  min-height: 54px;
 }
 
 .priority-preview {
-  padding: 10px;
-  border-radius: 8px;
-  text-transform: uppercase;
-  font-weight: 1000;
-  border: 1px solid currentColor;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .priority-preview-high {
-  background-color: rgba(231, 76, 60, 0.16);
-  color: #ff8a7c;
+  background: rgba(255, 107, 124, 0.14);
+  color: #ff9ea4;
 }
 
 .priority-preview-medium {
-  background-color: rgba(241, 196, 15, 0.16);
-  color: #ffd166;
+  background: rgba(255, 209, 102, 0.14);
+  color: #ffe69d;
 }
 
 .priority-preview-low {
-  background-color: rgba(46, 204, 113, 0.16);
-  color: #4fe38a;
+  background: rgba(107, 230, 161, 0.14);
+  color: #c5ffd9;
+}
+
+@media (max-width: 600px) {
+  .modal {
+    margin: 20px;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 }

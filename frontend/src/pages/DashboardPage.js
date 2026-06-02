@@ -73,6 +73,26 @@ function DashboardPage({ user, onLogout }) {
     });
   }, [language, t]);
 
+  const [showHeader, setShowHeader] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.pageYOffset || document.documentElement.scrollTop;
+
+      if (currentY < 80 || currentY < lastScrollY.current) {
+        setShowHeader(true);
+      } else {
+        setShowHeader(false);
+      }
+
+      lastScrollY.current = currentY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   useEffect(() => {
     if (assistantScrollRef.current) {
       assistantScrollRef.current.scrollTop = assistantScrollRef.current.scrollHeight;
@@ -198,60 +218,33 @@ function DashboardPage({ user, onLogout }) {
 
   return (
     <div className="dashboard-container">
-      <header className="dashboard-header">
-        <div className="header-content">
-          <div>
-            <h1>{t('dashboard.welcome', { name: user?.username || t('common.student') })}</h1>
-          </div>
-          <LanguageSwitch className="dashboard-language-switch" />
-          <button onClick={handleLogout} className="btn-secondary">
-            {t('common.logout')}
-          </button>
-        </div>
-      </header>
+      {showIntro && (
+        <div className="dashboard-intro-overlay" role="dialog" aria-modal="true">
+          <div className="dashboard-intro">
+            <div className="dashboard-intro-top">
+              <div className="dashboard-intro-badge">{t('dashboard.introBadge')}</div>
+              <h1 className="dashboard-intro-title">{t('dashboard.introTitle')}</h1>
+              <p className="dashboard-intro-subtitle">{t('dashboard.introSubtitle')}</p>
+            </div>
 
-      <div className="dashboard-content">
-        <div className="dashboard-sidebar">
-          <div className="sidebar-label">{t('dashboard.sidebarLabel')}</div>
-          <button onClick={() => setShowModal(true)} className="btn-primary create-btn">
-            {t('dashboard.create')}
-          </button>
-        </div>
+            <div className="dashboard-intro-actions">
+              <button type="button" className="intro-primary" onClick={() => setShowIntro(false)}>
+                {t('dashboard.enterDashboard')}
+              </button>
+            </div>
 
-        {showIntro && (
-          <div className="dashboard-intro-overlay" role="dialog" aria-modal="true">
-            <div className="dashboard-intro">
-              <div className="dashboard-intro-top">
-                <div className="dashboard-intro-badge">{t('dashboard.introBadge')}</div>
-                <h1 className="dashboard-intro-title">{t('dashboard.introTitle')}</h1>
-                <p className="dashboard-intro-subtitle">
-                  {t('dashboard.introSubtitle')}
-                </p>
+            <div className="dashboard-intro-hints">
+              <div className="intro-hint-card">
+                <div className="intro-hint-title">{t('dashboard.step1Title')}</div>
+                <div className="intro-hint-text">{t('dashboard.step1Text')}</div>
               </div>
-
-              <div className="dashboard-intro-actions">
-                <button
-                  type="button"
-                  className="intro-primary"
-                  onClick={() => setShowIntro(false)}
-                >
-                  {t('dashboard.enterDashboard')}
-                </button>
+              <div className="intro-hint-card">
+                <div className="intro-hint-title">{t('dashboard.step2Title')}</div>
+                <div className="intro-hint-text">{t('dashboard.step2Text')}</div>
               </div>
-
-              <div className="dashboard-intro-hints">
-                <div className="intro-hint-card">
-                  <div className="intro-hint-title">{t('dashboard.step1Title')}</div>
-                  <div className="intro-hint-text">{t('dashboard.step1Text')}</div>
-                </div>
-                <div className="intro-hint-card">
-                  <div className="intro-hint-title">{t('dashboard.step2Title')}</div>
-                  <div className="intro-hint-text">{t('dashboard.step2Text')}</div>
-                </div>
-                <div className="intro-hint-card">
-                  <div className="intro-hint-title">{t('dashboard.step3Title')}</div>
-                  <div className="intro-hint-text">{t('dashboard.step3Text')}</div>
-                </div>
+              <div className="intro-hint-card">
+                <div className="intro-hint-title">{t('dashboard.step3Title')}</div>
+                <div className="intro-hint-text">{t('dashboard.step3Text')}</div>
               </div>
             </div>
 
@@ -265,21 +258,59 @@ function DashboardPage({ user, onLogout }) {
               x
             </button>
           </div>
-        )}
+        </div>
+      )}
 
-        <div className="dashboard-main">
-          <div className="dashboard-main-layout">
-            <div className="assignments-section">
-              {error && <div className="alert alert-error">{error}</div>}
+      <header className={`dashboard-header ${showHeader ? 'visible' : 'hidden'}`}>
+        <div className="dashboard-brand">
+          <div className="brand-mark">CT</div>
+          <div className="brand-copy">
+            <p className="brand-eyebrow">CramTask.AI</p>
+            <h1 className="dashboard-header-title">
+              {t('dashboard.welcome', { name: user?.username || t('common.student') })}
+            </h1>
+          </div>
+        </div>
+        <div className="dashboard-header-actions">
+          <LanguageSwitch className="dashboard-language-switch" />
+          <button onClick={handleLogout} className="btn-secondary logout-btn">
+            {t('common.logout')}
+          </button>
+        </div>
+      </header>
 
-              <GoogleClassroomConnect
-                onSync={() => setGoogleClassroomRefresh((prev) => prev + 1)}
-              />
+      <div className="dashboard-content">
+        <aside className="dashboard-sidebar">
+          <div className="sidebar-title">{t('dashboard.sidebarLabel')}</div>
+          <nav className="sidebar-nav">
+            <a href="#assignments">{t('dashboard.navTasks')}</a>
+            <a href="#assistant">{t('dashboard.navAssistant')}</a>
+            <a href="#classroom">{t('dashboard.navClassroom')}</a>
+          </nav>
+          <button type="button" onClick={() => setShowModal(true)} className="btn-primary create-btn">
+            {t('dashboard.create')}
+          </button>
+        </aside>
 
-              <GoogleClassroomAssignments
-                key={googleClassroomRefresh}
-              />
+        <main className="dashboard-main">
+          <div className="dashboard-grid">
+            <section id="classroom" className="dashboard-panel dashboard-panel--wide">
+              <div className="panel-head">
+                <div>
+                  <p className="panel-eyebrow">{t('dashboard.classroomEyebrow')}</p>
+                  <h2>{t('dashboard.classroomTitle')}</h2>
+                </div>
+              </div>
+              <GoogleClassroomConnect onSync={() => setGoogleClassroomRefresh((prev) => prev + 1)} />
+            </section>
 
+            <section className="dashboard-panel dashboard-panel--wide">
+              <div className="panel-head">
+                <div>
+                  <p className="panel-eyebrow">{t('dashboard.assignmentsEyebrow')}</p>
+                  <h2>{t('dashboard.assignmentsTitle')}</h2>
+                </div>
+              </div>
               {loading ? (
                 <div className="loading">
                   <div className="spinner"></div>
@@ -295,94 +326,96 @@ function DashboardPage({ user, onLogout }) {
                   <AssignmentProgressWidget assignments={assignments} />
                 </>
               )}
-            </div>
+            </section>
 
-            {chatOpen ? (
-              <aside className="assistant-card">
-                <div className="assistant-card-header">
-                  <div>
-                    <p className="assistant-eyebrow">{t('dashboard.assistantEyebrow')}</p>
-                    <h2>{t('dashboard.assistantTitle')}</h2>
-                  </div>
-                  <button
-                    className="assistant-close-btn"
-                    onClick={() => setChatOpen(false)}
-                    title={t('dashboard.minimizeChat')}
-                  >
-                    -
-                  </button>
+            <section className="dashboard-panel dashboard-panel--narrow">
+              <div className="panel-head panel-head--compact">
+                <div>
+                  <p className="panel-eyebrow">{t('dashboard.assistantEyebrow')}</p>
+                  <h2>{t('dashboard.assistantTitle')}</h2>
                 </div>
-
-                <div className="assistant-messages" ref={assistantScrollRef}>
-                  {assistantMessages.map((message) => (
-                    <div key={message.id} className={`assistant-message ${message.role}`}>
-                      <div className="assistant-message-role">
-                        {message.role === 'user' ? t('dashboard.you') : t('dashboard.coach')}
-                      </div>
-                      <p>{message.content}</p>
-                    </div>
-                  ))}
-                  {assistantLoading && (
-                    <div className="assistant-message assistant">
-                      <div className="assistant-message-role">{t('dashboard.coach')}</div>
-                      <p>{t('dashboard.thinking')}</p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="assistant-quick-prompts">
-                  {quickPrompts.map((prompt) => (
-                    <button key={prompt} type="button" onClick={() => handleAssistantSend(prompt)}>
-                      {prompt}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="assistant-input-box">
-                  <textarea
-                    value={assistantInput}
-                    onChange={(e) => setAssistantInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleAssistantSend();
-                      }
-                    }}
-                    placeholder={t('dashboard.assistantPlaceholder')}
-                    rows="4"
-                  />
-                  <button
-                    type="button"
-                    className="assistant-send-btn"
-                    onClick={() => handleAssistantSend()}
-                    disabled={assistantLoading}
-                  >
-                    {assistantLoading ? t('dashboard.sending') : t('dashboard.send')}
-                  </button>
-                </div>
-              </aside>
-            ) : (
-              <div className="chat-toggle-button-container">
-                <button
-                  type="button"
-                  className="chat-toggle-button"
-                  onClick={() => setChatOpen(true)}
-                  title={t('dashboard.openChat')}
-                  aria-label={t('dashboard.openChat')}
-                >
-                  AI
+                <button type="button" className="btn-primary mobile-action" onClick={() => setShowModal(true)}>
+                  {t('dashboard.create')}
                 </button>
               </div>
-            )}
+              {error && <div className="alert alert-error">{error}</div>}
+              {chatOpen ? (
+                <aside className="assistant-card">
+                  <div className="assistant-messages" ref={assistantScrollRef}>
+                    {assistantMessages.map((message) => (
+                      <div key={message.id} className={`assistant-message ${message.role}`}>
+                        <div className="assistant-message-role">
+                          {message.role === 'user' ? t('dashboard.you') : t('dashboard.coach')}
+                        </div>
+                        <p>{message.content}</p>
+                      </div>
+                    ))}
+                    {assistantLoading && (
+                      <div className="assistant-message assistant">
+                        <div className="assistant-message-role">{t('dashboard.coach')}</div>
+                        <p>{t('dashboard.thinking')}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="assistant-quick-prompts">
+                    {quickPrompts.map((prompt) => (
+                      <button key={prompt} type="button" onClick={() => handleAssistantSend(prompt)}>
+                        {prompt}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="assistant-input-box">
+                    <textarea
+                      value={assistantInput}
+                      onChange={(e) => setAssistantInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleAssistantSend();
+                        }
+                      }}
+                      placeholder={t('dashboard.assistantPlaceholder')}
+                      rows="4"
+                    />
+                    <button
+                      type="button"
+                      className="assistant-send-btn"
+                      onClick={() => handleAssistantSend()}
+                      disabled={assistantLoading}
+                    >
+                      {assistantLoading ? t('dashboard.sending') : t('dashboard.send')}
+                    </button>
+                  </div>
+                </aside>
+              ) : (
+                <div className="chat-toggle-button-container">
+                  <button
+                    type="button"
+                    className="chat-toggle-button"
+                    onClick={() => setChatOpen(true)}
+                    title={t('dashboard.openChat')}
+                    aria-label={t('dashboard.openChat')}
+                  >
+                    AI
+                  </button>
+                </div>
+              )}
+            </section>
+
+            <section className="dashboard-panel dashboard-panel--wide">
+              <GoogleClassroomAssignments key={googleClassroomRefresh} />
+            </section>
           </div>
-        </div>
+        </main>
       </div>
 
-      <div className="logout-float">
-        <button type="button" className="logout-float-btn" onClick={handleLogout} title={t('common.logout')}>
-          {t('common.logout')}
-        </button>
-      </div>
+      <nav className="dashboard-bottom-nav">
+        <a href="#assignments">{t('dashboard.navTasks')}</a>
+        <a href="#assistant">{t('dashboard.navAssistant')}</a>
+        <button type="button" onClick={() => setShowModal(true)}>{t('dashboard.create')}</button>
+      </nav>
 
       {showModal && (
         <CreateAssignmentModal

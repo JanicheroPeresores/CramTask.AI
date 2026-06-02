@@ -82,16 +82,16 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
           <tbody>
             {assignments.map((assignment) => (
               <tr key={assignment.id}>
-                <td>{assignment.course}</td>
-                <td>{assignment.assignment_title}</td>
-                <td>{assignment.subject || '-'}</td>
-                <td>{formatDate(assignment.due_date)}</td>
-                <td>
+                <td data-label={t('assignments.course')}>{assignment.course}</td>
+                <td data-label={t('assignments.assignment')}>{assignment.assignment_title}</td>
+                <td data-label={t('assignments.subject')}>{assignment.subject || '-'}</td>
+                <td data-label={t('assignments.dueDate')}>{formatDate(assignment.due_date)}</td>
+                <td data-label={t('assignments.priority')}>
                   <span className={`badge ${getPriorityBadgeClass(assignment.priority)}`}>
                     {getPriorityDisplayText(assignment.priority)}
                   </span>
                 </td>
-                <td>
+                <td data-label={t('assignments.status')}>
                   <div className="assignment-status-control">
                     <label className="completion-toggle">
                       <input

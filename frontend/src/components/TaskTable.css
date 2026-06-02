@@ -1,169 +1,225 @@
 .table-wrapper {
-  overflow-x: auto;
   width: 100%;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(13, 22, 37, 0.95);
 }
 
 .empty-state {
+  padding: 56px 24px;
   text-align: center;
-  padding: 60px 20px;
-  color: #999;
+  color: #a8bacf;
 }
 
 .empty-state p {
-  font-size: 16px;
   margin: 0;
+  font-size: 1rem;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  background-color: transparent;
-  border: 1px solid #2a3a4a;
-  border-radius: 0;
+  min-width: 100%;
 }
 
-thead {
-  background-color: transparent;
+thead th {
+  padding: 18px 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-th {
-  padding: 15px;
-  text-align: left;
-  font-weight: 600;
-  border-bottom: 1px solid #2a3a4a;
-  color: #ccc;
-  font-size: 12px;
-  letter-spacing: 0.5px;
-}
-
-td {
-  padding: 15px;
-  border-bottom: 1px solid #2a3a4a;
-  color: #aaa;
-  font-size: 13px;
+tbody tr {
+  transition: transform 0.18s ease, background 0.18s ease;
 }
 
 tbody tr:hover {
-  background-color: transparent;
+  background: rgba(255, 255, 255, 0.04);
+  transform: translateY(-1px);
+}
+
+td {
+  padding: 18px 20px;
+  color: #e8efff;
+  font-size: 0.95rem;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .btn-delete {
-  padding: 6px 12px;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  min-width: 48px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 14px;
+  background: rgba(255, 107, 124, 0.15);
+  color: #ffd9dd;
+  border: 1px solid rgba(255, 107, 124, 0.28);
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .btn-delete:hover {
-  background-color: #c0392b;
-  transform: translateY(-2px);
+  background: rgba(255, 107, 124, 0.24);
+  transform: translateY(-1px);
 }
 
 .badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
   text-transform: capitalize;
 }
 
 .status-pending {
-  background-color: rgba(241, 196, 15, 0.2);
-  color: #f1c40f;
-  border: 1px solid rgba(241, 196, 15, 0.4);
+  background: rgba(255, 209, 102, 0.16);
+  color: #ffdb7e;
+  border: 1px solid rgba(255, 209, 102, 0.28);
 }
 
 .status-submitted {
-  background-color: rgba(52, 152, 219, 0.2);
-  color: #3498db;
-  border: 1px solid rgba(52, 152, 219, 0.4);
+  background: rgba(0, 212, 255, 0.16);
+  color: #9fe5ff;
+  border: 1px solid rgba(0, 212, 255, 0.28);
 }
 
 .status-graded {
-  background-color: rgba(46, 204, 113, 0.2);
-  color: #2ecc71;
-  border: 1px solid rgba(46, 204, 113, 0.4);
+  background: rgba(107, 230, 161, 0.16);
+  color: #b6ffd5;
+  border: 1px solid rgba(107, 230, 161, 0.28);
 }
 
 .assignment-status-control {
+  display: flex;
   align-items: center;
-  display: inline-flex;
-  gap: 9px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .completion-toggle {
-  cursor: pointer;
   display: inline-flex;
+  width: 18px;
   height: 18px;
   position: relative;
-  width: 18px;
+  cursor: pointer;
 }
 
 .completion-toggle input {
-  height: 1px;
   opacity: 0;
   position: absolute;
   width: 1px;
+  height: 1px;
 }
 
 .completion-checkmark {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(157, 179, 196, 0.62);
-  border-radius: 6px;
-  height: 18px;
-  position: relative;
-  transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
   width: 18px;
+  height: 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(157, 179, 196, 0.5);
+  background: rgba(255, 255, 255, 0.05);
+  transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
 }
 
 .completion-toggle input:checked + .completion-checkmark {
   background: #37dc87;
   border-color: #37dc87;
-  box-shadow: 0 0 12px rgba(55, 220, 135, 0.32);
+  box-shadow: 0 0 12px rgba(55, 220, 135, 0.24);
 }
 
 .completion-toggle input:checked + .completion-checkmark::after {
+  content: '';
+  width: 5px;
+  height: 9px;
   border: solid #092318;
   border-width: 0 2px 2px 0;
-  content: '';
-  height: 8px;
-  left: 6px;
   position: absolute;
-  top: 3px;
+  left: 5px;
+  top: 2px;
   transform: rotate(45deg);
-  width: 4px;
 }
 
 .completion-toggle input:focus-visible + .completion-checkmark {
-  box-shadow: 0 0 0 3px rgba(0, 255, 200, 0.28);
-}
-
-.completion-toggle input:disabled + .completion-checkmark {
-  cursor: progress;
-  opacity: 0.62;
+  box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.2);
 }
 
 .priority-high {
-  background-color: rgba(231, 76, 60, 0.2);
-  color: #e74c3c;
-  border: 1px solid rgba(231, 76, 60, 0.4);
+  background: rgba(255, 107, 124, 0.16);
+  color: #ffb2bd;
+  border: 1px solid rgba(255, 107, 124, 0.28);
 }
 
 .priority-medium {
-  background-color: rgba(241, 196, 15, 0.2);
-  color: #f1c40f;
-  border: 1px solid rgba(241, 196, 15, 0.4);
+  background: rgba(255, 209, 102, 0.16);
+  color: #ffe69e;
+  border: 1px solid rgba(255, 209, 102, 0.28);
 }
 
 .priority-low {
-  background-color: rgba(46, 204, 113, 0.2);
-  color: #2ecc71;
-  border: 1px solid rgba(46, 204, 113, 0.4);
+  background: rgba(107, 230, 161, 0.16);
+  color: #c3ffd5;
+  border: 1px solid rgba(107, 230, 161, 0.28);
+}
+
+@media (max-width: 860px) {
+  .table-wrapper {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  thead tr {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+  }
+
+  tr {
+    margin-bottom: 16px;
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  td {
+    position: relative;
+    padding: 12px 14px;
+    border: none;
+  }
+
+  td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.65);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+
+  .assignment-status-control {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn-delete {
+    width: 100%;
+  }
 }
 
