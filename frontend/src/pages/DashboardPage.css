@@ -865,6 +865,11 @@
     display: none;
   }
 
+  /* Place the combined summary card below the primary card and keep it aligned with the primary width */
+  .summary-card-combined {
+    grid-column: 1 / 3;
+  }
+
   .assistant-dock {
     top: 92px;
     bottom: 22px;
