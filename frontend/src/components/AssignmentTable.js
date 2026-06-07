@@ -73,6 +73,7 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
             const statusClass = getStatusBadgeClass(assignment.submission_status);
             const priorityText = getPriorityDisplayText(assignment.priority);
             const priorityClass = getPriorityBadgeClass(assignment.priority);
+            const isSubmitted = assignment.submission_status === 'submitted';
 
             return (
               <article key={assignment.id} className="assignment-card">
@@ -82,10 +83,9 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
                     className="btn-complete"
                     onClick={() => onToggleComplete(assignment)}
                     disabled={updatingAssignmentIds.includes(assignment.id)}
+                    title={isSubmitted ? t('common.notSubmitted') : t('common.submitted')}
                   >
-                    {assignment.submission_status === 'submitted'
-                      ? t('common.notSubmitted')
-                      : t('common.submitted')}
+                    {isSubmitted ? '✓' : '○'}
                   </button>
                   <button
                     type="button"
@@ -93,24 +93,28 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
                     onClick={() => onDelete(assignment.id)}
                     title={t('assignments.deleteTitle')}
                   >
-                    Delete
+                    ✕
                   </button>
                 </div>
 
-                <h3 className="assignment-card-title">{assignment.assignment_title}</h3>
-                <p className="assignment-card-course">{assignment.course}</p>
-                {assignment.subject && <p className="assignment-card-subject">{assignment.subject}</p>}
+                <div className="assignment-card-content">
+                  <h3 className="assignment-card-title">{assignment.assignment_title}</h3>
+                  <p className="assignment-card-course">{assignment.course}</p>
 
-                <div className="assignment-card-meta">
-                  <div>
+                  <div className="assignment-card-meta">
                     <span className="meta-label">{t('assignments.dueDate')}</span>
                     <span>{formatDate(assignment.due_date)}</span>
                   </div>
-                </div>
 
-                <div className="assignment-card-top">
-                  <span className={`assignment-chip ${priorityClass}`}>{priorityText}</span>
-                  <span className={`assignment-chip ${statusClass}`}>{statusText}</span>
+                  <div className="assignment-status-bar">
+                    <div className={`status-indicator ${statusClass}`}>
+                      <span className="status-icon">{isSubmitted ? '✓' : '◐'}</span>
+                      <span className="status-label">{statusText}</span>
+                    </div>
+                    <div className={`priority-badge ${priorityClass}`}>
+                      {priorityText}
+                    </div>
+                  </div>
                 </div>
               </article>
             );
