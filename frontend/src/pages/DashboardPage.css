@@ -431,7 +431,7 @@
 .summary-card-combined {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 }
 
 .summary-mini-icon--combined {
@@ -863,7 +863,10 @@
   }
 
   /* (combined summary card positioning left as-is) */
-
+  /* Place the combined summary card below the primary card (span same two columns) */
+  .summary-card-combined {
+    grid-column: 1 / 3;
+  }
   .assistant-dock {
     top: 92px;
     bottom: 22px;
