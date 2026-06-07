@@ -5,6 +5,7 @@ import SignupPage from './pages/SignupPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import DashboardPage from './pages/DashboardPage';
 import { LanguageProvider } from './i18n/LanguageContext';
+import { ThemeProvider } from './i18n/ThemeContext';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -57,25 +58,27 @@ function App() {
   }
 
   return (
-    <LanguageProvider>
-      <BrowserRouter>
-        <Routes>
-          {!isAuthenticated ? (
-            <>
-              <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
-              <Route path="/signup" element={<SignupPage onSignup={handleLogin} />} />
-              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="*" element={<Navigate to="/" />} />
-            </>
-          ) : (
-            <>
-              <Route path="/dashboard" element={<DashboardPage user={user} onLogout={handleLogout} />} />
-              <Route path="*" element={<Navigate to="/dashboard" />} />
-            </>
-          )}
-        </Routes>
-      </BrowserRouter>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <BrowserRouter>
+          <Routes>
+            {!isAuthenticated ? (
+              <>
+                <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
+                <Route path="/signup" element={<SignupPage onSignup={handleLogin} />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="*" element={<Navigate to="/" />} />
+              </>
+            ) : (
+              <>
+                <Route path="/dashboard" element={<DashboardPage user={user} onLogout={handleLogout} />} />
+                <Route path="*" element={<Navigate to="/dashboard" />} />
+              </>
+            )}
+          </Routes>
+        </BrowserRouter>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 

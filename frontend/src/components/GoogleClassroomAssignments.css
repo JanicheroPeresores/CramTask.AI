@@ -5,11 +5,21 @@
   background: #f8fcfc;
 }
 
+:root[data-theme='dark'] .google-classroom-assignments {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .google-classroom-assignments h3 {
   margin: 0 0 14px;
   color: #17212f;
   font-size: 1rem;
   font-weight: 850;
+}
+
+:root[data-theme='dark'] .google-classroom-assignments h3,
+:root[data-theme='dark'] .assignment-title {
+  color: #f7fbff;
 }
 
 .course-section {
@@ -42,6 +52,11 @@
   background: #ffffff;
   box-shadow: 0 12px 28px rgba(30, 73, 82, 0.06);
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+:root[data-theme='dark'] .google-classroom-assignments .assignment-card {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .google-classroom-assignments .assignment-card:hover {
@@ -99,6 +114,13 @@
   line-height: 1.5;
 }
 
+:root[data-theme='dark'] .assignment-description,
+:root[data-theme='dark'] .assignment-meta,
+:root[data-theme='dark'] .google-classroom-assignments .loading,
+:root[data-theme='dark'] .no-assignments {
+  color: #c7d7ec;
+}
+
 .assignment-meta {
   display: flex;
   flex-wrap: wrap;
@@ -121,6 +143,14 @@
   background: #f1f7f7;
   border: 1px solid rgba(13, 92, 95, 0.08);
   color: #526273;
+}
+
+:root[data-theme='dark'] .due-date,
+:root[data-theme='dark'] .state,
+:root[data-theme='dark'] .days-until {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #edf2ff;
 }
 
 .days-until {

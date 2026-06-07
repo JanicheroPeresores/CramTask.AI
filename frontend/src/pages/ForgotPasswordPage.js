@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import LanguageSwitch from '../components/LanguageSwitch';
+import ThemeToggle from '../components/ThemeToggle';
 import { useLanguage } from '../i18n/LanguageContext';
 import './ForgotPasswordPage.css';
 
@@ -62,7 +63,10 @@ function ForgotPasswordPage() {
 
   return (
     <div className="forgot-password-container">
-      <LanguageSwitch className="auth-language-switch" />
+      <div className="auth-top-controls">
+        <LanguageSwitch className="auth-language-switch" />
+        <ThemeToggle className="auth-theme-toggle" />
+      </div>
 
       <div className="forgot-shell">
         <section className="forgot-hero">

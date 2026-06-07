@@ -1,17 +1,84 @@
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   font-family: 'Inter', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   font-size: 16px;
-  --bg: #090d14;
+  --bg: #f4fbfb;
+  --surface: rgba(255, 255, 255, 0.94);
+  --surface-soft: rgba(0, 109, 103, 0.06);
+  --text: #17212f;
+  --muted: #667789;
+  --border: rgba(13, 92, 95, 0.1);
+  --primary: #00d4ff;
+  --accent: #ffd166;
+  --success: #1f9b62;
+  --danger: #d23248;
+  --control-bg: rgba(255, 255, 255, 0.78);
+  --control-border: rgba(13, 92, 95, 0.12);
+  --auth-sky-top: #e9f3ff;
+  --auth-sky-mid: #75b8ef;
+  --auth-sky-low: #0b5367;
+  --auth-hill-1: rgba(15, 122, 154, 0.72);
+  --auth-hill-2: rgba(80, 158, 211, 0.54);
+  --auth-hill-3: rgba(5, 42, 55, 0.95);
+  --auth-cloud: rgba(255, 255, 255, 0.64);
+  --auth-glass-top: rgba(247, 250, 255, 0.72);
+  --auth-glass-bottom: rgba(12, 55, 68, 0.72);
+  --auth-card-border: rgba(255, 255, 255, 0.28);
+  --auth-shadow: rgba(8, 38, 55, 0.3);
+  --auth-card-text: #eff7ff;
+  --auth-card-title: #081124;
+  --auth-hero-text: #f6fbff;
+  --auth-hero-muted: rgba(246, 251, 255, 0.84);
+  --auth-label: #071328;
+  --auth-line: rgba(7, 19, 40, 0.42);
+  --auth-muted: rgba(240, 248, 255, 0.82);
+  --auth-link: #f4fbff;
+  --auth-accent: #071328;
+  --auth-accent-2: #00d4ff;
+  --auth-pill-bg: rgba(255, 255, 255, 0.2);
+  --auth-feature-bg: rgba(255, 255, 255, 0.14);
+  --auth-feature-border: rgba(255, 255, 255, 0.18);
+  --auth-button-top: #9dccff;
+  --auth-button-bottom: #65a8f4;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #08111b;
   --surface: rgba(13, 22, 37, 0.96);
   --surface-soft: rgba(255, 255, 255, 0.05);
   --text: #edf2ff;
   --muted: #8aa0b8;
   --border: rgba(255, 255, 255, 0.08);
-  --primary: #00d4ff;
-  --accent: #ffd166;
   --success: #6be6a1;
   --danger: #ff6b7c;
+  --control-bg: rgba(7, 18, 28, 0.62);
+  --control-border: rgba(255, 255, 255, 0.14);
+  --auth-sky-top: #1f2a44;
+  --auth-sky-mid: #145d7c;
+  --auth-sky-low: #031d27;
+  --auth-hill-1: rgba(13, 95, 118, 0.76);
+  --auth-hill-2: rgba(46, 105, 160, 0.48);
+  --auth-hill-3: rgba(2, 18, 27, 0.98);
+  --auth-cloud: rgba(242, 245, 255, 0.18);
+  --auth-glass-top: rgba(238, 245, 255, 0.22);
+  --auth-glass-bottom: rgba(4, 23, 32, 0.82);
+  --auth-card-border: rgba(255, 255, 255, 0.13);
+  --auth-shadow: rgba(0, 0, 0, 0.46);
+  --auth-card-text: #edf7ff;
+  --auth-card-title: #f7fbff;
+  --auth-hero-text: #f6fbff;
+  --auth-hero-muted: rgba(232, 242, 255, 0.84);
+  --auth-label: #f4fbff;
+  --auth-line: rgba(244, 251, 255, 0.48);
+  --auth-muted: rgba(232, 242, 255, 0.78);
+  --auth-link: #dff4ff;
+  --auth-accent: #ffd166;
+  --auth-pill-bg: rgba(255, 255, 255, 0.08);
+  --auth-feature-bg: rgba(255, 255, 255, 0.08);
+  --auth-feature-border: rgba(255, 255, 255, 0.12);
+  --auth-button-top: #8bc2ff;
+  --auth-button-bottom: #347bd6;
 }
 
 * {
@@ -27,9 +94,7 @@ body,
 body {
   margin: 0;
   min-height: 100vh;
-  background: radial-gradient(circle at top left, rgba(0, 212, 255, 0.16), transparent 22%),
-    radial-gradient(circle at 85% 10%, rgba(255, 209, 102, 0.12), transparent 20%),
-    linear-gradient(180deg, #08111b 0%, #05070c 100%);
+  background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -67,8 +132,8 @@ input,
 textarea,
 select {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
   color: var(--text);
   border-radius: 20px;
   padding: 14px 16px;
@@ -145,9 +210,9 @@ a:hover {
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--control-bg);
   color: var(--text);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--control-border);
 }
 
 .btn-primary:hover,

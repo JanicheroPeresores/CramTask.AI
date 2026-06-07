@@ -7,6 +7,7 @@ import CreateAssignmentModal from '../components/CreateAssignmentModal';
 import GoogleClassroomConnect from '../components/GoogleClassroomConnect';
 import GoogleClassroomAssignments from '../components/GoogleClassroomAssignments';
 import LanguageSwitch from '../components/LanguageSwitch';
+import ThemeToggle from '../components/ThemeToggle';
 import { useLanguage } from '../i18n/LanguageContext';
 import { sendDashboardAssistantMessage } from '../utils/dashboardAssistant';
 import './DashboardPage.css';
@@ -367,6 +368,7 @@ function DashboardPage({ user, onLogout }) {
         </div>
         <div className="dashboard-header-actions">
           <LanguageSwitch className="dashboard-language-switch" />
+          <ThemeToggle />
           <button onClick={handleLogout} className="btn-secondary logout-btn">
             <DashboardIcon name="logout" size={17} />
             {t('common.logout')}

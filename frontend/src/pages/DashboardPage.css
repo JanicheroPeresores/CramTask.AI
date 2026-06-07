@@ -7,6 +7,14 @@
   color: #17212f;
 }
 
+:root[data-theme='dark'] .dashboard-container {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(0, 212, 255, 0.16), transparent 24%),
+    radial-gradient(circle at 92% 10%, rgba(255, 209, 102, 0.1), transparent 22%),
+    linear-gradient(180deg, #08111b 0%, #05070c 100%);
+  color: #edf2ff;
+}
+
 .dashboard-container button,
 .dashboard-container input,
 .dashboard-container textarea {
@@ -156,6 +164,11 @@
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
+:root[data-theme='dark'] .dashboard-header {
+  background: rgba(8, 12, 20, 0.94);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
 .dashboard-header.hidden {
   transform: translateY(-110%);
   opacity: 0;
@@ -203,6 +216,14 @@
   line-height: 1.2;
   font-weight: 800;
   overflow-wrap: anywhere;
+}
+
+:root[data-theme='dark'] .dashboard-header-title,
+:root[data-theme='dark'] .panel-head h2,
+:root[data-theme='dark'] .dashboard-panel h2,
+:root[data-theme='dark'] .summary-card h3,
+:root[data-theme='dark'] .assistant-dock-head h2 {
+  color: #f3f8ff;
 }
 
 .dashboard-header-actions {
@@ -262,6 +283,14 @@
   box-shadow: 0 20px 60px rgba(30, 73, 82, 0.08);
 }
 
+:root[data-theme='dark'] .summary-card,
+:root[data-theme='dark'] .dashboard-panel,
+:root[data-theme='dark'] .assistant-dock.is-open {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(10, 16, 28, 0.94);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
+}
+
 .summary-card {
   position: relative;
   min-height: 158px;
@@ -307,6 +336,12 @@
   margin: 10px 0 0;
   color: #68798a;
   line-height: 1.48;
+}
+
+:root[data-theme='dark'] .summary-card p,
+:root[data-theme='dark'] .panel-eyebrow,
+:root[data-theme='dark'] .assistant-message p {
+  color: #c7d7ec;
 }
 
 .summary-card-figure {
@@ -503,6 +538,11 @@
   background: #f7fbfb;
 }
 
+:root[data-theme='dark'] .assistant-message {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .assistant-message.user {
   background: rgba(0, 212, 255, 0.12);
   border-color: rgba(0, 139, 134, 0.14);
@@ -559,6 +599,12 @@
   border-radius: 8px;
   background: #ffffff;
   color: #17212f;
+}
+
+:root[data-theme='dark'] .assistant-input-box textarea {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: #edf2ff;
 }
 
 .assistant-send-btn {
@@ -619,6 +665,15 @@
   color: #073b3a;
 }
 
+:root[data-theme='dark'] .assistant-minimize-btn,
+:root[data-theme='dark'] .chat-toggle-button,
+:root[data-theme='dark'] .logout-btn,
+:root[data-theme='dark'] .dashboard-bottom-nav a {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: #edf2ff;
+}
+
 .chat-toggle-button {
   min-width: 84px;
   min-height: 46px;
@@ -660,6 +715,11 @@
   border-top: 1px solid rgba(10, 72, 77, 0.08);
   box-shadow: 0 -16px 36px rgba(30, 73, 82, 0.1);
   backdrop-filter: blur(16px);
+}
+
+:root[data-theme='dark'] .dashboard-bottom-nav {
+  background: rgba(8, 12, 20, 0.98);
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 .dashboard-bottom-nav a,

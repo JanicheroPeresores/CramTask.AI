@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import LanguageSwitch from '../components/LanguageSwitch';
+import ThemeToggle from '../components/ThemeToggle';
 import { useLanguage } from '../i18n/LanguageContext';
 import './SignupPage.css';
 
@@ -55,7 +56,10 @@ function SignupPage({ onSignup }) {
 
   return (
     <div className="signup-container">
-      <LanguageSwitch className="auth-language-switch" />
+      <div className="auth-top-controls">
+        <LanguageSwitch className="auth-language-switch" />
+        <ThemeToggle className="auth-theme-toggle" />
+      </div>
       <div className="signup-shell">
         <section className="signup-hero">
           <span className="signup-hero-eyebrow">CramTask.AI</span>

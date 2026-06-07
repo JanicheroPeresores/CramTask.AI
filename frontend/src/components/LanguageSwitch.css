@@ -4,9 +4,9 @@
   gap: 10px;
   padding: 10px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.05);
-  color: #eef8ff;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--text);
   font-size: 0.92rem;
   font-weight: 700;
   cursor: pointer;
@@ -40,7 +40,7 @@
 .language-switch-code,
 .language-switch-name,
 .language-switch-next {
-  color: #eef8ff;
+  color: var(--text);
 }
 
 .language-switch-code {
@@ -55,7 +55,7 @@
 
 .language-switch-next {
   padding-left: 8px;
-  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 1px solid var(--control-border);
   font-size: 0.75rem;
 }
 
