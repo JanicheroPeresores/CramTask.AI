@@ -76,26 +76,6 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
 
             return (
               <article key={assignment.id} className="assignment-card">
-                <div className="assignment-card-top">
-                  <span className={`assignment-chip ${priorityClass}`}>{priorityText}</span>
-                  <span className={`assignment-chip ${statusClass}`}>{statusText}</span>
-                </div>
-
-                <h3 className="assignment-card-title">{assignment.assignment_title}</h3>
-                <p className="assignment-card-course">{assignment.course}</p>
-                {assignment.subject && <p className="assignment-card-subject">{assignment.subject}</p>}
-
-                <div className="assignment-card-meta">
-                  <div>
-                    <span className="meta-label">{t('assignments.dueDate')}</span>
-                    <span>{formatDate(assignment.due_date)}</span>
-                  </div>
-                  <div>
-                    <span className="meta-label">{t('assignments.subject')}</span>
-                    <span>{assignment.subject || '-'}</span>
-                  </div>
-                </div>
-
                 <div className="assignment-card-actions">
                   <button
                     type="button"
@@ -115,6 +95,22 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
                   >
                     Delete
                   </button>
+                </div>
+
+                <h3 className="assignment-card-title">{assignment.assignment_title}</h3>
+                <p className="assignment-card-course">{assignment.course}</p>
+                {assignment.subject && <p className="assignment-card-subject">{assignment.subject}</p>}
+
+                <div className="assignment-card-meta">
+                  <div>
+                    <span className="meta-label">{t('assignments.dueDate')}</span>
+                    <span>{formatDate(assignment.due_date)}</span>
+                  </div>
+                </div>
+
+                <div className="assignment-card-top">
+                  <span className={`assignment-chip ${priorityClass}`}>{priorityText}</span>
+                  <span className={`assignment-chip ${statusClass}`}>{statusText}</span>
                 </div>
               </article>
             );

@@ -32,13 +32,16 @@
 
 .table-wrapper .assignment-card {
   display: grid;
-  gap: 12px;
-  padding: 16px;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto auto auto;
+  gap: 8px;
+  padding: 12px;
   border: 1px solid rgba(13, 92, 95, 0.09);
   border-radius: 8px;
   background: #ffffff;
   box-shadow: 0 12px 28px rgba(30, 73, 82, 0.06);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
+  position: relative;
 }
 
 :root[data-theme='dark'] .table-wrapper .assignment-card {
@@ -51,67 +54,41 @@
   box-shadow: 0 18px 34px rgba(30, 73, 82, 0.1);
 }
 
-.assignment-card-top {
+.assignment-card-actions {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.assignment-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
-  font-size: 0.68rem;
-  font-weight: 850;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.status-pending,
-.priority-medium {
-  background: rgba(255, 209, 102, 0.24);
-  color: #8a6500;
-  border: 1px solid rgba(255, 209, 102, 0.36);
-}
-
-.status-submitted,
-.priority-low {
-  background: rgba(0, 212, 255, 0.12);
-  color: #007c76;
-  border: 1px solid rgba(0, 139, 134, 0.18);
-}
-
-.status-graded,
-.priority-high {
-  background: rgba(255, 107, 124, 0.12);
-  color: #a4273b;
-  border: 1px solid rgba(255, 107, 124, 0.22);
+  flex-direction: column;
+  gap: 6px;
+  align-items: stretch;
+  grid-column: 1;
+  grid-row: 1 / 5;
 }
 
 .assignment-card-title {
   margin: 0;
   color: #17212f;
-  font-size: 1.02rem;
-  line-height: 1.25;
+  font-size: 0.95rem;
+  line-height: 1.2;
   font-weight: 850;
   overflow-wrap: anywhere;
+  grid-column: 2;
+  grid-row: 1;
 }
 
 :root[data-theme='dark'] .assignment-card-title {
   color: #f7fbff;
 }
 
-.assignment-card-course,
-.assignment-card-subject {
+.assignment-card-course {
   margin: 0;
   color: #5f7082;
-  line-height: 1.45;
-  font-size: 0.9rem;
+  line-height: 1.35;
+  font-size: 0.8rem;
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.assignment-card-subject {
+  display: none;
 }
 
 :root[data-theme='dark'] .assignment-card-course,
@@ -121,10 +98,14 @@
 }
 
 .assignment-card-meta {
-  display: grid;
-  gap: 8px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(13, 92, 95, 0.08);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 0;
+  border-top: none;
+  grid-column: 2;
+  grid-row: 3;
+  align-items: center;
 }
 
 .assignment-card-meta div {
@@ -132,7 +113,8 @@
   justify-content: space-between;
   gap: 10px;
   color: #435162;
-  font-size: 0.84rem;
+  font-size: 0.78rem;
+  flex: 0 0 auto;
 }
 
 .meta-label {
@@ -141,25 +123,28 @@
   font-weight: 800;
 }
 
-.assignment-card-actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
+.assignment-card-top {
+  display: flex;
   align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  flex-wrap: wrap;
+  grid-column: 2;
+  grid-row: 4;
 }
 
 .assignment-card-actions button {
-  min-height: 38px;
-  padding: 0 12px;
-  border-radius: 8px;
+  min-height: 32px;
+  padding: 6px 8px;
+  border-radius: 6px;
   border: 1px solid rgba(13, 92, 95, 0.1);
-  font-size: 0.83rem;
+  font-size: 0.7rem;
   font-weight: 850;
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 4px;
   white-space: nowrap;
 }
 
@@ -197,7 +182,35 @@
     padding: 10px;
   }
 
-  .assignment-card-actions {
+  .table-wrapper .assignment-card {
     grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+  }
+
+  .assignment-card-actions {
+    grid-column: 1;
+    grid-row: 5;
+    flex-direction: row;
+    gap: 6px;
+  }
+
+  .assignment-card-title {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .assignment-card-course {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .assignment-card-meta {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .assignment-card-top {
+    grid-column: 1;
+    grid-row: 4;
   }
 }
