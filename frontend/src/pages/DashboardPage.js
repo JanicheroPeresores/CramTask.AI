@@ -11,6 +11,69 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { sendDashboardAssistantMessage } from '../utils/dashboardAssistant';
 import './DashboardPage.css';
 
+const DashboardIcon = ({ name, size = 18 }) => {
+  const icons = {
+    tasks: (
+      <>
+        <path d="M8 6h11M8 12h11M8 18h11" />
+        <path d="M4 6h.01M4 12h.01M4 18h.01" />
+      </>
+    ),
+    assistant: (
+      <>
+        <path d="M5 8a7 7 0 0 1 14 0v5a5 5 0 0 1-5 5h-2" />
+        <path d="M9 18H6a3 3 0 0 1-3-3v-3h4v4" />
+        <path d="M17 12h4v3a3 3 0 0 1-3 3h-1" />
+      </>
+    ),
+    classroom: (
+      <>
+        <path d="M4 6h16v12H4z" />
+        <path d="M8 10h8M8 14h5" />
+      </>
+    ),
+    plus: <path d="M12 5v14M5 12h14" />,
+    logout: (
+      <>
+        <path d="M10 17l5-5-5-5" />
+        <path d="M15 12H3" />
+        <path d="M21 5v14" />
+      </>
+    ),
+    check: <path d="M20 6 9 17l-5-5" />,
+    alert: (
+      <>
+        <path d="M12 8v5" />
+        <path d="M12 17h.01" />
+        <path d="M10.3 4.2 2.6 17.6A1.6 1.6 0 0 0 4 20h16a1.6 1.6 0 0 0 1.4-2.4L13.7 4.2a1.6 1.6 0 0 0-3.4 0z" />
+      </>
+    ),
+    chart: (
+      <>
+        <path d="M4 19V5" />
+        <path d="M4 19h16" />
+        <path d="M8 16v-5M12 16V8M16 16v-8" />
+      </>
+    ),
+  };
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {icons[name]}
+    </svg>
+  );
+};
+
 function DashboardPage({ user, onLogout }) {
   const { language, t } = useLanguage();
   const [assignments, setAssignments] = useState([]);
@@ -282,6 +345,7 @@ function DashboardPage({ user, onLogout }) {
         <div className="dashboard-header-actions">
           <LanguageSwitch className="dashboard-language-switch" />
           <button onClick={handleLogout} className="btn-secondary logout-btn">
+            <DashboardIcon name="logout" size={17} />
             {t('common.logout')}
           </button>
         </div>
@@ -291,9 +355,18 @@ function DashboardPage({ user, onLogout }) {
         <aside className="dashboard-sidebar">
           <div className="sidebar-title">{t('dashboard.sidebarLabel')}</div>
           <nav className="sidebar-nav">
-            <a href="#assignments">{t('dashboard.navTasks')}</a>
-            <a href="#assistant">{t('dashboard.navAssistant')}</a>
-            <a href="#classroom">{t('dashboard.navClassroom')}</a>
+            <a href="#assignments">
+              <span className="nav-icon"><DashboardIcon name="tasks" /></span>
+              <span>{t('dashboard.navTasks')}</span>
+            </a>
+            <a href="#assistant">
+              <span className="nav-icon"><DashboardIcon name="assistant" /></span>
+              <span>{t('dashboard.navAssistant')}</span>
+            </a>
+            <a href="#classroom">
+              <span className="nav-icon"><DashboardIcon name="classroom" /></span>
+              <span>{t('dashboard.navClassroom')}</span>
+            </a>
           </nav>
           <button
             type="button"
@@ -303,9 +376,7 @@ function DashboardPage({ user, onLogout }) {
             title={t('dashboard.create')}
           >
             <span className="create-icon" aria-hidden>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 5v14M5 12h14" stroke="#07121b" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <DashboardIcon name="plus" size={16} />
             </span>
             <span className="create-label">{t('dashboard.create')}</span>
           </button>
@@ -316,9 +387,7 @@ function DashboardPage({ user, onLogout }) {
             <div className="summary-card summary-card-primary">
               <div className="summary-card-figure">
                 <div className="summary-icon" aria-hidden>
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 7h18M3 12h12M3 17h18" stroke="#07121b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                  <DashboardIcon name="chart" size={28} />
                 </div>
                 <div className="summary-progress">
                   {totalAssignments > 0 ? (
@@ -340,11 +409,13 @@ function DashboardPage({ user, onLogout }) {
               )}
             </div>
             <div className="summary-card">
+              <div className="summary-mini-icon"><DashboardIcon name="check" size={18} /></div>
               <p className="summary-card-label">Completed</p>
               <h3>{completedAssignments}</h3>
               <p>{t('common.submitted')}</p>
             </div>
             <div className="summary-card">
+              <div className="summary-mini-icon summary-mini-icon--alert"><DashboardIcon name="alert" size={18} /></div>
               <p className="summary-card-label">Overdue</p>
               <h3>{overdueAssignments}</h3>
               <p>{t('dashboard.quickOverdue')}</p>
@@ -362,7 +433,7 @@ function DashboardPage({ user, onLogout }) {
               <GoogleClassroomConnect onSync={() => setGoogleClassroomRefresh((prev) => prev + 1)} />
             </section>
 
-            <section className="dashboard-panel dashboard-panel--wide">
+            <section id="assignments" className="dashboard-panel dashboard-panel--wide">
               <div className="panel-head">
                 <div>
                   <p className="panel-eyebrow">{t('dashboard.assignmentsEyebrow')}</p>
@@ -386,7 +457,7 @@ function DashboardPage({ user, onLogout }) {
               )}
             </section>
 
-            <section className="dashboard-panel dashboard-panel--narrow">
+            <section id="assistant" className="dashboard-panel dashboard-panel--narrow">
               <div className="panel-head panel-head--compact">
                 <div>
                   <p className="panel-eyebrow">{t('dashboard.assistantEyebrow')}</p>
@@ -472,7 +543,10 @@ function DashboardPage({ user, onLogout }) {
       <nav className="dashboard-bottom-nav">
         <a href="#assignments">{t('dashboard.navTasks')}</a>
         <a href="#assistant">{t('dashboard.navAssistant')}</a>
-        <button type="button" onClick={() => setShowModal(true)}>{t('dashboard.create')}</button>
+        <button type="button" onClick={() => setShowModal(true)}>
+          <DashboardIcon name="plus" size={16} />
+          {t('dashboard.create')}
+        </button>
       </nav>
 
       <button
@@ -482,9 +556,7 @@ function DashboardPage({ user, onLogout }) {
         aria-label={t('dashboard.create')}
         title={t('dashboard.create')}
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-          <path d="M12 5v14M5 12h14" stroke="#07121b" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        <DashboardIcon name="plus" size={20} />
         <span className="fab-label">{t('dashboard.create')}</span>
       </button>
 
