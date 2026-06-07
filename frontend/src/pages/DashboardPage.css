@@ -427,6 +427,62 @@
   background: linear-gradient(90deg, #ff7a6b, #ff5064);
 }
 
+/* Combined summary card styles */
+.summary-card-combined {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.summary-mini-icon--combined {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  display: grid;
+  place-items: center;
+}
+
+.combined-badges {
+  display: flex;
+  gap: 6px;
+}
+
+.combined-badges .badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+
+.badge-completed {
+  background: linear-gradient(90deg, #37dc87, #2fbf74);
+}
+
+.badge-overdue {
+  background: linear-gradient(90deg, #ff7a6b, #ff5064);
+}
+
+.combined-content {
+  flex: 1 1 auto;
+}
+
+.combined-row {
+  display: flex;
+  gap: 18px;
+}
+
+.combined-col .summary-card-label {
+  margin-bottom: 6px;
+}
+
+.combined-col h3 {
+  margin: 0;
+}
+
 .dashboard-sidebar {
   display: none;
 }
@@ -775,7 +831,7 @@
 
 @media (min-width: 980px) {
   .dashboard-content {
-    grid-template-columns: 230px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     padding: 0 390px 52px 230px;
   }
 

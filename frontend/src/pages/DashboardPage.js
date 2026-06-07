@@ -445,17 +445,27 @@ function DashboardPage({ user, onLogout }) {
                 <p>{completedAssignments} {t('common.submitted')} - {overdueAssignments} {t('dashboard.quickOverdue')}</p>
               )}
             </div>
-            <div className="summary-card">
-              <div className="summary-mini-icon"><DashboardIcon name="check" size={18} /></div>
-              <p className="summary-card-label">Completed</p>
-              <h3>{completedAssignments}</h3>
-              <p>{t('common.submitted')}</p>
-            </div>
-            <div className="summary-card">
-              <div className="summary-mini-icon summary-mini-icon--alert"><DashboardIcon name="alert" size={18} /></div>
-              <p className="summary-card-label">Overdue</p>
-              <h3>{overdueAssignments}</h3>
-              <p>{t('dashboard.quickOverdue')}</p>
+            <div className="summary-card summary-card-combined">
+              <div className="summary-mini-icon summary-mini-icon--combined" aria-hidden>
+                <div className="combined-badges">
+                  <div className="badge badge-completed"><DashboardIcon name="check" size={14} /></div>
+                  <div className="badge badge-overdue"><DashboardIcon name="alert" size={14} /></div>
+                </div>
+              </div>
+              <div className="combined-content">
+                <div className="combined-row">
+                  <div className="combined-col">
+                    <p className="summary-card-label">Completed</p>
+                    <h3>{completedAssignments}</h3>
+                    <p>{t('common.submitted')}</p>
+                  </div>
+                  <div className="combined-col">
+                    <p className="summary-card-label">Overdue</p>
+                    <h3>{overdueAssignments}</h3>
+                    <p>{t('dashboard.quickOverdue')}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
