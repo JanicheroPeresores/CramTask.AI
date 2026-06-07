@@ -402,6 +402,31 @@
   transition: width 0.45s ease;
 }
 
+/* Compact combined segments for completed / overdue counts */
+.mini-progress-icons {
+  margin-top: 10px;
+  width: 120px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.mini-progress-icons .mini-segment {
+  height: 100%;
+  transition: width 0.45s ease;
+}
+
+.mini-progress-icons .mini-completed {
+  background: linear-gradient(90deg, #37dc87, #2fbf74);
+}
+
+.mini-progress-icons .mini-overdue {
+  background: linear-gradient(90deg, #ff7a6b, #ff5064);
+}
+
 .dashboard-sidebar {
   display: none;
 }
@@ -751,18 +776,21 @@
 @media (min-width: 980px) {
   .dashboard-content {
     grid-template-columns: 230px minmax(0, 1fr);
-    padding: 0 390px 52px 0;
+    padding: 0 390px 52px 230px;
   }
 
   .dashboard-sidebar {
-    position: sticky;
-    top: 0;
-    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 72px;
+    height: calc(100vh - 72px);
+    width: 230px;
     display: flex;
     flex-direction: column;
     padding: 24px 16px;
     background: linear-gradient(180deg, #073b3a 0%, #042f2e 100%);
     box-shadow: 18px 0 48px rgba(7, 59, 58, 0.12);
+    z-index: 30;
   }
 
   .dashboard-main {

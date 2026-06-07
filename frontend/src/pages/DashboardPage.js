@@ -423,6 +423,18 @@ function DashboardPage({ user, onLogout }) {
                       />
                     </div>
                   ) : null}
+                  {totalAssignments > 0 ? (
+                    <div className="mini-progress-icons" aria-hidden>
+                      <div
+                        className="mini-segment mini-completed"
+                        style={{ width: `${Math.round((completedAssignments / Math.max(1, totalAssignments)) * 100)}%` }}
+                      />
+                      <div
+                        className="mini-segment mini-overdue"
+                        style={{ width: `${Math.round((overdueAssignments / Math.max(1, totalAssignments)) * 100)}%` }}
+                      />
+                    </div>
+                  ) : null}
                 </div>
               </div>
               <p className="summary-card-label">{t('dashboard.assignmentsTitle')}</p>
