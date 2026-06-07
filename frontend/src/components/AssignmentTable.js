@@ -113,7 +113,7 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
                     onClick={() => onDelete(assignment.id)}
                     title={t('assignments.deleteTitle')}
                   >
-                    {t('assignments.action')}
+                    Delete
                   </button>
                 </div>
               </article>

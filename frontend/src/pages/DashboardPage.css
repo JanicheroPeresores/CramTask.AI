@@ -215,10 +215,11 @@
 
 .logout-btn,
 .dashboard-bottom-nav button,
-.floating-action-button,
 .create-btn,
 .mobile-action,
-.assistant-send-btn {
+.assistant-send-btn,
+.assistant-minimize-btn,
+.chat-toggle-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -236,7 +237,7 @@
 .dashboard-content {
   width: min(1340px, 100%);
   margin: 0 auto;
-  padding: 22px 18px 98px;
+  padding: 22px 18px 128px;
   display: grid;
   gap: 18px;
 }
@@ -436,6 +437,15 @@
   scroll-margin-top: 96px;
 }
 
+.dashboard-panel--classroom {
+  overflow: hidden;
+}
+
+.classroom-stack {
+  display: grid;
+  gap: 14px;
+}
+
 .panel-head {
   display: flex;
   align-items: flex-start;
@@ -475,13 +485,13 @@
 
 .assistant-card {
   display: grid;
-  gap: 16px;
+  gap: 14px;
 }
 
 .assistant-messages {
   display: grid;
-  gap: 12px;
-  max-height: 400px;
+  gap: 10px;
+  max-height: 320px;
   overflow-y: auto;
   padding-right: 4px;
 }
@@ -543,7 +553,7 @@
 }
 
 .assistant-input-box textarea {
-  min-height: 104px;
+  min-height: 86px;
   padding: 14px;
   border: 1px solid rgba(0, 109, 103, 0.16);
   border-radius: 8px;
@@ -560,19 +570,64 @@
   font-weight: 850;
 }
 
-.chat-toggle-button-container {
-  display: grid;
-  place-items: center;
-  padding: 20px 0;
+.assistant-dock {
+  position: fixed;
+  right: 18px;
+  bottom: calc(82px + env(safe-area-inset-bottom));
+  z-index: 45;
+}
+
+.assistant-dock.is-open {
+  width: min(360px, calc(100vw - 24px));
+  max-height: calc(100vh - 112px);
+  padding: 16px;
+  border: 1px solid rgba(13, 92, 95, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 22px 60px rgba(30, 73, 82, 0.18);
+  backdrop-filter: blur(16px);
+  overflow: auto;
+}
+
+.assistant-dock.is-minimized {
+  width: auto;
+}
+
+.assistant-dock-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.assistant-dock-head h2 {
+  margin: 0;
+  color: #17212f;
+  font-size: 1.05rem;
+  font-weight: 850;
+}
+
+.assistant-minimize-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  flex: 0 0 auto;
+  border: 1px solid rgba(0, 109, 103, 0.12);
+  border-radius: 8px;
+  background: #f4fbfb;
+  color: #073b3a;
 }
 
 .chat-toggle-button {
-  min-width: 112px;
+  min-width: 84px;
   min-height: 46px;
+  padding: 0 14px;
   border: 1px solid rgba(0, 109, 103, 0.16);
-  border-radius: 8px;
-  background: #eef9f9;
+  border-radius: 999px;
+  background: #ffffff;
   color: #073b3a;
+  box-shadow: 0 18px 38px rgba(30, 73, 82, 0.16);
 }
 
 .alert {
@@ -633,28 +688,10 @@
   color: #052c31;
 }
 
-.floating-action-button {
-  position: fixed;
-  right: 18px;
-  bottom: calc(78px + env(safe-area-inset-bottom));
-  z-index: 35;
-  min-height: 48px;
-  padding: 0 16px;
-  border-radius: 999px;
-  background: #ffd166;
-  color: #052c31;
-  box-shadow: 0 18px 38px rgba(144, 107, 13, 0.22);
-}
-
-.fab-label {
-  color: inherit;
-  font-weight: 850;
-}
-
 @media (min-width: 980px) {
   .dashboard-content {
     grid-template-columns: 230px minmax(0, 1fr);
-    padding: 0 18px 52px 0;
+    padding: 0 390px 52px 0;
   }
 
   .dashboard-sidebar {
@@ -677,27 +714,34 @@
   }
 
   .dashboard-panel--wide {
-    grid-column: span 8;
+    grid-column: 1 / -1;
   }
 
-  .dashboard-panel--narrow {
-    grid-column: span 4;
-  }
-
-  .dashboard-bottom-nav,
-  .floating-action-button {
+  .dashboard-bottom-nav {
     display: none;
+  }
+
+  .assistant-dock {
+    top: 92px;
+    bottom: 22px;
+  }
+
+  .assistant-dock.is-open {
+    width: 350px;
+    max-height: none;
+  }
+
+  .assistant-messages {
+    max-height: calc(100vh - 430px);
+    min-height: 180px;
   }
 }
 
 @media (min-width: 1180px) {
   .dashboard-panel--wide {
-    grid-column: span 8;
+    grid-column: 1 / -1;
   }
 
-  .dashboard-panel--narrow {
-    grid-column: span 4;
-  }
 }
 
 @media (max-width: 979px) {
@@ -732,6 +776,21 @@
 
   .dashboard-content {
     padding: 16px 12px 98px;
+  }
+
+  .assistant-dock {
+    right: 12px;
+    left: 12px;
+    bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+
+  .assistant-dock.is-open {
+    width: auto;
+    max-height: min(72vh, 560px);
+  }
+
+  .assistant-dock.is-minimized {
+    left: auto;
   }
 
   .dashboard-summary,

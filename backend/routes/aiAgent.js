@@ -96,6 +96,57 @@ function buildGeminiContent(prompt) {
   };
 }
 
+function normalizeAssignmentContext(assignments) {
+  if (!Array.isArray(assignments)) return [];
+
+  return assignments
+    .slice(0, 25)
+    .map((assignment) => ({
+      title: safeTrim(assignment.title || assignment.assignment_title),
+      course: safeTrim(assignment.course),
+      subject: safeTrim(assignment.subject),
+      dueDate: safeTrim(assignment.dueDate || assignment.due_date),
+      priority: safeTrim(assignment.priority),
+      status: safeTrim(assignment.status || assignment.submission_status),
+      description: safeTrim(assignment.description).slice(0, 240),
+    }))
+    .filter((assignment) => assignment.title || assignment.course || assignment.dueDate);
+}
+
+function buildAssignmentContextText(assignments) {
+  if (!assignments.length) {
+    return 'No saved assignments were provided from the dashboard yet.';
+  }
+
+  const now = new Date();
+  const rows = assignments.map((assignment, index) => {
+    const due = assignment.dueDate ? new Date(assignment.dueDate) : null;
+    const daysUntilDue =
+      due && !Number.isNaN(due.getTime())
+        ? Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+        : null;
+
+    const timing =
+      daysUntilDue === null
+        ? 'no due date'
+        : daysUntilDue < 0
+        ? `${Math.abs(daysUntilDue)} day(s) overdue`
+        : daysUntilDue === 0
+        ? 'due today'
+        : `due in ${daysUntilDue} day(s)`;
+
+    return `${index + 1}. ${assignment.title || 'Untitled'} | course: ${
+      assignment.course || 'not set'
+    } | subject: ${assignment.subject || 'not set'} | due: ${
+      assignment.dueDate || 'not set'
+    } (${timing}) | priority: ${assignment.priority || 'not set'} | status: ${
+      assignment.status || 'not set'
+    }${assignment.description ? ` | notes: ${assignment.description}` : ''}`;
+  });
+
+  return rows.join('\n');
+}
+
 function extractGeminiText(data) {
   // Typical response: { candidates: [{ content: { parts: [{ text: '...' }]}}]}
   const text =
@@ -169,7 +220,8 @@ async function callGemini({ apiKey, prompt, temperature = 0.7, maxOutputTokens =
 
 router.post('/dashboard-assistant', authMiddleware, async (req, res) => {
   try {
-    const { messages = [], userName = 'Student', language = 'en' } = req.body || {};
+    const { messages = [], userName = 'Student', language = 'en', assignments = [] } = req.body || {};
+    const assignmentContext = normalizeAssignmentContext(assignments);
 
     const safeMessages = Array.isArray(messages)
       ? messages
@@ -188,9 +240,13 @@ router.post('/dashboard-assistant', authMiddleware, async (req, res) => {
 
     const system = `You are the AI assistant inside Assignment Tracker.
 Be friendly, conversational, and useful. You can help with assignments, study planning, school topics, basic math, writing, explanations, brainstorming, and general student questions.
+You can see the user's current saved dashboard assignments below. When the user asks what is posted, what is nearly due, what to do first, or asks for planning, use this assignment context before giving advice.
+Treat "nearly due" as due today, overdue, or due within the next 3 days unless the user gives a different window.
 Answer the user's actual question directly, even when it is not about assignments. For math questions, show the key steps and the final answer.
 Keep replies short by default (3-6 sentences), practical, and easy to understand. If the user asks for help planning, propose a concrete first action.
 ${responseLanguage}`;
+
+    const assignmentContextText = buildAssignmentContextText(assignmentContext);
 
     // Gemini doesn't use role-based chat completions in the same way as OpenAI;
     // flatten into a single prompt.
@@ -198,7 +254,7 @@ ${responseLanguage}`;
       .map((m) => `${m.role === 'user' ? 'Student' : 'Assistant'}: ${m.content}`)
       .join('\n');
 
-    const prompt = `${system}\n\n${chatHistory ? chatHistory + '\n\n' : ''}Student name: ${safeTrim(
+    const prompt = `${system}\n\nCurrent saved assignments:\n${assignmentContextText}\n\n${chatHistory ? chatHistory + '\n\n' : ''}Student name: ${safeTrim(
       userName
     )}. Respond now:`;
 

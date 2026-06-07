@@ -10,7 +10,12 @@ const FALLBACK_REPLY_TL = {
     'Matutulungan kitang ayusin ang priorities, gawing study plan ang deadline, o hatiin ang malaking project sa susunod na tatlong steps. Ano ang ginagawa mo ngayon?',
 };
 
-export const sendDashboardAssistantMessage = async ({ messages = [], userName = 'Student', language = 'en' }) => {
+export const sendDashboardAssistantMessage = async ({
+  messages = [],
+  userName = 'Student',
+  language = 'en',
+  assignments = [],
+}) => {
   const fallback = language === 'tl' ? FALLBACK_REPLY_TL : FALLBACK_REPLY;
 
   try {
@@ -18,7 +23,7 @@ export const sendDashboardAssistantMessage = async ({ messages = [], userName = 
 
     const response = await axios.post(
       '/api/ai/dashboard-assistant',
-      { messages, userName, language },
+      { messages, userName, language, assignments },
       {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       }
