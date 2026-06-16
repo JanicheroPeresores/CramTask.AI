@@ -16,6 +16,7 @@ function ForgotPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [resetLink, setResetLink] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -27,6 +28,7 @@ function ForgotPasswordPage() {
     const verifyToken = async () => {
       setError('');
       setMessage('');
+      setResetLink('');
       setLoading(true);
 
       try {
@@ -61,11 +63,13 @@ function ForgotPasswordPage() {
     e.preventDefault();
     setError('');
     setMessage('');
+    setResetLink('');
     setLoading(true);
 
     try {
       const response = await axios.post('/api/auth/forgot-password', { email });
-      setMessage(response.data.message);
+      setMessage(translateServerMessage(response.data.message, null));
+      setResetLink(response.data.resetLink || '');
     } catch (err) {
       setError(translateServerMessage(err.response?.data?.message, 'errors.resetInstructions'));
     } finally {
@@ -77,6 +81,7 @@ function ForgotPasswordPage() {
     e.preventDefault();
     setError('');
     setMessage('');
+    setResetLink('');
     setLoading(true);
 
     if (newPassword !== confirmPassword) {
@@ -134,6 +139,13 @@ function ForgotPasswordPage() {
             <form onSubmit={handleEmailSubmit} className="forgot-password-form">
               {error && <div className="alert alert-error">{error}</div>}
               {message && <div className="alert alert-success">{message}</div>}
+              {resetLink && (
+                <div className="alert alert-success">
+                  <Link to={new URL(resetLink).pathname + new URL(resetLink).search}>
+                    Open reset link
+                  </Link>
+                </div>
+              )}
 
               <div className="form-group">
                 <label htmlFor="email">{t('auth.emailAddress')}</label>

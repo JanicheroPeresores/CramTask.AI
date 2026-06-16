@@ -1,5 +1,18 @@
 const nodemailer = require('nodemailer');
 
+const isConfiguredValue = (value) => (
+  typeof value === 'string'
+  && value.trim()
+  && !value.includes('your-email')
+  && !value.includes('your-app-password')
+);
+
+const isEmailConfigured = () => (
+  isConfiguredValue(process.env.SMTP_HOST)
+  && isConfiguredValue(process.env.SMTP_USER)
+  && isConfiguredValue(process.env.SMTP_PASS)
+);
+
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: parseInt(process.env.SMTP_PORT || '587'),
@@ -10,8 +23,19 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const buildResetLink = (toEmail, resetToken, baseUrl) => (
+  `${baseUrl}/forgot-password?token=${resetToken}`
+);
+
 const sendResetEmail = async (toEmail, resetToken, baseUrl) => {
-  const resetLink = `${baseUrl}/forgot-password?token=${resetToken}`;
+  const resetLink = buildResetLink(toEmail, resetToken, baseUrl);
+
+  if (!isEmailConfigured()) {
+    const err = new Error('Email service is not configured');
+    err.code = 'EMAIL_NOT_CONFIGURED';
+    err.resetLink = resetLink;
+    throw err;
+  }
 
   const mailOptions = {
     from: process.env.SMTP_FROM || process.env.SMTP_USER,

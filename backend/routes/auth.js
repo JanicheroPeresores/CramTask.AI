@@ -7,11 +7,24 @@ const { sendResetEmail, sendWelcomeEmail } = require('../utils/email');
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const EMAIL_ALREADY_CONNECTED_MESSAGE = 'This email is already connected to an account. Please log in using that email.';
+
+const isUniqueViolation = (err) => (
+  err?.code === '23505'
+  || err?.code === 'SQLITE_CONSTRAINT'
+  || /unique constraint|duplicate key|unique/i.test(err?.message || '')
+);
+
+const isEmailUniqueViolation = (err) => (
+  isUniqueViolation(err)
+  && /email|users_email/i.test(`${err.constraint || ''} ${err.detail || ''} ${err.message || ''}`)
+);
 
 // Sign up
 router.post('/signup', async (req, res) => {
   try {
-    const { username, password, confirmPassword } = req.body;
+    const username = req.body.username?.trim();
+    const { password, confirmPassword } = req.body;
     const email = req.body.email?.trim().toLowerCase();
 
     if (!username || !email || !password || !confirmPassword) {
@@ -30,7 +43,7 @@ router.post('/signup', async (req, res) => {
     const existingEmail = await User.findByEmail(email);
     if (existingEmail) {
       return res.status(409).json({
-        message: 'This email is already connected to an account. Please log in using that email.'
+        message: EMAIL_ALREADY_CONNECTED_MESSAGE
       });
     }
 
@@ -46,6 +59,15 @@ router.post('/signup', async (req, res) => {
     res.json({ token, user: newUser });
   } catch (err) {
     console.error('Signup error:', err);
+
+    if (isEmailUniqueViolation(err)) {
+      return res.status(409).json({ message: EMAIL_ALREADY_CONNECTED_MESSAGE });
+    }
+
+    if (isUniqueViolation(err)) {
+      return res.status(409).json({ message: 'Username already exists' });
+    }
+
     res.status(500).json({ message: 'Error creating user' });
   }
 });
@@ -128,7 +150,19 @@ router.post('/forgot-password', async (req, res) => {
     const requestBaseUrl = `${protocol}://${host}`;
     const baseUrl = process.env.FRONTEND_URL || requestBaseUrl.replace(/:5000$/, ':3000');
 
-    await sendResetEmail(email, resetToken, baseUrl);
+    try {
+      await sendResetEmail(email, resetToken, baseUrl);
+    } catch (emailErr) {
+      if (emailErr.code === 'EMAIL_NOT_CONFIGURED') {
+        console.warn('[auth/forgot-password] SMTP is not configured. Returning development reset link.');
+        return res.json({
+          message: 'Email service is not configured yet. Use the reset link below to continue.',
+          resetLink: emailErr.resetLink
+        });
+      }
+
+      throw emailErr;
+    }
 
     res.json({ message: 'Password reset link sent to your email' });
   } catch (err) {
