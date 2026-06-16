@@ -11,7 +11,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 // Sign up
 router.post('/signup', async (req, res) => {
   try {
-    const { username, email, password, confirmPassword } = req.body;
+    const { username, password, confirmPassword } = req.body;
+    const email = req.body.email?.trim().toLowerCase();
 
     if (!username || !email || !password || !confirmPassword) {
       return res.status(400).json({ message: 'All fields are required' });
@@ -28,7 +29,9 @@ router.post('/signup', async (req, res) => {
 
     const existingEmail = await User.findByEmail(email);
     if (existingEmail) {
-      return res.status(400).json({ message: 'Email already exists' });
+      return res.status(409).json({
+        message: 'This email is already connected to an account. Please log in using that email.'
+      });
     }
 
     const newUser = await User.create(username, email, password);
@@ -102,7 +105,7 @@ router.post('/login', async (req, res) => {
 // Forgot password
 router.post('/forgot-password', async (req, res) => {
   try {
-    const { email } = req.body;
+    const email = req.body.email?.trim().toLowerCase();
 
     if (!email) {
       return res.status(400).json({ message: 'Email is required' });
@@ -119,10 +122,11 @@ router.post('/forgot-password', async (req, res) => {
 
     await User.setResetToken(email, resetToken, expires.toISOString());
 
-    // Build the base URL from the request
+    // Build the frontend URL for the reset link.
     const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
     const host = req.headers['x-forwarded-host'] || req.headers.host;
-    const baseUrl = `${protocol}://${host}`;
+    const requestBaseUrl = `${protocol}://${host}`;
+    const baseUrl = process.env.FRONTEND_URL || requestBaseUrl.replace(/:5000$/, ':3000');
 
     await sendResetEmail(email, resetToken, baseUrl);
 

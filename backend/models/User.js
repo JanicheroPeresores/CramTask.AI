@@ -21,14 +21,14 @@ const User = {
 
   findByEmail: async (email) => {
     const sql = await getDatabase();
-    const rows = await sql('SELECT * FROM users WHERE email = $1', [email]);
+    const rows = await sql('SELECT * FROM users WHERE LOWER(email) = LOWER($1)', [email]);
     return rows.length > 0 ? rows[0] : null;
   },
 
   findByUsernameOrEmail: async (identifier) => {
     const sql = await getDatabase();
     const rows = await sql(
-      'SELECT * FROM users WHERE username = $1 OR email = $2',
+      'SELECT * FROM users WHERE username = $1 OR LOWER(email) = LOWER($2)',
       [identifier, identifier]
     );
     return rows.length > 0 ? rows[0] : null;

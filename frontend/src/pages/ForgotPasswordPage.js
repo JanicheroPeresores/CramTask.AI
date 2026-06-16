@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import LanguageSwitch from '../components/LanguageSwitch';
 import ThemeToggle from '../components/ThemeToggle';
@@ -8,7 +8,9 @@ import './ForgotPasswordPage.css';
 
 function ForgotPasswordPage() {
   const { t, translateServerMessage } = useLanguage();
-  const [step, setStep] = useState(1); // 1: email, 2: reset password
+  const [searchParams] = useSearchParams();
+  const resetToken = useMemo(() => searchParams.get('token') || '', [searchParams]);
+  const [step, setStep] = useState(resetToken ? 2 : 1); // 1: email, 2: reset password
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -16,6 +18,44 @@ function ForgotPasswordPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!resetToken) return;
+
+    let ignore = false;
+
+    const verifyToken = async () => {
+      setError('');
+      setMessage('');
+      setLoading(true);
+
+      try {
+        const response = await axios.get('/api/auth/verify-reset-token', {
+          params: { token: resetToken },
+        });
+
+        if (!ignore) {
+          setEmail(response.data.email || '');
+          setStep(2);
+        }
+      } catch (err) {
+        if (!ignore) {
+          setStep(1);
+          setError(translateServerMessage(err.response?.data?.message, 'errors.resetInstructions'));
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    verifyToken();
+
+    return () => {
+      ignore = true;
+    };
+  }, [resetToken, translateServerMessage]);
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
@@ -26,7 +66,6 @@ function ForgotPasswordPage() {
     try {
       const response = await axios.post('/api/auth/forgot-password', { email });
       setMessage(response.data.message);
-      setStep(2);
     } catch (err) {
       setError(translateServerMessage(err.response?.data?.message, 'errors.resetInstructions'));
     } finally {
@@ -46,9 +85,15 @@ function ForgotPasswordPage() {
       return;
     }
 
+    if (!resetToken) {
+      setError(t('errors.resetInstructions'));
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await axios.post('/api/auth/reset-password', {
-        email,
+        token: resetToken,
         newPassword,
         confirmPassword,
       });
