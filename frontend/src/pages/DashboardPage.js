@@ -12,6 +12,8 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { sendDashboardAssistantMessage } from '../utils/dashboardAssistant';
 import './DashboardPage.css';
 
+const getIntroStorageKey = (user) => `cramtask-intro-seen-${user?.id || user?.email || user?.username || 'guest'}`;
+
 const DashboardIcon = ({ name, size = 18 }) => {
   const icons = {
     tasks: (
@@ -100,7 +102,10 @@ function DashboardPage({ user, onLogout }) {
   const [assistantLoading, setAssistantLoading] = useState(false);
   const [chatOpen, setChatOpen] = useState(true);
   const [googleClassroomRefresh, setGoogleClassroomRefresh] = useState(0);
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return sessionStorage.getItem(getIntroStorageKey(user)) !== 'true';
+  });
   const navigate = useNavigate();
   const assistantScrollRef = useRef(null);
   const token = localStorage.getItem('token');
@@ -263,6 +268,11 @@ function DashboardPage({ user, onLogout }) {
     navigate('/');
   };
 
+  const dismissIntro = () => {
+    sessionStorage.setItem(getIntroStorageKey(user), 'true');
+    setShowIntro(false);
+  };
+
   const totalAssignments = assignments.length;
   const completedAssignments = assignments.filter(
     (assignment) => assignment.submission_status === 'submitted'
@@ -323,7 +333,7 @@ function DashboardPage({ user, onLogout }) {
             </div>
 
             <div className="dashboard-intro-actions">
-              <button type="button" className="intro-primary" onClick={() => setShowIntro(false)}>
+              <button type="button" className="intro-primary" onClick={dismissIntro}>
                 {t('dashboard.enterDashboard')}
               </button>
             </div>
@@ -346,7 +356,7 @@ function DashboardPage({ user, onLogout }) {
             <button
               type="button"
               className="intro-close-x"
-              onClick={() => setShowIntro(false)}
+              onClick={dismissIntro}
               aria-label={t('dashboard.closeIntro')}
               title={t('dashboard.closeIntro')}
             >

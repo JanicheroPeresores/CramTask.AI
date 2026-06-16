@@ -1,10 +1,10 @@
 .dashboard-container {
   min-height: 100vh;
   background:
-    radial-gradient(circle at 8% 0%, rgba(0, 212, 255, 0.16), transparent 24%),
-    radial-gradient(circle at 92% 10%, rgba(255, 209, 102, 0.16), transparent 22%),
-    linear-gradient(180deg, #f4fbfb 0%, #edf4f6 100%);
-  color: #17212f;
+    radial-gradient(circle at 8% 0%, rgba(115, 171, 171, 0.12), transparent 24%),
+    radial-gradient(circle at 92% 10%, rgba(180, 162, 116, 0.12), transparent 22%),
+    linear-gradient(180deg, #f3f6f4 0%, #e9efed 100%);
+  color: #22313a;
 }
 
 :root[data-theme='dark'] .dashboard-container {
@@ -29,7 +29,7 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: rgba(4, 33, 32, 0.3);
+  background: rgba(28, 48, 49, 0.24);
   backdrop-filter: blur(18px);
 }
 
@@ -39,8 +39,8 @@
   padding: 34px;
   border: 1px solid rgba(0, 109, 103, 0.12);
   border-radius: 24px;
-  background: #ffffff;
-  box-shadow: 0 26px 70px rgba(24, 64, 73, 0.22);
+  background: #f9fbf8;
+  box-shadow: 0 26px 70px rgba(48, 73, 76, 0.18);
 }
 
 .dashboard-intro-top {
@@ -53,8 +53,8 @@
   width: fit-content;
   padding: 9px 14px;
   border-radius: 999px;
-  background: rgba(255, 209, 102, 0.28);
-  color: #8a6500;
+  background: rgba(184, 157, 91, 0.18);
+  color: #755b17;
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -63,7 +63,7 @@
 
 .dashboard-intro-title {
   margin: 0;
-  color: #073b3a;
+  color: #214947;
   font-size: clamp(2rem, 4vw, 3.6rem);
   line-height: 1.06;
   font-weight: 900;
@@ -72,7 +72,7 @@
 .dashboard-intro-subtitle {
   margin: 0;
   max-width: 72ch;
-  color: #586879;
+  color: #5a686f;
   font-size: 1.03rem;
   line-height: 1.65;
 }
@@ -93,13 +93,13 @@
 }
 
 .intro-primary {
-  background: linear-gradient(135deg, #00d4ff, #35a8f4);
-  color: #07232c;
+  background: linear-gradient(135deg, #5f9f9b, #6fa8b5);
+  color: #f8fbfa;
 }
 
 .intro-secondary {
-  background: #eef7f7;
-  color: #073b3a;
+  background: #edf3f1;
+  color: #214947;
   border: 1px solid rgba(0, 109, 103, 0.14);
 }
 
@@ -114,12 +114,12 @@
   padding: 20px;
   border: 1px solid rgba(0, 109, 103, 0.1);
   border-radius: 18px;
-  background: #f6fbfb;
+  background: #f4f7f5;
 }
 
 .intro-hint-title {
   margin: 0 0 10px;
-  color: #007c76;
+  color: #4b817d;
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.13em;
@@ -128,7 +128,7 @@
 
 .intro-hint-text {
   margin: 0;
-  color: #617081;
+  color: #607077;
   font-size: 0.94rem;
   line-height: 1.6;
 }
@@ -144,8 +144,8 @@
   place-items: center;
   border: 1px solid rgba(0, 109, 103, 0.12);
   border-radius: 12px;
-  background: #f2f8f8;
-  color: #073b3a;
+  background: #eef4f2;
+  color: #214947;
 }
 
 .dashboard-header {
@@ -158,8 +158,8 @@
   gap: 16px;
   min-height: 72px;
   padding: 14px 24px;
-  background: rgba(255, 255, 255, 0.88);
-  border-bottom: 1px solid rgba(10, 72, 77, 0.08);
+  background: rgba(249, 251, 248, 0.9);
+  border-bottom: 1px solid rgba(50, 88, 90, 0.1);
   backdrop-filter: blur(18px);
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
@@ -188,7 +188,7 @@
   display: grid;
   place-items: center;
   border-radius: 12px;
-  background: linear-gradient(135deg, #00796f, #00d4ff);
+  background: linear-gradient(135deg, #3f817b, #6ea9b5);
   color: #ffffff;
   font-size: 0.86rem;
   font-weight: 900;
@@ -202,7 +202,7 @@
 
 .brand-eyebrow {
   margin: 0;
-  color: #007c76;
+  color: #4b817d;
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -211,7 +211,7 @@
 
 .dashboard-header-title {
   margin: 0;
-  color: #17212f;
+  color: #22313a;
   font-size: clamp(1rem, 2.2vw, 1.22rem);
   line-height: 1.2;
   font-weight: 800;
@@ -251,8 +251,8 @@
   min-height: 42px;
   padding: 0 14px;
   border: 1px solid rgba(0, 109, 103, 0.16);
-  background: #ffffff;
-  color: #073b3a;
+  background: #f9fbf8;
+  color: #214947;
 }
 
 .dashboard-content {
@@ -279,8 +279,8 @@
 .dashboard-panel {
   border: 1px solid rgba(13, 92, 95, 0.08);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 20px 60px rgba(30, 73, 82, 0.08);
+  background: rgba(249, 251, 248, 0.96);
+  box-shadow: 0 18px 44px rgba(48, 73, 76, 0.08);
 }
 
 :root[data-theme='dark'] .summary-card,
@@ -301,14 +301,14 @@
 .summary-card-primary {
   grid-column: span 2;
   background:
-    linear-gradient(135deg, rgba(0, 117, 111, 0.96), rgba(0, 92, 87, 0.96)),
-    #006d67;
+    linear-gradient(135deg, rgba(62, 121, 115, 0.96), rgba(48, 96, 93, 0.96)),
+    #3e7973;
   color: #ffffff;
 }
 
 .summary-card-label {
   margin: 0 0 6px;
-  color: #637282;
+  color: #66757d;
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.11em;
@@ -322,19 +322,19 @@
 
 .summary-card h3 {
   margin: 0;
-  color: #17212f;
+  color: #22313a;
   font-size: clamp(2rem, 4vw, 3rem);
   line-height: 1;
   font-weight: 850;
 }
 
 .summary-card-primary h3 {
-  color: #ffd166;
+  color: #f1d48b;
 }
 
 .summary-card p {
   margin: 10px 0 0;
-  color: #68798a;
+  color: #62737b;
   line-height: 1.48;
 }
 
@@ -374,13 +374,13 @@
   width: 38px;
   height: 38px;
   border-radius: 12px;
-  background: rgba(0, 212, 255, 0.12);
-  color: #007c76;
+  background: rgba(95, 159, 155, 0.14);
+  color: #4b817d;
 }
 
 .summary-mini-icon--alert {
-  background: rgba(255, 209, 102, 0.28);
-  color: #9b6f00;
+  background: rgba(184, 157, 91, 0.18);
+  color: #755b17;
 }
 
 .summary-progress {
@@ -398,7 +398,7 @@
 .progress-fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #ffd166, #00d4ff);
+  background: linear-gradient(90deg, #d8b96f, #6fa8b5);
   transition: width 0.45s ease;
 }
 
@@ -420,11 +420,11 @@
 }
 
 .mini-progress-icons .mini-completed {
-  background: linear-gradient(90deg, #37dc87, #2fbf74);
+  background: linear-gradient(90deg, #4f9d73, #3b8d67);
 }
 
 .mini-progress-icons .mini-overdue {
-  background: linear-gradient(90deg, #ff7a6b, #ff5064);
+  background: linear-gradient(90deg, #d06e68, #c84f5f);
 }
 
 /* Combined summary card styles */
@@ -459,11 +459,11 @@
 }
 
 .badge-completed {
-  background: linear-gradient(90deg, #37dc87, #2fbf74);
+  background: linear-gradient(90deg, #4f9d73, #3b8d67);
 }
 
 .badge-overdue {
-  background: linear-gradient(90deg, #ff7a6b, #ff5064);
+  background: linear-gradient(90deg, #d06e68, #c84f5f);
 }
 
 .combined-content {
@@ -526,7 +526,7 @@
   height: 30px;
   border-radius: 8px;
   background: rgba(0, 212, 255, 0.14);
-  color: #57e3f7;
+  color: #9bd0d0;
 }
 
 .create-btn {
@@ -534,7 +534,7 @@
   min-height: 48px;
   margin-top: 22px;
   border-radius: 8px;
-  color: #052c31;
+  color: #153438;
   font-weight: 850;
 }
 
@@ -576,7 +576,7 @@
 
 .panel-eyebrow {
   margin: 0 0 5px;
-  color: #7a8999;
+  color: #68777f;
   font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.11em;
@@ -586,7 +586,7 @@
 .panel-head h2,
 .dashboard-panel h2 {
   margin: 0;
-  color: #17212f;
+  color: #22313a;
   font-size: 1.12rem;
   line-height: 1.2;
   font-weight: 850;
@@ -616,7 +616,7 @@
   padding: 14px;
   border: 1px solid rgba(13, 92, 95, 0.08);
   border-radius: 8px;
-  background: #f7fbfb;
+  background: #f4f7f5;
 }
 
 :root[data-theme='dark'] .assistant-message {
@@ -625,13 +625,13 @@
 }
 
 .assistant-message.user {
-  background: rgba(0, 212, 255, 0.12);
-  border-color: rgba(0, 139, 134, 0.14);
+  background: rgba(95, 159, 155, 0.14);
+  border-color: rgba(73, 129, 124, 0.16);
 }
 
 .assistant-message-role {
   margin: 0 0 8px;
-  color: #007c76;
+  color: #4b817d;
   font-size: 0.72rem;
   font-weight: 850;
   letter-spacing: 0.12em;
@@ -640,7 +640,7 @@
 
 .assistant-message p {
   margin: 0;
-  color: #435162;
+  color: #43545c;
   font-size: 0.93rem;
   line-height: 1.55;
 }
@@ -656,16 +656,16 @@
   padding: 0 12px;
   border: 1px solid rgba(0, 109, 103, 0.12);
   border-radius: 999px;
-  background: #f6fbfb;
-  color: #526273;
+  background: #f4f7f5;
+  color: #52636b;
   font-size: 0.82rem;
   font-weight: 750;
   text-align: left;
 }
 
 .assistant-quick-prompts button:hover {
-  background: rgba(0, 212, 255, 0.12);
-  color: #073b3a;
+  background: rgba(95, 159, 155, 0.14);
+  color: #214947;
 }
 
 .assistant-input-box {
@@ -678,8 +678,8 @@
   padding: 14px;
   border: 1px solid rgba(0, 109, 103, 0.16);
   border-radius: 8px;
-  background: #ffffff;
-  color: #17212f;
+  background: #fbfcfa;
+  color: #22313a;
 }
 
 :root[data-theme='dark'] .assistant-input-box textarea {
@@ -692,8 +692,8 @@
   width: 100%;
   min-height: 44px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #00d4ff, #35a8f4);
-  color: #052c31;
+  background: linear-gradient(135deg, #5f9f9b, #6fa8b5);
+  color: #f8fbfa;
   font-weight: 850;
 }
 
@@ -710,8 +710,8 @@
   padding: 16px;
   border: 1px solid rgba(13, 92, 95, 0.1);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 22px 60px rgba(30, 73, 82, 0.18);
+  background: rgba(249, 251, 248, 0.98);
+  box-shadow: 0 22px 60px rgba(48, 73, 76, 0.16);
   backdrop-filter: blur(16px);
   overflow: auto;
 }
@@ -730,7 +730,7 @@
 
 .assistant-dock-head h2 {
   margin: 0;
-  color: #17212f;
+  color: #22313a;
   font-size: 1.05rem;
   font-weight: 850;
 }
@@ -742,8 +742,8 @@
   flex: 0 0 auto;
   border: 1px solid rgba(0, 109, 103, 0.12);
   border-radius: 8px;
-  background: #f4fbfb;
-  color: #073b3a;
+  background: #f1f5f3;
+  color: #214947;
 }
 
 :root[data-theme='dark'] .assistant-minimize-btn,
@@ -761,8 +761,8 @@
   padding: 0 14px;
   border: 1px solid rgba(0, 109, 103, 0.16);
   border-radius: 999px;
-  background: #ffffff;
-  color: #073b3a;
+  background: #f9fbf8;
+  color: #214947;
   box-shadow: 0 18px 38px rgba(30, 73, 82, 0.16);
 }
 
@@ -792,7 +792,7 @@
   align-items: center;
   gap: 10px;
   padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(249, 251, 248, 0.96);
   border-top: 1px solid rgba(10, 72, 77, 0.08);
   box-shadow: 0 -16px 36px rgba(30, 73, 82, 0.1);
   backdrop-filter: blur(16px);
@@ -815,8 +815,8 @@
   gap: 6px;
   border: 1px solid rgba(0, 109, 103, 0.1);
   border-radius: 8px;
-  background: #f5fbfb;
-  color: #073b3a;
+  background: #f4f7f5;
+  color: #214947;
   font-size: 0.86rem;
   font-weight: 850;
   text-decoration: none;
@@ -825,8 +825,65 @@
 
 .dashboard-bottom-nav button {
   border-color: transparent;
-  background: linear-gradient(135deg, #00d4ff, #35a8f4);
-  color: #052c31;
+  background: linear-gradient(135deg, #5f9f9b, #6fa8b5);
+  color: #f8fbfa;
+}
+
+.dashboard-container .table-wrapper,
+.dashboard-container .google-classroom-connect,
+.dashboard-container .google-classroom-assignments {
+  background: #f6f8f5;
+  border-color: rgba(61, 110, 105, 0.12);
+}
+
+.dashboard-container .table-wrapper .assignment-card,
+.dashboard-container .google-classroom-assignments .assignment-card {
+  background: #fbfcfa;
+  border-color: rgba(61, 110, 105, 0.12);
+}
+
+.dashboard-container .assignment-card-title,
+.dashboard-container .google-classroom-connect h3,
+.dashboard-container .google-classroom-assignments h3 {
+  color: #22313a;
+}
+
+.dashboard-container .assignment-description,
+.dashboard-container .assignment-meta,
+.dashboard-container .connected-at,
+.dashboard-container .info-text,
+.dashboard-container .no-assignments {
+  color: #5e6f77;
+}
+
+.dashboard-container .status-submitted,
+.dashboard-container .priority-low,
+.dashboard-container .connected-badge {
+  background: rgba(79, 157, 115, 0.16);
+  color: #24623e;
+}
+
+.dashboard-container .status-not-submitted,
+.dashboard-container .priority-medium,
+.dashboard-container .due-date.warning {
+  background: rgba(184, 157, 91, 0.18);
+  color: #755b17;
+}
+
+.dashboard-container .priority-high,
+.dashboard-container .error-message,
+.dashboard-container .due-date.overdue {
+  background: rgba(200, 79, 95, 0.12);
+  color: #963746;
+}
+
+:root[data-theme='dark'] .dashboard-container .table-wrapper,
+:root[data-theme='dark'] .dashboard-container .google-classroom-connect,
+:root[data-theme='dark'] .dashboard-container .google-classroom-assignments,
+:root[data-theme='dark'] .dashboard-container .table-wrapper .assignment-card,
+:root[data-theme='dark'] .dashboard-container .google-classroom-assignments .assignment-card {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 @media (min-width: 980px) {
@@ -842,8 +899,8 @@
     display: flex;
     flex-direction: column;
     padding: 24px 16px;
-    background: linear-gradient(180deg, #073b3a 0%, #042f2e 100%);
-    box-shadow: 18px 0 48px rgba(7, 59, 58, 0.12);
+    background: linear-gradient(180deg, #254e4b 0%, #1d3f3e 100%);
+    box-shadow: 18px 0 48px rgba(37, 78, 75, 0.12);
   }
 
   .dashboard-main {

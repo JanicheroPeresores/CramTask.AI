@@ -72,7 +72,7 @@
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(360px, 0.78fr);
   gap: 24px;
-  align-items: stretch;
+  align-items: center;
 }
 
 .login-hero,
@@ -93,6 +93,7 @@
 .signup-hero,
 .forgot-hero {
   min-height: 560px;
+  height: 560px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -103,6 +104,7 @@
 
 .forgot-hero {
   min-height: 460px;
+  height: 460px;
 }
 
 .login-hero::before,
@@ -351,6 +353,7 @@
   .login-hero,
   .signup-hero,
   .forgot-hero {
+    height: auto;
     padding: 30px;
   }
 }
