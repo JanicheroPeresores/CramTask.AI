@@ -5,6 +5,7 @@ import './AssignmentProgressWidget.css';
 const RING_RADIUS = 43;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 const POSITION_STORAGE_KEY = 'assignment-progress-position';
+const COLLAPSE_STORAGE_KEY = 'assignment-progress-collapsed';
 
 const getDefaultPosition = () => {
   if (typeof window === 'undefined') return { x: 24, y: 110 };
@@ -40,11 +41,18 @@ const readStoredPosition = () => {
   return getDefaultPosition();
 };
 
+const readStoredCollapsed = () => {
+  if (typeof window === 'undefined') return false;
+
+  return localStorage.getItem(COLLAPSE_STORAGE_KEY) === 'true';
+};
+
 function AssignmentProgressWidget({ assignments }) {
   const { language, t } = useLanguage();
   const [currentTime, setCurrentTime] = useState(() => new Date());
   const [position, setPosition] = useState(readStoredPosition);
   const [isDragging, setIsDragging] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(readStoredCollapsed);
 
   useEffect(() => {
     const clockInterval = window.setInterval(() => setCurrentTime(new Date()), 1000);
@@ -54,6 +62,10 @@ function AssignmentProgressWidget({ assignments }) {
   useEffect(() => {
     localStorage.setItem(POSITION_STORAGE_KEY, JSON.stringify(position));
   }, [position]);
+
+  useEffect(() => {
+    localStorage.setItem(COLLAPSE_STORAGE_KEY, isCollapsed ? 'true' : 'false');
+  }, [isCollapsed]);
 
   useEffect(() => {
     const handleResize = () => setPosition((current) => clampPosition(current));
@@ -131,11 +143,25 @@ function AssignmentProgressWidget({ assignments }) {
 
   return (
     <section
-      className={`assignment-progress-widget progress-${progressTone}${isDragging ? ' is-dragging' : ''}`}
+      className={`assignment-progress-widget progress-${progressTone}${isDragging ? ' is-dragging' : ''}${isCollapsed ? ' is-collapsed' : ''}`}
       aria-label={t('progress.title')}
       style={{ left: `${position.x}px`, top: `${position.y}px` }}
       onPointerDown={handlePointerDown}
     >
+      <button
+        type="button"
+        className="progress-toggle-button"
+        aria-label={t(isCollapsed ? 'progress.restore' : 'progress.minimize')}
+        title={t(isCollapsed ? 'progress.restore' : 'progress.minimize')}
+        onPointerDown={(event) => event.stopPropagation()}
+        onClick={(event) => {
+          event.stopPropagation();
+          setIsCollapsed((current) => !current);
+        }}
+      >
+        {isCollapsed ? '+' : '−'}
+      </button>
+
       <div className="progress-ring-panel">
         <svg
           className="progress-ring"

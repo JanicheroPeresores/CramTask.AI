@@ -125,6 +125,8 @@ const translations = {
       keepGoing: 'Keep going',
       almostDone: 'Almost done',
       allCompleted: 'Completed',
+      minimize: 'Minimize',
+      restore: 'Restore',
     },
     classroom: {
       title: 'Google Classroom Integration',
@@ -295,6 +297,8 @@ const translations = {
       keepGoing: 'Tuloy lang',
       almostDone: 'Malapit na',
       allCompleted: 'Tapos na',
+      minimize: 'I-minimize',
+      restore: 'Ibalik',
     },
     classroom: {
       title: 'Google Classroom Integration',

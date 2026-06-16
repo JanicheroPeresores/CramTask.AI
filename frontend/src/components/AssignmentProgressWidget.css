@@ -15,7 +15,26 @@
   cursor: grab;
   touch-action: none;
   user-select: none;
-  transition: transform 0.24s ease, box-shadow 0.24s ease;
+  transition: transform 0.24s ease, box-shadow 0.24s ease, width 0.2s ease, height 0.2s ease, padding 0.2s ease;
+}
+
+.assignment-progress-widget.is-collapsed {
+  width: 60px;
+  padding: 10px;
+  gap: 0;
+}
+
+.assignment-progress-widget.is-collapsed .progress-ring-panel,
+.assignment-progress-widget.is-collapsed .progress-summary {
+  display: none;
+}
+
+.assignment-progress-widget.is-collapsed {
+  min-height: 60px;
+}
+
+.assignment-progress-widget.is-collapsed .progress-toggle-button {
+  right: 10px;
 }
 
 .assignment-progress-widget:hover {
@@ -61,6 +80,38 @@
   flex: 0 0 108px;
   height: 108px;
   position: relative;
+}
+
+.progress-toggle-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #334046;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  z-index: 1;
+}
+
+.assignment-progress-widget:hover .progress-toggle-button,
+.assignment-progress-widget.is-dragging .progress-toggle-button {
+  background: rgba(255, 255, 255, 1);
+}
+
+.progress-toggle-button:hover {
+  transform: scale(1.05);
+}
+
+:root[data-theme='dark'] .progress-toggle-button {
+  background: rgba(15, 23, 35, 0.92);
+  color: #f7fbff;
 }
 
 .progress-ring {
