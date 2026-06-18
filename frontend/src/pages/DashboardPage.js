@@ -102,6 +102,7 @@ function DashboardPage({ user, onLogout }) {
   const [assistantLoading, setAssistantLoading] = useState(false);
   const [chatOpen, setChatOpen] = useState(true);
   const [googleClassroomRefresh, setGoogleClassroomRefresh] = useState(0);
+  const [googleClassroomAssignments, setGoogleClassroomAssignments] = useState([]);
   const [showIntro, setShowIntro] = useState(() => {
     if (typeof window === 'undefined') return true;
     return sessionStorage.getItem(getIntroStorageKey(user)) !== 'true';
@@ -116,17 +117,37 @@ function DashboardPage({ user, onLogout }) {
   ];
 
   const getAssignmentContext = () =>
-    assignments
+    [
+      ...assignments.map((assignment) => ({
+        ...assignment,
+        source: 'Dashboard',
+      })),
+      ...googleClassroomAssignments.map((assignment) => ({
+        ...assignment,
+        title: assignment.title,
+        course: assignment.course_name,
+        dueDate: assignment.due_date,
+        dueTime: assignment.due_time,
+        status: assignment.state,
+        source: 'Google Classroom',
+        classroomId: assignment.google_classroom_id,
+        link: assignment.alternate_link,
+      })),
+    ]
       .slice()
-      .sort((a, b) => new Date(a.due_date || '9999-12-31') - new Date(b.due_date || '9999-12-31'))
-      .slice(0, 25)
+      .sort((a, b) => new Date(a.dueDate || a.due_date || '9999-12-31') - new Date(b.dueDate || b.due_date || '9999-12-31'))
+      .slice(0, 50)
       .map((assignment) => ({
-        title: assignment.assignment_title,
+        title: assignment.title || assignment.assignment_title,
         course: assignment.course,
         subject: assignment.subject,
-        dueDate: assignment.due_date,
+        dueDate: assignment.dueDate || assignment.due_date,
+        dueTime: assignment.dueTime || assignment.due_time,
         priority: assignment.priority,
-        status: assignment.submission_status,
+        status: assignment.status || assignment.submission_status,
+        source: assignment.source,
+        classroomId: assignment.classroomId,
+        link: assignment.link,
         description: assignment.description,
       }));
 
@@ -488,8 +509,16 @@ function DashboardPage({ user, onLogout }) {
                 </div>
               </div>
               <div className="classroom-stack">
-                <GoogleClassroomConnect onSync={() => setGoogleClassroomRefresh((prev) => prev + 1)} />
-                <GoogleClassroomAssignments key={googleClassroomRefresh} />
+                <GoogleClassroomConnect
+                  onSync={(syncedAssignments) => {
+                    setGoogleClassroomAssignments(syncedAssignments);
+                    setGoogleClassroomRefresh((prev) => prev + 1);
+                  }}
+                />
+                <GoogleClassroomAssignments
+                  key={googleClassroomRefresh}
+                  onAssignmentsChange={setGoogleClassroomAssignments}
+                />
               </div>
             </section>
 

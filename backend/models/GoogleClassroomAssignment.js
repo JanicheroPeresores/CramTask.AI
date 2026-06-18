@@ -56,6 +56,30 @@ const GoogleClassroomAssignment = {
     }
   },
 
+  replaceForUser: async (userId, assignments) => {
+    const sql = await getDatabase();
+    await GoogleClassroomAssignment.saveMultiple(userId, assignments);
+    const activeIds = new Set(
+      (Array.isArray(assignments) ? assignments : [])
+        .map((assignment) => assignment?.googleClassroomId)
+        .filter(Boolean)
+    );
+
+    const existingAssignments = await GoogleClassroomAssignment.getByUserId(userId);
+    const staleAssignments = existingAssignments.filter(
+      (assignment) => !activeIds.has(assignment.google_classroom_id)
+    );
+
+    for (const assignment of staleAssignments) {
+      await sql('DELETE FROM google_classroom_assignments WHERE id = $1 AND user_id = $2', [
+        assignment.id,
+        userId,
+      ]);
+    }
+
+    return GoogleClassroomAssignment.getByUserId(userId);
+  },
+
   getByUserId: async (userId) => {
     const sql = await getDatabase();
     try {

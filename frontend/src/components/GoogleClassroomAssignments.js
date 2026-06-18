@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useLanguage } from '../i18n/LanguageContext';
 import './GoogleClassroomAssignments.css';
 
-function GoogleClassroomAssignments() {
+function GoogleClassroomAssignments({ onAssignmentsChange }) {
   const { language, t } = useLanguage();
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +17,11 @@ function GoogleClassroomAssignments() {
       const response = await axios.get('/api/google-classroom/assignments', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAssignments(response.data.assignments || []);
+      const nextAssignments = response.data.assignments || [];
+      setAssignments(nextAssignments);
+      if (onAssignmentsChange) {
+        onAssignmentsChange(nextAssignments);
+      }
       setError('');
     } catch (err) {
       console.error('Error fetching assignments:', err);
@@ -25,7 +29,7 @@ function GoogleClassroomAssignments() {
     } finally {
       setLoading(false);
     }
-  }, [token, t]);
+  }, [onAssignmentsChange, token, t]);
 
   useEffect(() => {
     fetchAssignments();

@@ -140,8 +140,8 @@ router.post('/sync', authMiddleware, async (req, res) => {
     // Sync assignments
     const assignments = await syncAllAssignments(credentials, userId);
 
-    // Save to database
-    const savedAssignments = await GoogleClassroomAssignment.saveMultiple(
+    // Save the current Google Classroom snapshot and remove work that disappeared.
+    const savedAssignments = await GoogleClassroomAssignment.replaceForUser(
       userId,
       assignments
     );
@@ -211,8 +211,7 @@ router.post('/disconnect', authMiddleware, async (req, res) => {
     // Delete credentials
     await GoogleClassroomCredentials.delete(userId);
 
-    // Optionally delete all synced assignments
-    // await GoogleClassroomAssignment.deleteByUserId(userId);
+    await GoogleClassroomAssignment.deleteByUserId(userId);
 
     res.json({ message: 'Google Classroom disconnected successfully' });
   } catch (err) {

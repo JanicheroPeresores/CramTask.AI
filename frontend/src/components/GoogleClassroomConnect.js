@@ -121,7 +121,7 @@ function GoogleClassroomConnect({ onSync }) {
       setSuccess(t('classroom.synced', { count: response.data.count }));
 
       if (onSync) {
-        onSync();
+        onSync(response.data.assignments || []);
       }
     } catch (err) {
       console.error('Error syncing assignments:', err);
@@ -163,6 +163,9 @@ function GoogleClassroomConnect({ onSync }) {
       setConnectedAt(null);
       setSuccess(t('classroom.disconnectedSuccess'));
       setError('');
+      if (onSync) {
+        onSync([]);
+      }
     } catch (err) {
       console.error('Error disconnecting:', err);
       setError(err.response?.data?.message || t('errors.disconnectClassroom'));

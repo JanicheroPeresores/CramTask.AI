@@ -1,5 +1,8 @@
 const express = require('express');
 const authMiddleware = require('../middleware/auth');
+const GoogleClassroomCredentials = require('../models/GoogleClassroomCredentials');
+const GoogleClassroomAssignment = require('../models/GoogleClassroomAssignment');
+const { syncAllAssignments } = require('../utils/googleClassroom');
 
 const router = express.Router();
 
@@ -83,6 +86,12 @@ function safeTrim(value) {
   return value.trim();
 }
 
+function safeText(value) {
+  if (value === null || value === undefined) return '';
+  if (value instanceof Date) return value.toISOString();
+  return safeTrim(String(value));
+}
+
 function buildGeminiUrl({ apiKey }) {
   // Gemini API key is sent as ?key=... (matches Google docs style)
   return `https://generativelanguage.googleapis.com/${GEMINI_API_VERSION}/models/${encodeURIComponent(
@@ -100,17 +109,37 @@ function normalizeAssignmentContext(assignments) {
   if (!Array.isArray(assignments)) return [];
 
   return assignments
-    .slice(0, 25)
     .map((assignment) => ({
       title: safeTrim(assignment.title || assignment.assignment_title),
-      course: safeTrim(assignment.course),
+      course: safeTrim(assignment.course || assignment.course_name),
       subject: safeTrim(assignment.subject),
-      dueDate: safeTrim(assignment.dueDate || assignment.due_date),
+      dueDate: safeText(assignment.dueDate || assignment.due_date),
+      dueTime: safeTrim(assignment.dueTime || assignment.due_time),
       priority: safeTrim(assignment.priority),
       status: safeTrim(assignment.status || assignment.submission_status),
+      source: safeTrim(assignment.source),
+      classroomId: safeText(assignment.classroomId || assignment.google_classroom_id),
+      link: safeTrim(assignment.link || assignment.alternate_link),
       description: safeTrim(assignment.description).slice(0, 240),
     }))
     .filter((assignment) => assignment.title || assignment.course || assignment.dueDate);
+}
+
+function dedupeAssignmentContext(assignments) {
+  const seen = new Set();
+
+  return assignments.filter((assignment) => {
+    const key = assignment.classroomId
+      ? `classroom:${assignment.classroomId}`
+      : `${assignment.source || 'dashboard'}:${assignment.title}:${assignment.course}:${assignment.dueDate}`;
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
 }
 
 function buildAssignmentContextText(assignments) {
@@ -135,13 +164,18 @@ function buildAssignmentContextText(assignments) {
         ? 'due today'
         : `due in ${daysUntilDue} day(s)`;
 
-    return `${index + 1}. ${assignment.title || 'Untitled'} | course: ${
+    return `${index + 1}. ${assignment.title || 'Untitled'} | source: ${
+      assignment.source || 'dashboard'
+    } | course: ${
       assignment.course || 'not set'
     } | subject: ${assignment.subject || 'not set'} | due: ${
       assignment.dueDate || 'not set'
+    }${assignment.dueTime ? ` at ${assignment.dueTime}` : ''
     } (${timing}) | priority: ${assignment.priority || 'not set'} | status: ${
       assignment.status || 'not set'
-    }${assignment.description ? ` | notes: ${assignment.description}` : ''}`;
+    }${assignment.link ? ` | link: ${assignment.link}` : ''}${
+      assignment.description ? ` | notes: ${assignment.description}` : ''
+    }`;
   });
 
   return rows.join('\n');
@@ -221,7 +255,45 @@ async function callGemini({ apiKey, prompt, temperature = 0.7, maxOutputTokens =
 router.post('/dashboard-assistant', authMiddleware, async (req, res) => {
   try {
     const { messages = [], userName = 'Student', language = 'en', assignments = [] } = req.body || {};
-    const assignmentContext = normalizeAssignmentContext(assignments);
+    const dashboardAssignmentContext = normalizeAssignmentContext(assignments);
+    let classroomAssignmentContext = [];
+
+    try {
+      const classroomCredentials = await GoogleClassroomCredentials.getByUserId(req.userId);
+      if (classroomCredentials) {
+        const syncedAssignments = await syncAllAssignments(classroomCredentials, req.userId);
+        await GoogleClassroomAssignment.replaceForUser(req.userId, syncedAssignments);
+      }
+
+      const classroomAssignments = await GoogleClassroomAssignment.getByUserId(req.userId);
+      classroomAssignmentContext = normalizeAssignmentContext(
+        classroomAssignments.map((assignment) => ({
+          ...assignment,
+          source: 'Google Classroom',
+        }))
+      );
+    } catch (err) {
+      console.warn('Could not refresh Google Classroom assignments for AI context:', err.message);
+
+      try {
+        const classroomAssignments = await GoogleClassroomAssignment.getByUserId(req.userId);
+        classroomAssignmentContext = normalizeAssignmentContext(
+          classroomAssignments.map((assignment) => ({
+            ...assignment,
+            source: 'Google Classroom',
+          }))
+        );
+      } catch (fallbackErr) {
+        console.warn('Could not load saved Google Classroom assignments for AI context:', fallbackErr.message);
+      }
+    }
+
+    const assignmentContext = dedupeAssignmentContext([
+      ...dashboardAssignmentContext,
+      ...classroomAssignmentContext,
+    ])
+      .sort((a, b) => new Date(a.dueDate || '9999-12-31') - new Date(b.dueDate || '9999-12-31'))
+      .slice(0, 50);
 
     const safeMessages = Array.isArray(messages)
       ? messages
@@ -240,7 +312,8 @@ router.post('/dashboard-assistant', authMiddleware, async (req, res) => {
 
     const system = `You are the AI assistant inside Assignment Tracker.
 Be friendly, conversational, and useful. You can help with assignments, study planning, school topics, basic math, writing, explanations, brainstorming, and general student questions.
-You can see the user's current saved dashboard assignments below. When the user asks what is posted, what is nearly due, what to do first, or asks for planning, use this assignment context before giving advice.
+You can see the user's current dashboard and Google Classroom assignments below. When the user asks what is posted, what is nearly due, what was added or removed, what to do first, or asks for planning, use this assignment context before giving advice.
+The assignment context is refreshed from saved Google Classroom sync data on every chat request, so treat it as the current known assignment list.
 Treat "nearly due" as due today, overdue, or due within the next 3 days unless the user gives a different window.
 Answer the user's actual question directly, even when it is not about assignments. For math questions, show the key steps and the final answer.
 Keep replies short by default (3-6 sentences), practical, and easy to understand. If the user asks for help planning, propose a concrete first action.
