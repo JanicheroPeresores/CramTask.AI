@@ -600,13 +600,18 @@
 }
 
 .assistant-card {
-  display: grid;
+  min-height: 0;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   gap: 14px;
 }
 
 .assistant-messages {
   display: grid;
   gap: 10px;
+  flex: 1 1 auto;
+  min-height: 180px;
   max-height: 320px;
   overflow-y: auto;
   padding-right: 4px;
@@ -705,6 +710,7 @@
 }
 
 .assistant-dock.is-open {
+  position: fixed;
   width: min(360px, calc(100vw - 24px));
   max-height: calc(100vh - 112px);
   padding: 16px;
@@ -714,6 +720,37 @@
   box-shadow: 0 22px 60px rgba(48, 73, 76, 0.16);
   backdrop-filter: blur(16px);
   overflow: auto;
+}
+
+.assistant-resize-handle {
+  position: absolute;
+  top: 10px;
+  left: -7px;
+  width: 14px;
+  height: calc(100% - 20px);
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+.assistant-resize-handle::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  width: 4px;
+  height: 56px;
+  border-radius: 999px;
+  background: rgba(75, 129, 125, 0.34);
+  transform: translateY(-50%);
+}
+
+.assistant-resize-handle:hover::before,
+.assistant-resize-handle:focus-visible::before {
+  background: rgba(75, 129, 125, 0.72);
 }
 
 .assistant-dock.is-minimized {
@@ -889,7 +926,7 @@
 @media (min-width: 980px) {
   .dashboard-content {
     grid-template-columns: 230px minmax(0, 1fr);
-    padding: 0 390px 52px 0;
+    padding: 0 clamp(420px, 34vw, 620px) 52px 0;
   }
 
   .dashboard-sidebar {
@@ -930,13 +967,18 @@
   }
 
   .assistant-dock.is-open {
-    width: 350px;
+    width: var(--assistant-panel-width, 420px);
+    min-width: 340px;
+    max-width: min(620px, calc(100vw - 290px));
+    min-height: 420px;
     max-height: none;
+    display: flex;
+    flex-direction: column;
   }
 
   .assistant-messages {
-    max-height: calc(100vh - 430px);
-    min-height: 180px;
+    min-height: 220px;
+    max-height: none;
   }
 }
 
@@ -989,7 +1031,37 @@
 
   .assistant-dock.is-open {
     width: auto;
-    max-height: min(72vh, 560px);
+    height: min(var(--assistant-panel-height, 560px), 82vh);
+    max-height: min(76vh, 620px);
+    display: flex;
+    flex-direction: column;
+    resize: none;
+  }
+
+  .assistant-resize-handle {
+    top: -8px;
+    left: 50%;
+    width: min(112px, 36vw);
+    height: 18px;
+    transform: translateX(-50%);
+    cursor: ns-resize;
+  }
+
+  .assistant-resize-handle::before {
+    top: 7px;
+    left: 50%;
+    width: 64px;
+    height: 4px;
+    transform: translateX(-50%);
+  }
+
+  .assistant-card {
+    min-height: 0;
+  }
+
+  .assistant-messages {
+    min-height: 180px;
+    max-height: min(42vh, 360px);
   }
 
   .assistant-dock.is-minimized {

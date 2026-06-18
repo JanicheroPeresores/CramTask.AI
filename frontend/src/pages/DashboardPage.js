@@ -101,6 +101,8 @@ function DashboardPage({ user, onLogout }) {
   const [assistantInput, setAssistantInput] = useState('');
   const [assistantLoading, setAssistantLoading] = useState(false);
   const [chatOpen, setChatOpen] = useState(true);
+  const [assistantPanelWidth, setAssistantPanelWidth] = useState(420);
+  const [assistantPanelHeight, setAssistantPanelHeight] = useState(560);
   const [googleClassroomRefresh, setGoogleClassroomRefresh] = useState(0);
   const [googleClassroomAssignments, setGoogleClassroomAssignments] = useState([]);
   const [showIntro, setShowIntro] = useState(() => {
@@ -289,6 +291,36 @@ function DashboardPage({ user, onLogout }) {
     navigate('/');
   };
 
+  const handleAssistantResizeStart = (event) => {
+    event.preventDefault();
+    const pointerId = event.pointerId;
+    event.currentTarget.setPointerCapture?.(pointerId);
+
+    const handlePointerMove = (moveEvent) => {
+      const isMobile = window.innerWidth < 980;
+
+      if (isMobile) {
+        const bottomOffset = 72;
+        const nextHeight = window.innerHeight - moveEvent.clientY - bottomOffset;
+        setAssistantPanelHeight(Math.min(Math.max(nextHeight, 360), window.innerHeight * 0.82));
+        return;
+      }
+
+      const rightOffset = 18;
+      const maxWidth = Math.min(620, window.innerWidth - 290);
+      const nextWidth = window.innerWidth - moveEvent.clientX - rightOffset;
+      setAssistantPanelWidth(Math.min(Math.max(nextWidth, 340), maxWidth));
+    };
+
+    const handlePointerUp = () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp, { once: true });
+  };
+
   const dismissIntro = () => {
     sessionStorage.setItem(getIntroStorageKey(user), 'true');
     setShowIntro(false);
@@ -411,17 +443,13 @@ function DashboardPage({ user, onLogout }) {
         <aside className="dashboard-sidebar">
           <div className="sidebar-title">{t('dashboard.sidebarLabel')}</div>
           <nav className="sidebar-nav">
-            <a href="#assignments">
-              <span className="nav-icon"><DashboardIcon name="tasks" /></span>
-              <span>{t('dashboard.navTasks')}</span>
-            </a>
-            <a href="#assistant">
-              <span className="nav-icon"><DashboardIcon name="assistant" /></span>
-              <span>{t('dashboard.navAssistant')}</span>
-            </a>
             <a href="#classroom">
               <span className="nav-icon"><DashboardIcon name="classroom" /></span>
               <span>{t('dashboard.navClassroom')}</span>
+            </a>
+            <a href="#assignments">
+              <span className="nav-icon"><DashboardIcon name="tasks" /></span>
+              <span>{t('dashboard.navTasks')}</span>
             </a>
           </nav>
           <button
@@ -550,9 +578,23 @@ function DashboardPage({ user, onLogout }) {
         </main>
       </div>
 
-      <aside id="assistant" className={`assistant-dock ${chatOpen ? 'is-open' : 'is-minimized'}`}>
+      <aside
+        id="assistant"
+        className={`assistant-dock ${chatOpen ? 'is-open' : 'is-minimized'}`}
+        style={{
+          '--assistant-panel-width': `${assistantPanelWidth}px`,
+          '--assistant-panel-height': `${assistantPanelHeight}px`,
+        }}
+      >
         {chatOpen ? (
           <>
+            <button
+              type="button"
+              className="assistant-resize-handle"
+              onPointerDown={handleAssistantResizeStart}
+              aria-label="Resize AI chat"
+              title="Resize AI chat"
+            />
             <div className="assistant-dock-head">
               <div>
                 <p className="panel-eyebrow">{t('dashboard.assistantEyebrow')}</p>
@@ -635,8 +677,8 @@ function DashboardPage({ user, onLogout }) {
       </aside>
 
       <nav className="dashboard-bottom-nav">
+        <a href="#classroom">{t('dashboard.navClassroom')}</a>
         <a href="#assignments">{t('dashboard.navTasks')}</a>
-        <a href="#assistant">{t('dashboard.navAssistant')}</a>
         <button type="button" onClick={() => setShowModal(true)}>
           <DashboardIcon name="plus" size={16} />
           {t('dashboard.create')}
