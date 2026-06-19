@@ -519,7 +519,7 @@ function DashboardPage({ user, onLogout }) {
                     onToggleComplete={handleToggleAssignmentCompletion}
                     updatingAssignmentIds={updatingAssignmentIds}
                   />
-                  <AssignmentProgressWidget assignments={assignments} />
+                  <AssignmentProgressWidget assignments={assignments} onRefresh={fetchAssignments} />
                 </>
               )}
             </section>

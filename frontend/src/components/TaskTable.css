@@ -1,8 +1,8 @@
 .table-wrapper {
   width: 100%;
-  border: 1px solid rgba(79, 72, 68, 0.12);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: rgba(210, 205, 201, 0.72);
+  background: rgba(226, 218, 213, 0.72);
   padding: 12px;
 }
 
@@ -16,14 +16,18 @@
   display: grid;
   place-items: center;
   text-align: center;
-  color: #5e5d5c;
+  color: var(--muted);
 }
 
 .empty-state--compact {
   min-height: 96px;
-  border: 1px dashed rgba(79, 72, 68, 0.18);
+  border: 1px dashed var(--border);
   border-radius: 8px;
-  background: rgba(200, 194, 190, 0.34);
+  background: rgba(226, 218, 213, 0.34);
+}
+
+:root[data-theme='dark'] .empty-state--compact {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .empty-state p {
@@ -38,9 +42,9 @@
 
 .assignment-picker,
 .assignment-no-date {
-  border: 1px solid rgba(79, 72, 68, 0.13);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: rgba(218, 213, 209, 0.72);
+  background: rgba(226, 218, 213, 0.72);
   overflow: hidden;
 }
 
@@ -55,7 +59,7 @@
   grid-template-columns: repeat(2, minmax(180px, 1fr));
   gap: 10px;
   padding: 12px;
-  border-bottom: 1px solid rgba(79, 72, 68, 0.1);
+  border-bottom: 1px solid var(--border);
 }
 
 .assignment-picker-controls label {
@@ -65,7 +69,7 @@
 }
 
 .assignment-picker-controls span {
-  color: #5f5854;
+  color: var(--muted);
   font-size: 0.72rem;
   font-weight: 850;
   letter-spacing: 0.08em;
@@ -76,9 +80,13 @@
   min-height: 40px;
   padding: 0 12px;
   border-radius: 8px;
-  background: rgba(200, 194, 190, 0.74);
-  border-color: rgba(79, 72, 68, 0.14);
-  color: #242322;
+  background: rgba(226, 218, 213, 0.74);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+:root[data-theme='dark'] .assignment-picker-controls select {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .assignment-day-strip {
@@ -86,7 +94,7 @@
   gap: 8px;
   padding: 10px 12px;
   overflow-x: auto;
-  border-bottom: 1px solid rgba(79, 72, 68, 0.1);
+  border-bottom: 1px solid var(--border);
 }
 
 .assignment-day-strip button {
@@ -98,9 +106,13 @@
   gap: 2px;
   padding: 6px 9px;
   border-radius: 8px;
-  background: rgba(200, 194, 190, 0.56);
-  color: #34312f;
+  background: rgba(226, 218, 213, 0.56);
+  color: var(--text);
   box-shadow: none;
+}
+
+:root[data-theme='dark'] .assignment-day-strip button {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .assignment-day-strip button:hover,
@@ -135,18 +147,14 @@
   gap: 12px;
   min-height: 44px;
   padding: 0 12px;
-  border-bottom: 1px solid rgba(79, 72, 68, 0.1);
+  border-bottom: 1px solid var(--border);
 }
 
 .assignment-month-head h3 {
   margin: 0;
-  color: #242322;
+  color: var(--text);
   font-size: 0.98rem;
   font-weight: 850;
-}
-
-:root[data-theme='dark'] .assignment-month-head h3 {
-  color: #f7fbff;
 }
 
 .assignment-month-head span {
@@ -166,10 +174,10 @@
   display: grid;
   gap: 8px;
   padding: 10px;
-  border: 1px solid rgba(79, 72, 68, 0.12);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: rgba(229, 225, 221, 0.78);
-  box-shadow: 0 10px 24px rgba(79, 72, 68, 0.08);
+  background: rgba(226, 218, 213, 0.78);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.04);
 }
 
 :root[data-theme='dark'] .calendar-assignment {
@@ -185,7 +193,7 @@
 
 .assignment-card-title {
   margin: 0;
-  color: #242322;
+  color: var(--text);
   font-size: 0.9rem;
   line-height: 1.25;
   font-weight: 850;
@@ -193,21 +201,12 @@
   word-break: break-word;
 }
 
-:root[data-theme='dark'] .assignment-card-title {
-  color: #f7fbff;
-}
-
 .assignment-card-course {
   margin: 0;
-  color: #67605c;
+  color: var(--muted);
   font-size: 0.73rem;
   line-height: 1.25;
   font-weight: 700;
-}
-
-:root[data-theme='dark'] .assignment-card-course,
-:root[data-theme='dark'] .assignment-card-meta {
-  color: #c7d7ec;
 }
 
 .assignment-card-meta {
@@ -215,13 +214,13 @@
   gap: 6px;
   align-items: center;
   font-size: 0.75rem;
-  color: #4f4a47;
+  color: var(--muted);
   flex-wrap: wrap;
 }
 
 .meta-label {
   font-weight: 800;
-  color: #7a736f;
+  color: var(--muted-lighter);
 }
 
 .assignment-status-bar {
@@ -274,21 +273,6 @@
   background: rgba(55, 130, 90, 0.14);
   color: #24623e;
   border: 1px solid rgba(55, 130, 90, 0.22);
-}
-
-:root[data-theme='dark'] .priority-high {
-  background: rgba(255, 107, 124, 0.1);
-  color: #ff6b7c;
-}
-
-:root[data-theme='dark'] .priority-medium {
-  background: rgba(255, 209, 102, 0.1);
-  color: #ffd162;
-}
-
-:root[data-theme='dark'] .priority-low {
-  background: rgba(55, 220, 135, 0.1);
-  color: #37dc87;
 }
 
 .calendar-assignment-actions {

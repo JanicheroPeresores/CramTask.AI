@@ -9,15 +9,15 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  background: linear-gradient(180deg, rgba(211, 206, 202, 0.98), rgba(200, 194, 190, 0.98));
-  border: 1px solid rgba(79, 72, 68, 0.16);
+  background: linear-gradient(180deg, rgba(226, 218, 213, 0.98), rgba(226, 218, 213, 0.98));
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
-  box-shadow: 0 20px 52px rgba(79, 72, 68, 0.18);
+  box-shadow: 0 20px 52px rgba(0, 0, 0, 0.08);
   cursor: grab;
   touch-action: none;
   user-select: none;
-  overflow: auto;
+  overflow: visible;
   transition: transform 0.24s ease, box-shadow 0.24s ease, width 0.2s ease, height 0.2s ease, padding 0.2s ease;
 }
 
@@ -38,19 +38,19 @@
   min-height: 60px;
 }
 
-.assignment-progress-widget.is-collapsed .progress-toggle-button {
+.assignment-progress-widget.is-collapsed > .progress-toggle-button {
   right: 10px;
 }
 
 .assignment-progress-widget:hover {
   transform: translateY(-3px);
-  box-shadow: 0 26px 64px rgba(79, 72, 68, 0.2);
+  box-shadow: 0 26px 64px rgba(0, 0, 0, 0.1);
 }
 
 .assignment-progress-widget.is-dragging {
   cursor: grabbing;
   transform: scale(1.01);
-  box-shadow: 0 30px 80px rgba(79, 72, 68, 0.24);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.12);
 }
 
 .assignment-progress-widget.is-resizing {
@@ -92,22 +92,62 @@
   position: relative;
 }
 
-.progress-toggle-button {
+/* Top action buttons row */
+.progress-top-actions {
   position: absolute;
   top: 10px;
   right: 10px;
+  display: flex;
+  gap: 6px;
+  z-index: 1;
+}
+
+.progress-toggle-button,
+.progress-refresh-button {
   width: 30px;
   height: 30px;
   display: grid;
   place-items: center;
   border: none;
   border-radius: 999px;
-  background: rgba(211, 206, 202, 0.94);
-  color: #242322;
+  background: rgba(226, 218, 213, 0.94);
+  color: var(--text);
   font-size: 1.1rem;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
-  z-index: 1;
+  padding: 0;
+  line-height: 1;
+}
+
+:root[data-theme='dark'] .progress-toggle-button,
+:root[data-theme='dark'] .progress-refresh-button {
+  background: rgba(15, 23, 35, 0.92);
+  color: #f7fbff;
+}
+
+.progress-refresh-button {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.progress-toggle-button:hover,
+.progress-refresh-button:hover {
+  transform: scale(1.05);
+}
+
+.assignment-progress-widget:hover .progress-toggle-button,
+.assignment-progress-widget:hover .progress-refresh-button,
+.assignment-progress-widget.is-dragging .progress-toggle-button,
+.assignment-progress-widget.is-dragging .progress-refresh-button {
+  background: rgba(226, 218, 213, 1);
+}
+
+.progress-refresh-button.is-spinning svg {
+  animation: progress-spin 0.8s linear infinite;
+}
+
+@keyframes progress-spin {
+  to { transform: rotate(360deg); }
 }
 
 .progress-resize-handle {
@@ -117,12 +157,12 @@
   width: 22px;
   height: 22px;
   padding: 0;
-  border: 1px solid rgba(79, 72, 68, 0.2);
+  border: 1px solid var(--border);
   border-radius: 6px;
   background:
-    linear-gradient(135deg, transparent 0 48%, rgba(79, 72, 68, 0.62) 49% 54%, transparent 55%),
-    linear-gradient(135deg, transparent 0 66%, rgba(79, 72, 68, 0.42) 67% 72%, transparent 73%),
-    rgba(211, 206, 202, 0.88);
+    linear-gradient(135deg, transparent 0 48%, rgba(100, 116, 139, 0.62) 49% 54%, transparent 55%),
+    linear-gradient(135deg, transparent 0 66%, rgba(100, 116, 139, 0.42) 67% 72%, transparent 73%),
+    rgba(226, 218, 213, 0.88);
   cursor: nwse-resize;
   touch-action: none;
   z-index: 2;
@@ -131,7 +171,7 @@
 .progress-resize-handle:hover,
 .progress-resize-handle:focus-visible {
   transform: none;
-  box-shadow: 0 8px 18px rgba(79, 72, 68, 0.14);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
 }
 
 :root[data-theme='dark'] .progress-resize-handle {
@@ -140,20 +180,6 @@
     linear-gradient(135deg, transparent 0 48%, rgba(237, 246, 255, 0.64) 49% 54%, transparent 55%),
     linear-gradient(135deg, transparent 0 66%, rgba(237, 246, 255, 0.42) 67% 72%, transparent 73%),
     rgba(15, 23, 35, 0.92);
-}
-
-.assignment-progress-widget:hover .progress-toggle-button,
-.assignment-progress-widget.is-dragging .progress-toggle-button {
-  background: rgba(218, 213, 209, 1);
-}
-
-.progress-toggle-button:hover {
-  transform: scale(1.05);
-}
-
-:root[data-theme='dark'] .progress-toggle-button {
-  background: rgba(15, 23, 35, 0.92);
-  color: #f7fbff;
 }
 
 .progress-ring {
@@ -170,7 +196,7 @@
 }
 
 .progress-ring-track {
-  stroke: rgba(64, 93, 103, 0.16);
+  stroke: rgba(100, 116, 139, 0.16);
 }
 
 :root[data-theme='dark'] .progress-ring-track {
@@ -194,58 +220,50 @@
 
 .progress-ring-center strong {
   margin: 0;
-  color: #242322;
+  color: var(--text);
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 0;
 }
 
-:root[data-theme='dark'] .progress-ring-center strong {
-  color: #f3f8ff;
-}
-
 .progress-ring-center span {
-  color: rgba(79, 72, 68, 0.72);
+  color: var(--muted);
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-top: 6px;
 }
 
-:root[data-theme='dark'] .progress-ring-center span {
-  color: rgba(224, 232, 241, 0.6);
-}
-
 .progress-summary {
   min-width: 0;
-  color: #242322;
+  color: var(--text);
 }
 
 .progress-eyebrow {
   margin: 0 0 6px;
   font-size: 0.72rem;
   letter-spacing: 0.12em;
-  color: #625e5b;
+  color: var(--muted);
   text-transform: uppercase;
 }
 
 .progress-date {
   margin: 0;
   font-size: 1rem;
-  color: #242322;
+  color: var(--text);
   font-weight: 700;
 }
 
 .progress-time {
   margin: 6px 0 0;
   font-size: 0.9rem;
-  color: #625e5b;
+  color: var(--muted);
 }
 
 .progress-count {
   margin: 10px 0 0;
   font-size: 0.95rem;
-  color: #4f4a47;
+  color: var(--text);
 }
 
 .progress-count strong {
@@ -260,14 +278,14 @@
 }
 
 .progress-stats span {
-  color: #6a625e;
+  color: var(--muted);
   font-size: 0.75rem;
 }
 
 .progress-stats strong {
   display: block;
   font-size: 0.88rem;
-  color: #242322;
+  color: var(--text);
 }
 
 .progress-motivation {
@@ -275,28 +293,6 @@
   color: var(--progress-color);
   font-size: 0.9rem;
   font-weight: 700;
-}
-
-:root[data-theme='dark'] .progress-summary,
-:root[data-theme='dark'] .progress-date,
-:root[data-theme='dark'] .progress-stats strong {
-  color: #edf6ff;
-}
-
-:root[data-theme='dark'] .progress-eyebrow {
-  color: #8aa0b8;
-}
-
-:root[data-theme='dark'] .progress-time {
-  color: rgba(224, 232, 241, 0.74);
-}
-
-:root[data-theme='dark'] .progress-count {
-  color: rgba(224, 232, 241, 0.82);
-}
-
-:root[data-theme='dark'] .progress-stats span {
-  color: rgba(188, 205, 218, 0.72);
 }
 
 @media (max-width: 560px) {

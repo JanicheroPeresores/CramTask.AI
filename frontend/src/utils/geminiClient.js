@@ -41,7 +41,7 @@ export const generateGeminiContent = async ({ prompt, generationConfig }) => {
   });
 
   if (!response.ok) {
-    const errorBody = await response.text().catch(() => '');
+    await response.text().catch(() => {});
     throw new Error(`I can't fully understand and answer your question right now. Could you try asking in a different way?`);
   }
 

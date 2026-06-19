@@ -52,7 +52,7 @@ const readStoredCollapsed = () => {
   return localStorage.getItem(COLLAPSE_STORAGE_KEY) === 'true';
 };
 
-function AssignmentProgressWidget({ assignments }) {
+function AssignmentProgressWidget({ assignments, onRefresh }) {
   const { language, t } = useLanguage();
   const [currentTime, setCurrentTime] = useState(() => new Date());
   const [position, setPosition] = useState(readStoredPosition);
@@ -60,6 +60,7 @@ function AssignmentProgressWidget({ assignments }) {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(readStoredCollapsed);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     const clockInterval = window.setInterval(() => setCurrentTime(new Date()), 1000);
@@ -172,6 +173,17 @@ function AssignmentProgressWidget({ assignments }) {
     window.addEventListener('pointerup', handlePointerUp, { once: true });
   };
 
+  const handleRefresh = async (event) => {
+    event.stopPropagation();
+    if (!onRefresh || isRefreshing) return;
+    setIsRefreshing(true);
+    try {
+      await onRefresh();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   return (
     <section
       className={`assignment-progress-widget progress-${progressTone}${isDragging ? ' is-dragging' : ''}${isResizing ? ' is-resizing' : ''}${isCollapsed ? ' is-collapsed' : ''}`}
@@ -184,19 +196,55 @@ function AssignmentProgressWidget({ assignments }) {
       }}
       onPointerDown={handlePointerDown}
     >
-      <button
-        type="button"
-        className="progress-toggle-button"
-        aria-label={t(isCollapsed ? 'progress.restore' : 'progress.minimize')}
-        title={t(isCollapsed ? 'progress.restore' : 'progress.minimize')}
-        onPointerDown={(event) => event.stopPropagation()}
-        onClick={(event) => {
-          event.stopPropagation();
-          setIsCollapsed((current) => !current);
-        }}
-      >
-        {isCollapsed ? '+' : '−'}
-      </button>
+      {!isCollapsed && (
+        <div className="progress-top-actions">
+          <button
+            type="button"
+            className={`progress-refresh-button${isRefreshing ? ' is-spinning' : ''}`}
+            aria-label="Refresh assignments"
+            title="Refresh assignments"
+            onPointerDown={(event) => event.stopPropagation()}
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="23 4 23 10 17 10" />
+              <polyline points="1 20 1 14 7 14" />
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="progress-toggle-button"
+            aria-label={t('progress.minimize')}
+            title={t('progress.minimize')}
+            onPointerDown={(event) => event.stopPropagation()}
+            onClick={(event) => {
+              event.stopPropagation();
+              setIsCollapsed((current) => !current);
+            }}
+          >
+            −
+          </button>
+        </div>
+      )}
+
+      {isCollapsed && (
+        <button
+          type="button"
+          className="progress-toggle-button"
+          aria-label={t('progress.restore')}
+          title={t('progress.restore')}
+          style={{ position: 'absolute', top: '10px', right: '10px' }}
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+            setIsCollapsed((current) => !current);
+          }}
+        >
+          +
+        </button>
+      )}
 
       <div className="progress-ring-panel">
         <svg
