@@ -2,9 +2,9 @@
   color-scheme: light;
   font-family: 'Inter', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   font-size: 16px;
-  /* Warm, soft light mode — easy on the eyes */
-  --bg: #e8ddd3;
-  --surface: rgba(232, 221, 211, 0.94);
+  /* Light mode colors */
+  --bg: #F2F0EF;
+  --surface: #FFFFFF;
   --surface-soft: rgba(120, 100, 80, 0.06);
   --text: #3d352e;
   --text-secondary: #5f554a;
@@ -18,7 +18,7 @@
   --accent-light: #dbb86a;
   --success: #3a7d5c;
   --danger: #b85a5a;
-  --control-bg: rgba(232, 221, 211, 0.84);
+  --control-bg: #FFFFFF;
   --control-border: rgba(120, 100, 80, 0.14);
   --shadow-sm: rgba(80, 60, 40, 0.06);
   --shadow-md: rgba(80, 60, 40, 0.08);
