@@ -87,7 +87,7 @@ const translations = {
       send: 'Send',
       welcomeMessage: 'Ask me what to work on first, how to handle an overdue assignment, or how to plan a study session.',
       quickFirst: 'What should I do first today?',
-      quickOverdue: 'How do I catch up on overdue work?',
+      quickOverdue: 'Overdue only',
       quickPlan: 'Make me a short study plan for tonight.',
     },
     assignments: {
