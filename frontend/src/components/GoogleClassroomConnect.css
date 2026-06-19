@@ -1,8 +1,8 @@
 .google-classroom-connect {
   border: 1px solid rgba(13, 92, 95, 0.08);
   border-radius: 8px;
-  padding: 16px;
-  background: #f8fcfc;
+  padding: 14px;
+  background: #eef5f2;
 }
 
 :root[data-theme='dark'] .google-classroom-connect {
@@ -11,7 +11,7 @@
 }
 
 .google-classroom-connect h3 {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   color: #17212f;
   font-size: 1rem;
   font-weight: 850;
@@ -42,7 +42,7 @@
 
 .connection-status {
   display: grid;
-  gap: 10px;
+  gap: 9px;
 }
 
 .status-indicator {
@@ -89,8 +89,8 @@
 }
 
 .google-classroom-connect .btn {
-  min-height: 40px;
-  padding: 0 14px;
+  min-height: 38px;
+  padding: 0 13px;
   border-radius: 8px;
   font-weight: 850;
 }

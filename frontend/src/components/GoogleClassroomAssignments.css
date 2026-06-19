@@ -1,8 +1,8 @@
 .google-classroom-assignments {
   border: 1px solid rgba(13, 92, 95, 0.08);
   border-radius: 8px;
-  padding: 16px;
-  background: #f8fcfc;
+  padding: 14px;
+  background: #eef5f2;
 }
 
 :root[data-theme='dark'] .google-classroom-assignments {
@@ -11,7 +11,7 @@
 }
 
 .google-classroom-assignments h3 {
-  margin: 0 0 14px;
+  margin: 0 0 12px;
   color: #17212f;
   font-size: 1rem;
   font-weight: 850;
@@ -23,7 +23,7 @@
 }
 
 .course-section {
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .course-section:last-child {
@@ -41,12 +41,12 @@
 
 .assignments-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 9px;
 }
 
 .google-classroom-assignments .assignment-card {
-  padding: 14px;
+  padding: 12px;
   border: 1px solid rgba(13, 92, 95, 0.09);
   border-radius: 8px;
   background: #ffffff;
@@ -124,7 +124,7 @@
 .assignment-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
   color: #667789;
   font-size: 0.8rem;
@@ -133,7 +133,7 @@
 .due-date,
 .days-until,
 .state {
-  padding: 6px 9px;
+  padding: 5px 8px;
   border-radius: 999px;
   font-weight: 800;
 }

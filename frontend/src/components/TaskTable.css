@@ -2,8 +2,8 @@
   width: 100%;
   border: 1px solid rgba(13, 92, 95, 0.08);
   border-radius: 8px;
-  background: #f8fcfc;
-  padding: 14px;
+  background: #eef5f2;
+  padding: 12px;
 }
 
 :root[data-theme='dark'] .table-wrapper {
@@ -26,13 +26,13 @@
 
 .assignments-board {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
 }
 
 .table-wrapper .assignment-card {
   display: grid;
-  grid-template-columns: 50px 1fr;
+  grid-template-columns: 44px 1fr;
   grid-template-rows: 1fr auto;
   height: 100%;
   border: 1px solid rgba(13, 92, 95, 0.09);
@@ -76,7 +76,7 @@
   border-radius: 0;
   border-bottom: 1px solid rgba(13, 92, 95, 0.1);
   background: transparent;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
   display: flex;
@@ -114,7 +114,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 12px;
+  padding: 12px 12px 10px;
   grid-column: 2;
   grid-row: 1;
   overflow: hidden;
@@ -176,7 +176,7 @@
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 6px;
-  padding-top: 8px;
+  padding: 8px 0 0;
   border-top: 1px solid rgba(13, 92, 95, 0.08);
   grid-column: 2;
   grid-row: 2;

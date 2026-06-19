@@ -1,9 +1,6 @@
 .dashboard-container {
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 8% 0%, rgba(115, 171, 171, 0.12), transparent 24%),
-    radial-gradient(circle at 92% 10%, rgba(180, 162, 116, 0.12), transparent 22%),
-    linear-gradient(180deg, #f3f6f4 0%, #e9efed 100%);
+  background: linear-gradient(180deg, #e5eeeb 0%, #dfe9e6 100%);
   color: #22313a;
 }
 
@@ -151,27 +148,21 @@
 .dashboard-header {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 90;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 72px;
-  padding: 14px 24px;
-  background: rgba(249, 251, 248, 0.9);
+  min-height: 70px;
+  padding: 12px 24px;
+  background: rgba(232, 241, 238, 0.94);
   border-bottom: 1px solid rgba(50, 88, 90, 0.1);
   backdrop-filter: blur(18px);
-  transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
 :root[data-theme='dark'] .dashboard-header {
   background: rgba(8, 12, 20, 0.94);
   border-bottom-color: rgba(255, 255, 255, 0.08);
-}
-
-.dashboard-header.hidden {
-  transform: translateY(-110%);
-  opacity: 0;
 }
 
 .dashboard-brand {
@@ -182,9 +173,9 @@
 }
 
 .brand-mark {
-  width: 42px;
-  height: 42px;
-  flex: 0 0 42px;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
   display: grid;
   place-items: center;
   border-radius: 12px;
@@ -256,9 +247,9 @@
 }
 
 .dashboard-content {
-  width: min(1340px, 100%);
-  margin: 0 auto;
-  padding: 22px 18px 128px;
+  width: 100%;
+  margin: 0;
+  padding: 18px 18px 128px;
   display: grid;
   gap: 18px;
 }
@@ -279,7 +270,7 @@
 .dashboard-panel {
   border: 1px solid rgba(13, 92, 95, 0.08);
   border-radius: 8px;
-  background: rgba(249, 251, 248, 0.96);
+  background: rgba(242, 247, 244, 0.96);
   box-shadow: 0 18px 44px rgba(48, 73, 76, 0.08);
 }
 
@@ -293,8 +284,8 @@
 
 .summary-card {
   position: relative;
-  min-height: 158px;
-  padding: 22px;
+  min-height: 150px;
+  padding: 20px;
   overflow: hidden;
 }
 
@@ -431,7 +422,7 @@
 .summary-card-combined {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .summary-mini-icon--combined {
@@ -488,12 +479,13 @@
 }
 
 .sidebar-title {
-  margin: 0 0 20px;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.8rem;
+  margin: 0 0 12px;
+  color: #456a68;
+  font-size: 0.72rem;
   font-weight: 900;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-align: center;
 }
 
 .sidebar-nav {
@@ -503,13 +495,13 @@
 }
 
 .sidebar-nav a {
-  min-height: 46px;
+  min-height: 42px;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 12px;
+  padding: 0 10px;
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.86);
+  color: #244341;
   font-weight: 750;
   text-decoration: none;
 }
@@ -517,22 +509,22 @@
 .sidebar-nav a:hover,
 .sidebar-nav a:focus {
   background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
+  color: #173331;
   text-decoration: none;
 }
 
 .nav-icon {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 8px;
-  background: rgba(0, 212, 255, 0.14);
-  color: #9bd0d0;
+  background: rgba(69, 129, 124, 0.14);
+  color: #437c78;
 }
 
 .create-btn {
   width: 100%;
-  min-height: 48px;
-  margin-top: 22px;
+  min-height: 42px;
+  margin-top: 14px;
   border-radius: 8px;
   color: #153438;
   font-weight: 850;
@@ -549,7 +541,7 @@
 }
 
 .dashboard-panel {
-  padding: 22px;
+  padding: 20px;
   scroll-margin-top: 96px;
 }
 
@@ -604,7 +596,7 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  gap: 14px;
+  gap: clamp(8px, 2.6cqw, 14px);
 }
 
 .assistant-messages {
@@ -618,7 +610,7 @@
 }
 
 .assistant-message {
-  padding: 14px;
+  padding: clamp(10px, 2.8cqw, 14px);
   border: 1px solid rgba(13, 92, 95, 0.08);
   border-radius: 8px;
   background: #f4f7f5;
@@ -658,7 +650,7 @@
 
 .assistant-quick-prompts button {
   min-height: 36px;
-  padding: 0 12px;
+  padding: 0 clamp(9px, 2.8cqw, 12px);
   border: 1px solid rgba(0, 109, 103, 0.12);
   border-radius: 999px;
   background: #f4f7f5;
@@ -695,7 +687,7 @@
 
 .assistant-send-btn {
   width: 100%;
-  min-height: 44px;
+  min-height: clamp(38px, 8cqw, 44px);
   border-radius: 8px;
   background: linear-gradient(135deg, #5f9f9b, #6fa8b5);
   color: #f8fbfa;
@@ -711,14 +703,15 @@
 
 .assistant-dock.is-open {
   position: fixed;
-  width: min(360px, calc(100vw - 24px));
+  width: min(var(--assistant-panel-width, 400px), calc(100vw - 24px));
   max-height: calc(100vh - 112px);
-  padding: 16px;
+  padding: clamp(12px, 3cqw, 16px);
   border: 1px solid rgba(13, 92, 95, 0.1);
   border-radius: 8px;
-  background: rgba(249, 251, 248, 0.98);
+  background: rgba(242, 247, 244, 0.98);
   box-shadow: 0 22px 60px rgba(48, 73, 76, 0.16);
   backdrop-filter: blur(16px);
+  container-type: inline-size;
   overflow: auto;
 }
 
@@ -759,22 +752,22 @@
 
 .assistant-dock-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: clamp(8px, 2.6cqw, 12px);
 }
 
 .assistant-dock-head h2 {
   margin: 0;
   color: #22313a;
-  font-size: 1.05rem;
+  font-size: clamp(0.95rem, 3.8cqw, 1.05rem);
   font-weight: 850;
 }
 
 .assistant-minimize-btn {
-  width: 36px;
-  height: 36px;
+  width: clamp(30px, 8cqw, 36px);
+  height: clamp(30px, 8cqw, 36px);
   padding: 0;
   flex: 0 0 auto;
   border: 1px solid rgba(0, 109, 103, 0.12);
@@ -793,7 +786,7 @@
 }
 
 .chat-toggle-button {
-  min-width: 84px;
+  min-width: 76px;
   min-height: 46px;
   padding: 0 14px;
   border: 1px solid rgba(0, 109, 103, 0.16);
@@ -869,7 +862,7 @@
 .dashboard-container .table-wrapper,
 .dashboard-container .google-classroom-connect,
 .dashboard-container .google-classroom-assignments {
-  background: #f6f8f5;
+  background: #eef5f2;
   border-color: rgba(61, 110, 105, 0.12);
 }
 
@@ -925,23 +918,27 @@
 
 @media (min-width: 980px) {
   .dashboard-content {
-    grid-template-columns: 230px minmax(0, 1fr);
-    padding: 0 clamp(420px, 34vw, 620px) 52px 0;
+    grid-template-columns: 210px minmax(0, 1fr);
+    padding: 16px clamp(392px, 27vw, 500px) 44px 16px;
+    align-items: start;
   }
 
   .dashboard-sidebar {
     position: sticky;
-    top: 0;
-    height: 100vh;
+    top: 86px;
+    height: fit-content;
     display: flex;
     flex-direction: column;
-    padding: 24px 16px;
-    background: linear-gradient(180deg, #254e4b 0%, #1d3f3e 100%);
-    box-shadow: 18px 0 48px rgba(37, 78, 75, 0.12);
+    padding: 14px;
+    border: 1px solid rgba(61, 110, 105, 0.14);
+    border-radius: 8px;
+    background: rgba(218, 235, 231, 0.88);
+    box-shadow: 0 18px 42px rgba(37, 78, 75, 0.1);
+    backdrop-filter: blur(14px);
   }
 
   .dashboard-main {
-    padding-top: 22px;
+    padding-top: 0;
   }
 
   .dashboard-grid {
@@ -962,14 +959,14 @@
     grid-column: 1 / 3;
   }
   .assistant-dock {
-    top: 92px;
-    bottom: 22px;
+    top: 88px;
+    bottom: 18px;
   }
 
   .assistant-dock.is-open {
-    width: var(--assistant-panel-width, 420px);
+    width: var(--assistant-panel-width, 400px);
     min-width: 340px;
-    max-width: min(620px, calc(100vw - 290px));
+    max-width: min(620px, calc(100vw - 260px));
     min-height: 420px;
     max-height: none;
     display: flex;
@@ -977,7 +974,7 @@
   }
 
   .assistant-messages {
-    min-height: 220px;
+    min-height: 180px;
     max-height: none;
   }
 }
@@ -1005,7 +1002,7 @@
 
 @media (max-width: 680px) {
   .dashboard-header {
-    align-items: flex-start;
+    align-items: center;
     padding: 12px 14px;
   }
 
@@ -1020,7 +1017,7 @@
   }
 
   .dashboard-content {
-    padding: 16px 12px 98px;
+    padding: 14px 12px 98px;
   }
 
   .assistant-dock {
@@ -1080,7 +1077,7 @@
   }
 
   .dashboard-panel {
-    padding: 18px;
+    padding: 16px;
   }
 
   .panel-head {

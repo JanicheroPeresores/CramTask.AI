@@ -187,26 +187,6 @@ function DashboardPage({ user, onLogout }) {
     });
   }, [language, t]);
 
-  const [showHeader, setShowHeader] = useState(true);
-  const lastScrollY = useRef(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentY = window.pageYOffset || document.documentElement.scrollTop;
-
-      if (currentY < 80 || currentY < lastScrollY.current) {
-        setShowHeader(true);
-      } else {
-        setShowHeader(false);
-      }
-
-      lastScrollY.current = currentY;
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   useEffect(() => {
     if (assistantScrollRef.current) {
       assistantScrollRef.current.scrollTop = assistantScrollRef.current.scrollHeight;
@@ -419,7 +399,7 @@ function DashboardPage({ user, onLogout }) {
         </div>
       )}
 
-      <header className={`dashboard-header ${showHeader ? 'visible' : 'hidden'}`}>
+      <header className="dashboard-header">
         <div className="dashboard-brand">
           <div className="brand-mark">CT</div>
           <div className="brand-copy">

@@ -2,9 +2,9 @@
   color-scheme: light;
   font-family: 'Inter', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   font-size: 16px;
-  --bg: #f4fbfb;
-  --surface: rgba(255, 255, 255, 0.94);
-  --surface-soft: rgba(0, 109, 103, 0.06);
+  --bg: #e5eeeb;
+  --surface: rgba(241, 247, 244, 0.94);
+  --surface-soft: rgba(61, 110, 105, 0.08);
   --text: #17212f;
   --muted: #667789;
   --border: rgba(13, 92, 95, 0.1);
@@ -12,7 +12,7 @@
   --accent: #ffd166;
   --success: #1f9b62;
   --danger: #d23248;
-  --control-bg: rgba(255, 255, 255, 0.78);
+  --control-bg: rgba(237, 245, 242, 0.84);
   --control-border: rgba(13, 92, 95, 0.12);
   --auth-sky-top: #e9f3ff;
   --auth-sky-mid: #75b8ef;
