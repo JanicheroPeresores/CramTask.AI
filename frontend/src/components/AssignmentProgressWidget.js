@@ -103,19 +103,21 @@ function AssignmentProgressWidget({ assignments, onRefresh }) {
     [language]
   );
 
-  const total = assignments.length;
-  const completed = assignments.filter(
-    (assignment) => assignment.submission_status === 'submitted'
-  ).length;
-  const remaining = total - completed;
-  const percentage = total ? Math.round((completed / total) * 100) : 0;
+  // Count only active (unsubmitted) assignments — matches exactly what the calendar shows
+  const activeAssignments = assignments.filter(
+    (assignment) => assignment.submission_status !== 'submitted'
+  );
+  const total = activeAssignments.length;
+  const completed = 0;
+  const remaining = total;
+  const percentage = total === 0 ? 100 : 0;
   const progressOffset = RING_CIRCUMFERENCE * (1 - percentage / 100);
   const progressTone = percentage >= 80 ? 'high' : percentage >= 40 ? 'medium' : 'low';
   const statusKey =
-    percentage === 100 && total > 0
+    total === 0 && assignments.length > 0
       ? 'allCompleted'
-      : percentage >= 70
-      ? 'almostDone'
+      : total === 0
+      ? 'keepGoing'
       : 'keepGoing';
 
   const handlePointerDown = (event) => {
@@ -280,7 +282,7 @@ function AssignmentProgressWidget({ assignments, onRefresh }) {
           {timeFormatter.format(currentTime)}
         </time>
         <p className="progress-count">
-          <strong>{completed}/{total}</strong> {t('progress.tasksCompleted')}
+          <strong>{remaining}</strong> {t('progress.remaining').toLowerCase()} — {completed} {t('progress.completed').toLowerCase()}
         </p>
         <div className="progress-stats" aria-label={t('progress.statsLabel')}>
           <span>
@@ -296,7 +298,14 @@ function AssignmentProgressWidget({ assignments, onRefresh }) {
             {t('progress.remaining')}
           </span>
         </div>
-        <p className="progress-motivation">{t(`progress.${statusKey}`)}</p>
+        <p className="progress-motivation">
+          {total === 0 && assignments.length > 0
+            ? 'All done! 🎉'
+            : total === 0
+            ? 'No assignments yet.'
+            : `${remaining} task${remaining !== 1 ? 's' : ''} remaining`
+          }
+        </p>
       </div>
 
       {!isCollapsed && (
