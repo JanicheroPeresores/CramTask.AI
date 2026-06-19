@@ -497,7 +497,12 @@ function DashboardPage({ user, onLogout }) {
                   ) : null}
                 </div>
               </div>
-              <p className="summary-card-label">{t('dashboard.assignmentsTitle')}</p>
+              <p className="summary-card-label">
+                <span className="summary-card-label-icon" aria-hidden>
+                  <DashboardIcon name="tasks" size={14} />
+                </span>
+                {t('dashboard.assignmentsTitle')}
+              </p>
               <h3>{totalAssignments}</h3>
               {totalAssignments === 0 ? (
                 <p>{t('assignments.empty')}</p>

@@ -291,6 +291,20 @@
   font-weight: 800;
   letter-spacing: 0.11em;
   text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.summary-card-label-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  color: inherit;
 }
 
 .summary-card-primary .summary-card-label,
