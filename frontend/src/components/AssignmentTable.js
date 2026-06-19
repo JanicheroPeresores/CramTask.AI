@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import './TaskTable.css';
 
@@ -71,20 +71,25 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
     }
   };
 
-  const getAssignmentStatus = (assignment) =>
+  const getAssignmentStatus = useCallback((assignment) =>
     String(assignment.submission_status || assignment.state || assignment.status || '')
       .trim()
-      .toUpperCase();
+      .toUpperCase(),
+    []
+  );
 
-  const isAssignmentCompleted = (assignment) => {
-    const status = getAssignmentStatus(assignment);
-    return [
-      'SUBMITTED',
-      'TURNED_IN',
-      'RETURNED',
-      'COMPLETED',
-    ].includes(status);
-  };
+  const isAssignmentCompleted = useCallback(
+    (assignment) => {
+      const status = getAssignmentStatus(assignment);
+      return [
+        'SUBMITTED',
+        'TURNED_IN',
+        'RETURNED',
+        'COMPLETED',
+      ].includes(status);
+    },
+    [getAssignmentStatus]
+  );
 
   const activeAssignments = useMemo(
     () =>
@@ -92,7 +97,7 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
         .filter((assignment) => !isAssignmentCompleted(assignment))
         .slice()
         .sort((a, b) => new Date(a.due_date || '9999-12-31') - new Date(b.due_date || '9999-12-31')),
-    [assignments]
+    [assignments, isAssignmentCompleted]
   );
   const datedAssignments = useMemo(
     () => activeAssignments.filter((assignment) => getDateKey(assignment.due_date) !== 'no-date'),
