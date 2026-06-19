@@ -9,11 +9,11 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  background: linear-gradient(180deg, rgba(248, 252, 250, 0.98), rgba(237, 246, 244, 0.98));
-  border: 1px solid rgba(61, 110, 105, 0.16);
+  background: linear-gradient(180deg, rgba(211, 206, 202, 0.98), rgba(200, 194, 190, 0.98));
+  border: 1px solid rgba(79, 72, 68, 0.16);
   border-radius: 8px;
   padding: 16px;
-  box-shadow: 0 20px 52px rgba(41, 84, 91, 0.18);
+  box-shadow: 0 20px 52px rgba(79, 72, 68, 0.18);
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -44,13 +44,13 @@
 
 .assignment-progress-widget:hover {
   transform: translateY(-3px);
-  box-shadow: 0 26px 64px rgba(41, 84, 91, 0.2);
+  box-shadow: 0 26px 64px rgba(79, 72, 68, 0.2);
 }
 
 .assignment-progress-widget.is-dragging {
   cursor: grabbing;
   transform: scale(1.01);
-  box-shadow: 0 30px 80px rgba(41, 84, 91, 0.24);
+  box-shadow: 0 30px 80px rgba(79, 72, 68, 0.24);
 }
 
 .assignment-progress-widget.is-resizing {
@@ -102,8 +102,8 @@
   place-items: center;
   border: none;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.95);
-  color: #334046;
+  background: rgba(211, 206, 202, 0.94);
+  color: #242322;
   font-size: 1.1rem;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
@@ -117,12 +117,12 @@
   width: 22px;
   height: 22px;
   padding: 0;
-  border: 1px solid rgba(61, 110, 105, 0.2);
+  border: 1px solid rgba(79, 72, 68, 0.2);
   border-radius: 6px;
   background:
-    linear-gradient(135deg, transparent 0 48%, rgba(61, 110, 105, 0.62) 49% 54%, transparent 55%),
-    linear-gradient(135deg, transparent 0 66%, rgba(61, 110, 105, 0.42) 67% 72%, transparent 73%),
-    rgba(255, 255, 255, 0.88);
+    linear-gradient(135deg, transparent 0 48%, rgba(79, 72, 68, 0.62) 49% 54%, transparent 55%),
+    linear-gradient(135deg, transparent 0 66%, rgba(79, 72, 68, 0.42) 67% 72%, transparent 73%),
+    rgba(211, 206, 202, 0.88);
   cursor: nwse-resize;
   touch-action: none;
   z-index: 2;
@@ -131,7 +131,7 @@
 .progress-resize-handle:hover,
 .progress-resize-handle:focus-visible {
   transform: none;
-  box-shadow: 0 8px 18px rgba(41, 84, 91, 0.14);
+  box-shadow: 0 8px 18px rgba(79, 72, 68, 0.14);
 }
 
 :root[data-theme='dark'] .progress-resize-handle {
@@ -144,7 +144,7 @@
 
 .assignment-progress-widget:hover .progress-toggle-button,
 .assignment-progress-widget.is-dragging .progress-toggle-button {
-  background: rgba(255, 255, 255, 1);
+  background: rgba(218, 213, 209, 1);
 }
 
 .progress-toggle-button:hover {
@@ -194,7 +194,7 @@
 
 .progress-ring-center strong {
   margin: 0;
-  color: #22313a;
+  color: #242322;
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 0;
@@ -205,7 +205,7 @@
 }
 
 .progress-ring-center span {
-  color: rgba(54, 77, 89, 0.7);
+  color: rgba(79, 72, 68, 0.72);
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -218,34 +218,34 @@
 
 .progress-summary {
   min-width: 0;
-  color: #22313a;
+  color: #242322;
 }
 
 .progress-eyebrow {
   margin: 0 0 6px;
   font-size: 0.72rem;
   letter-spacing: 0.12em;
-  color: #64727b;
+  color: #625e5b;
   text-transform: uppercase;
 }
 
 .progress-date {
   margin: 0;
   font-size: 1rem;
-  color: #22313a;
+  color: #242322;
   font-weight: 700;
 }
 
 .progress-time {
   margin: 6px 0 0;
   font-size: 0.9rem;
-  color: #5d6d76;
+  color: #625e5b;
 }
 
 .progress-count {
   margin: 10px 0 0;
   font-size: 0.95rem;
-  color: #4f6069;
+  color: #4f4a47;
 }
 
 .progress-count strong {
@@ -260,14 +260,14 @@
 }
 
 .progress-stats span {
-  color: #667782;
+  color: #6a625e;
   font-size: 0.75rem;
 }
 
 .progress-stats strong {
   display: block;
   font-size: 0.88rem;
-  color: #22313a;
+  color: #242322;
 }
 
 .progress-motivation {

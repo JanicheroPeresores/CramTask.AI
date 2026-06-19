@@ -1,10 +1,24 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import './TaskTable.css';
+
+const getDateKey = (dateInput) => {
+  if (!dateInput) return 'no-date';
+  const date = new Date(dateInput);
+  if (Number.isNaN(date.getTime())) return 'no-date';
+  return date.toISOString().slice(0, 10);
+};
+
+const getMonthKey = (dateString) => {
+  const date = new Date(dateString);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+};
 
 function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssignmentIds = [] }) {
   const { language, t } = useLanguage();
   const locale = language === 'tl' ? 'fil-PH' : 'en-US';
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedDay, setSelectedDay] = useState('');
 
   const formatDate = (dateString) => {
     if (!dateString) return t('common.noDueDate');
@@ -16,65 +30,21 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
     });
   };
 
-  const formatMonth = (date) =>
-    date.toLocaleDateString(locale, {
+  const formatMonth = (monthKey) => {
+    const [year, month] = monthKey.split('-').map(Number);
+    return new Date(year, month - 1, 1).toLocaleDateString(locale, {
       month: 'long',
       year: 'numeric',
     });
-
-  const getDateKey = (dateInput) => {
-    if (!dateInput) return 'no-date';
-    const date = new Date(dateInput);
-    if (Number.isNaN(date.getTime())) return 'no-date';
-    return date.toISOString().slice(0, 10);
   };
 
-  const getMonthKey = (dateString) => {
-    const date = new Date(dateString);
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-  };
-
-  const buildMonthDays = (monthKey) => {
-    const [year, month] = monthKey.split('-').map(Number);
-    const monthIndex = month - 1;
-    const firstDay = new Date(year, monthIndex, 1);
-    const daysInMonth = new Date(year, month, 0).getDate();
-    const days = [];
-
-    for (let index = 0; index < firstDay.getDay(); index += 1) {
-      days.push(null);
-    }
-
-    for (let day = 1; day <= daysInMonth; day += 1) {
-      days.push(new Date(year, monthIndex, day));
-    }
-
-    while (days.length % 7 !== 0) {
-      days.push(null);
-    }
-
-    return days;
-  };
-
-  const getStatusBadgeClass = (status) => {
-    switch (status) {
-      case 'submitted':
-        return 'status-submitted';
-      case 'not_submitted':
-      default:
-        return 'status-pending';
-    }
-  };
-
-  const getStatusDisplayText = (status) => {
-    switch (status) {
-      case 'not_submitted':
-        return t('common.notSubmitted');
-      case 'submitted':
-        return t('common.submitted');
-      default:
-        return status;
-    }
+  const formatDay = (dateKey) => {
+    const date = new Date(`${dateKey}T00:00:00`);
+    return date.toLocaleDateString(locale, {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    });
   };
 
   const getPriorityBadgeClass = (priority) => {
@@ -101,30 +71,83 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
     }
   };
 
-  const renderAssignmentItem = (assignment, compact = false) => {
-    const statusText = getStatusDisplayText(assignment.submission_status);
-    const statusClass = getStatusBadgeClass(assignment.submission_status);
+  const activeAssignments = useMemo(
+    () =>
+      assignments
+        .filter((assignment) => assignment.submission_status !== 'submitted')
+        .slice()
+        .sort((a, b) => new Date(a.due_date || '9999-12-31') - new Date(b.due_date || '9999-12-31')),
+    [assignments]
+  );
+  const datedAssignments = useMemo(
+    () => activeAssignments.filter((assignment) => getDateKey(assignment.due_date) !== 'no-date'),
+    [activeAssignments]
+  );
+  const noDateAssignments = useMemo(
+    () => activeAssignments.filter((assignment) => getDateKey(assignment.due_date) === 'no-date'),
+    [activeAssignments]
+  );
+  const monthKeys = useMemo(
+    () => [...new Set(datedAssignments.map((assignment) => getMonthKey(assignment.due_date)))],
+    [datedAssignments]
+  );
+  const selectedMonthAssignments = useMemo(
+    () =>
+      selectedMonth
+        ? datedAssignments.filter((assignment) => getMonthKey(assignment.due_date) === selectedMonth)
+        : [],
+    [datedAssignments, selectedMonth]
+  );
+  const dayKeys = useMemo(
+    () => [...new Set(selectedMonthAssignments.map((assignment) => getDateKey(assignment.due_date)))],
+    [selectedMonthAssignments]
+  );
+  const selectedDayAssignments = useMemo(
+    () =>
+      selectedDay
+        ? selectedMonthAssignments.filter((assignment) => getDateKey(assignment.due_date) === selectedDay)
+        : [],
+    [selectedDay, selectedMonthAssignments]
+  );
+
+  useEffect(() => {
+    if (!monthKeys.length) {
+      setSelectedMonth('');
+      return;
+    }
+
+    if (!selectedMonth || !monthKeys.includes(selectedMonth)) {
+      setSelectedMonth(monthKeys[0]);
+    }
+  }, [monthKeys, selectedMonth]);
+
+  useEffect(() => {
+    if (!dayKeys.length) {
+      setSelectedDay('');
+      return;
+    }
+
+    if (!selectedDay || !dayKeys.includes(selectedDay)) {
+      setSelectedDay(dayKeys[0]);
+    }
+  }, [dayKeys, selectedDay]);
+
+  const renderAssignmentItem = (assignment) => {
     const priorityText = getPriorityDisplayText(assignment.priority);
     const priorityClass = getPriorityBadgeClass(assignment.priority);
-    const isSubmitted = assignment.submission_status === 'submitted';
 
     return (
-      <article
-        key={assignment.id}
-        className={`calendar-assignment ${isSubmitted ? 'is-submitted' : ''}${compact ? ' is-compact' : ''}`}
-      >
+      <article key={assignment.id} className="calendar-assignment">
         <div className="calendar-assignment-main">
           <h3 className="assignment-card-title">{assignment.assignment_title}</h3>
           <p className="assignment-card-course">{assignment.course}</p>
-          {!compact && (
-            <div className="assignment-card-meta">
-              <span className="meta-label">{t('assignments.dueDate')}</span>
-              <span>{formatDate(assignment.due_date)}</span>
-            </div>
-          )}
+          <div className="assignment-card-meta">
+            <span className="meta-label">{t('assignments.dueDate')}</span>
+            <span>{formatDate(assignment.due_date)}</span>
+          </div>
           <div className="assignment-status-bar">
-            <div className={`status-indicator ${statusClass}`}>
-              <span className="status-label">{statusText}</span>
+            <div className="status-indicator status-pending">
+              <span className="status-label">{t('common.notSubmitted')}</span>
             </div>
             <div className={`priority-badge ${priorityClass}`}>
               {priorityText}
@@ -138,9 +161,9 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
             className="btn-complete"
             onClick={() => onToggleComplete(assignment)}
             disabled={updatingAssignmentIds.includes(assignment.id)}
-            title={isSubmitted ? t('common.notSubmitted') : t('common.submitted')}
+            title={t('common.submitted')}
           >
-            {isSubmitted ? 'Undo' : 'Done'}
+            Done
           </button>
           <button
             type="button"
@@ -155,72 +178,64 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
     );
   };
 
-  const datedAssignments = assignments
-    .filter((assignment) => getDateKey(assignment.due_date) !== 'no-date')
-    .slice()
-    .sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
-  const noDateAssignments = assignments.filter((assignment) => getDateKey(assignment.due_date) === 'no-date');
-  const assignmentsByDate = datedAssignments.reduce((groups, assignment) => {
-    const dateKey = getDateKey(assignment.due_date);
-    return {
-      ...groups,
-      [dateKey]: [...(groups[dateKey] || []), assignment],
-    };
-  }, {});
-  const monthKeys = [...new Set(datedAssignments.map((assignment) => getMonthKey(assignment.due_date)))];
-  const todayKey = getDateKey(new Date());
-  const weekdayLabels = Array.from({ length: 7 }, (_, index) =>
-    new Date(2026, 5, 14 + index).toLocaleDateString(locale, { weekday: 'short' })
-  );
-
   return (
     <div className="table-wrapper">
-      {assignments.length === 0 ? (
+      {activeAssignments.length === 0 ? (
         <div className="empty-state">
           <p>{t('assignments.empty')}</p>
         </div>
       ) : (
         <div className="assignment-calendar-board">
-          {monthKeys.map((monthKey) => {
-            const days = buildMonthDays(monthKey);
-            const [year, month] = monthKey.split('-').map(Number);
+          {monthKeys.length > 0 && (
+            <section className="assignment-picker">
+              <div className="assignment-picker-controls">
+                <label>
+                  <span>{t('assignments.month')}</span>
+                  <select value={selectedMonth} onChange={(event) => setSelectedMonth(event.target.value)}>
+                    {monthKeys.map((monthKey) => (
+                      <option key={monthKey} value={monthKey}>
+                        {formatMonth(monthKey)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>{t('assignments.day')}</span>
+                  <select value={selectedDay} onChange={(event) => setSelectedDay(event.target.value)}>
+                    {dayKeys.map((dayKey) => (
+                      <option key={dayKey} value={dayKey}>
+                        {formatDay(dayKey)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
 
-            return (
-              <section className="assignment-month" key={monthKey}>
-                <div className="assignment-month-head">
-                  <h3>{formatMonth(new Date(year, month - 1, 1))}</h3>
-                  <span>{datedAssignments.filter((assignment) => getMonthKey(assignment.due_date) === monthKey).length}</span>
-                </div>
-                <div className="calendar-weekdays" aria-hidden>
-                  {weekdayLabels.map((weekday) => (
-                    <span key={weekday}>{weekday}</span>
-                  ))}
-                </div>
-                <div className="calendar-grid">
-                  {days.map((day, index) => {
-                    const dateKey = day ? getDateKey(day) : `empty-${monthKey}-${index}`;
-                    const dayAssignments = day ? assignmentsByDate[dateKey] || [] : [];
+              <div className="assignment-day-strip" aria-label={t('assignments.day')}>
+                {dayKeys.map((dayKey) => (
+                  <button
+                    key={dayKey}
+                    type="button"
+                    className={dayKey === selectedDay ? 'is-active' : ''}
+                    onClick={() => setSelectedDay(dayKey)}
+                  >
+                    <strong>{new Date(`${dayKey}T00:00:00`).getDate()}</strong>
+                    <span>{selectedMonthAssignments.filter((assignment) => getDateKey(assignment.due_date) === dayKey).length}</span>
+                  </button>
+                ))}
+              </div>
 
-                    return (
-                      <div
-                        className={`calendar-day${day ? '' : ' is-empty'}${dateKey === todayKey ? ' is-today' : ''}${dayAssignments.length ? ' has-assignments' : ''}`}
-                        key={dateKey}
-                      >
-                        {day && (
-                          <>
-                            <div className="calendar-day-number">{day.getDate()}</div>
-                            <div className="calendar-day-list">
-                              {dayAssignments.map((assignment) => renderAssignmentItem(assignment, true))}
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            );
-          })}
+              <div className="selected-day-list">
+                {selectedDayAssignments.length > 0 ? (
+                  selectedDayAssignments.map((assignment) => renderAssignmentItem(assignment))
+                ) : (
+                  <div className="empty-state empty-state--compact">
+                    <p>{t('assignments.emptyDay')}</p>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
 
           {noDateAssignments.length > 0 && (
             <section className="assignment-no-date">

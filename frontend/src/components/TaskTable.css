@@ -1,8 +1,8 @@
 .table-wrapper {
   width: 100%;
-  border: 1px solid rgba(13, 92, 95, 0.08);
+  border: 1px solid rgba(79, 72, 68, 0.12);
   border-radius: 8px;
-  background: #eef5f2;
+  background: rgba(210, 205, 201, 0.72);
   padding: 12px;
 }
 
@@ -12,11 +12,18 @@
 }
 
 .empty-state {
-  min-height: 180px;
+  min-height: 160px;
   display: grid;
   place-items: center;
   text-align: center;
-  color: #667789;
+  color: #5e5d5c;
+}
+
+.empty-state--compact {
+  min-height: 96px;
+  border: 1px dashed rgba(79, 72, 68, 0.18);
+  border-radius: 8px;
+  background: rgba(200, 194, 190, 0.34);
 }
 
 .empty-state p {
@@ -26,21 +33,99 @@
 
 .assignment-calendar-board {
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
-.assignment-month,
+.assignment-picker,
 .assignment-no-date {
-  border: 1px solid rgba(13, 92, 95, 0.09);
+  border: 1px solid rgba(79, 72, 68, 0.13);
   border-radius: 8px;
-  background: rgba(251, 252, 250, 0.88);
+  background: rgba(218, 213, 209, 0.72);
   overflow: hidden;
 }
 
-:root[data-theme='dark'] .assignment-month,
+:root[data-theme='dark'] .assignment-picker,
 :root[data-theme='dark'] .assignment-no-date {
   border-color: rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.04);
+}
+
+.assignment-picker-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 10px;
+  padding: 12px;
+  border-bottom: 1px solid rgba(79, 72, 68, 0.1);
+}
+
+.assignment-picker-controls label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.assignment-picker-controls span {
+  color: #5f5854;
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.assignment-picker-controls select {
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: rgba(200, 194, 190, 0.74);
+  border-color: rgba(79, 72, 68, 0.14);
+  color: #242322;
+}
+
+.assignment-day-strip {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  overflow-x: auto;
+  border-bottom: 1px solid rgba(79, 72, 68, 0.1);
+}
+
+.assignment-day-strip button {
+  flex: 0 0 auto;
+  min-width: 48px;
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  padding: 6px 9px;
+  border-radius: 8px;
+  background: rgba(200, 194, 190, 0.56);
+  color: #34312f;
+  box-shadow: none;
+}
+
+.assignment-day-strip button:hover,
+.assignment-day-strip button.is-active {
+  transform: none;
+  background: #5f9f9b;
+  color: #f8fbfa;
+}
+
+.assignment-day-strip strong {
+  font-size: 0.92rem;
+  line-height: 1;
+}
+
+.assignment-day-strip span {
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.selected-day-list,
+.no-date-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 9px;
+  padding: 12px;
 }
 
 .assignment-month-head {
@@ -48,15 +133,15 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  min-height: 48px;
-  padding: 0 14px;
-  border-bottom: 1px solid rgba(13, 92, 95, 0.08);
+  min-height: 44px;
+  padding: 0 12px;
+  border-bottom: 1px solid rgba(79, 72, 68, 0.1);
 }
 
 .assignment-month-head h3 {
   margin: 0;
-  color: #17212f;
-  font-size: 1rem;
+  color: #242322;
+  font-size: 0.98rem;
   font-weight: 850;
 }
 
@@ -67,121 +152,24 @@
 .assignment-month-head span {
   display: inline-grid;
   place-items: center;
-  min-width: 30px;
-  height: 28px;
-  padding: 0 9px;
-  border-radius: 999px;
-  background: rgba(69, 129, 124, 0.14);
-  color: #315f5d;
-  font-size: 0.78rem;
-  font-weight: 850;
-}
-
-.calendar-weekdays,
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(92px, 1fr));
-}
-
-.calendar-weekdays {
-  border-bottom: 1px solid rgba(13, 92, 95, 0.08);
-  background: rgba(61, 110, 105, 0.07);
-}
-
-.calendar-weekdays span {
-  min-height: 34px;
-  display: grid;
-  place-items: center;
-  color: #5d6d76;
-  font-size: 0.72rem;
-  font-weight: 850;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.calendar-day {
-  min-height: 152px;
-  padding: 8px;
-  border-right: 1px solid rgba(13, 92, 95, 0.07);
-  border-bottom: 1px solid rgba(13, 92, 95, 0.07);
-  background: rgba(255, 255, 255, 0.46);
-}
-
-.calendar-day:nth-child(7n) {
-  border-right: none;
-}
-
-.calendar-day.is-empty {
-  background: rgba(61, 110, 105, 0.04);
-}
-
-.calendar-day.is-today {
-  box-shadow: inset 0 0 0 2px rgba(95, 159, 155, 0.48);
-}
-
-.calendar-day.has-assignments {
-  background: rgba(255, 255, 255, 0.72);
-}
-
-:root[data-theme='dark'] .calendar-weekdays,
-:root[data-theme='dark'] .calendar-day.is-empty {
-  background: rgba(255, 255, 255, 0.04);
-}
-
-:root[data-theme='dark'] .calendar-day {
-  border-color: rgba(255, 255, 255, 0.07);
-  background: rgba(255, 255, 255, 0.025);
-}
-
-:root[data-theme='dark'] .calendar-day.has-assignments {
-  background: rgba(255, 255, 255, 0.045);
-}
-
-.calendar-day-number {
-  width: 28px;
+  min-width: 28px;
   height: 26px;
-  display: grid;
-  place-items: center;
-  margin-bottom: 7px;
-  border-radius: 8px;
-  color: #435162;
-  font-size: 0.78rem;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(95, 159, 155, 0.16);
+  color: #315f5d;
+  font-size: 0.76rem;
   font-weight: 850;
-}
-
-.calendar-day.is-today .calendar-day-number {
-  background: #5f9f9b;
-  color: #f8fbfa;
-}
-
-.calendar-day-list,
-.no-date-list {
-  display: grid;
-  gap: 7px;
-}
-
-.no-date-list {
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  padding: 12px;
 }
 
 .calendar-assignment {
   display: grid;
   gap: 8px;
   padding: 10px;
-  border: 1px solid rgba(13, 92, 95, 0.09);
+  border: 1px solid rgba(79, 72, 68, 0.12);
   border-radius: 8px;
-  background: #fbfcfa;
-  box-shadow: 0 10px 24px rgba(30, 73, 82, 0.06);
-}
-
-.calendar-assignment.is-compact {
-  padding: 8px;
-  gap: 7px;
-}
-
-.calendar-assignment.is-submitted {
-  opacity: 0.72;
+  background: rgba(229, 225, 221, 0.78);
+  box-shadow: 0 10px 24px rgba(79, 72, 68, 0.08);
 }
 
 :root[data-theme='dark'] .calendar-assignment {
@@ -197,8 +185,8 @@
 
 .assignment-card-title {
   margin: 0;
-  color: #17212f;
-  font-size: 0.86rem;
+  color: #242322;
+  font-size: 0.9rem;
   line-height: 1.25;
   font-weight: 850;
   overflow-wrap: anywhere;
@@ -211,8 +199,8 @@
 
 .assignment-card-course {
   margin: 0;
-  color: #667789;
-  font-size: 0.72rem;
+  color: #67605c;
+  font-size: 0.73rem;
   line-height: 1.25;
   font-weight: 700;
 }
@@ -227,13 +215,13 @@
   gap: 6px;
   align-items: center;
   font-size: 0.75rem;
-  color: #435162;
+  color: #4f4a47;
   flex-wrap: wrap;
 }
 
 .meta-label {
   font-weight: 800;
-  color: #7a8999;
+  color: #7a736f;
 }
 
 .assignment-status-bar {
@@ -259,33 +247,33 @@
 }
 
 .status-pending {
-  background: rgba(255, 209, 102, 0.24);
-  color: #8a6500;
-  border: 1px solid rgba(255, 209, 102, 0.36);
+  background: rgba(127, 113, 88, 0.18);
+  color: #6d5322;
+  border: 1px solid rgba(127, 113, 88, 0.24);
 }
 
 .status-submitted {
-  background: rgba(55, 220, 135, 0.2);
-  color: #0f7f3a;
-  border: 1px solid rgba(55, 220, 135, 0.4);
+  background: rgba(55, 130, 90, 0.18);
+  color: #24623e;
+  border: 1px solid rgba(55, 130, 90, 0.28);
 }
 
 .priority-high {
-  background: rgba(255, 107, 124, 0.15);
-  color: #a4273b;
-  border: 1px solid rgba(255, 107, 124, 0.25);
+  background: rgba(180, 80, 92, 0.14);
+  color: #8f3340;
+  border: 1px solid rgba(180, 80, 92, 0.22);
 }
 
 .priority-medium {
-  background: rgba(255, 209, 102, 0.15);
-  color: #8a6500;
-  border: 1px solid rgba(255, 209, 102, 0.25);
+  background: rgba(127, 113, 88, 0.16);
+  color: #6d5322;
+  border: 1px solid rgba(127, 113, 88, 0.22);
 }
 
 .priority-low {
-  background: rgba(55, 220, 135, 0.15);
-  color: #0f7f3a;
-  border: 1px solid rgba(55, 220, 135, 0.25);
+  background: rgba(55, 130, 90, 0.14);
+  color: #24623e;
+  border: 1px solid rgba(55, 130, 90, 0.22);
 }
 
 :root[data-theme='dark'] .priority-high {
@@ -310,10 +298,10 @@
 }
 
 .calendar-assignment-actions button {
-  min-height: 28px;
-  padding: 0 7px;
+  min-height: 30px;
+  padding: 0 8px;
   border-radius: 6px;
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 850;
   box-shadow: none;
 }
@@ -323,37 +311,22 @@
 }
 
 .btn-complete {
-  background: rgba(79, 157, 115, 0.16);
+  background: rgba(55, 130, 90, 0.16);
   color: #24623e;
 }
 
 .btn-delete {
-  background: rgba(200, 79, 95, 0.12);
-  color: #963746;
-}
-
-@media (max-width: 1100px) {
-  .calendar-weekdays,
-  .calendar-grid {
-    grid-template-columns: repeat(7, minmax(78px, 1fr));
-  }
-
-  .calendar-day {
-    min-height: 136px;
-    padding: 7px;
-  }
+  background: rgba(180, 80, 92, 0.12);
+  color: #8f3340;
 }
 
 @media (max-width: 760px) {
   .table-wrapper {
     padding: 10px;
-    overflow-x: auto;
   }
 
-  .assignment-month {
-    min-width: 720px;
-  }
-
+  .assignment-picker-controls,
+  .selected-day-list,
   .no-date-list {
     grid-template-columns: 1fr;
   }

@@ -2,7 +2,7 @@
   border: 1px solid rgba(13, 92, 95, 0.08);
   border-radius: 8px;
   padding: 14px;
-  background: #eef5f2;
+  background: rgba(211, 206, 202, 0.72);
 }
 
 :root[data-theme='dark'] .google-classroom-connect {
@@ -12,7 +12,7 @@
 
 .google-classroom-connect h3 {
   margin: 0 0 10px;
-  color: #17212f;
+  color: #242322;
   font-size: 1rem;
   font-weight: 850;
 }
@@ -72,7 +72,7 @@
 .connected-at,
 .info-text {
   margin: 0;
-  color: #667789;
+  color: #625e5b;
   font-size: 0.9rem;
   line-height: 1.5;
 }
@@ -101,9 +101,9 @@
 }
 
 .google-classroom-connect .btn-secondary {
-  background: #ffffff;
-  color: #073b3a;
-  border: 1px solid rgba(0, 109, 103, 0.14);
+  background: #d1ccc8;
+  color: #242322;
+  border: 1px solid rgba(79, 72, 68, 0.14);
 }
 
 :root[data-theme='dark'] .google-classroom-connect .btn-secondary {

@@ -434,10 +434,6 @@ function DashboardPage({ user, onLogout }) {
               <span className="nav-icon"><DashboardIcon name="calendar" /></span>
               <span>{t('dashboard.navCalendar')}</span>
             </a>
-            <a href="#assignments">
-              <span className="nav-icon"><DashboardIcon name="tasks" /></span>
-              <span>{t('dashboard.navTasks')}</span>
-            </a>
           </nav>
           <button
             type="button"
