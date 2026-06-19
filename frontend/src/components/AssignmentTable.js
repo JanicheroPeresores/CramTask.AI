@@ -132,7 +132,7 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
 
   const completedAssignments = useMemo(
     () => assignments.filter(isAssignmentCompleted),
-    [assignments]
+    [assignments, isAssignmentCompleted]
   );
 
   useEffect(() => {
