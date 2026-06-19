@@ -335,7 +335,7 @@ ${responseLanguage}`;
     if (!geminiKey) {
       return res
         .status(500)
-        .json({ message: 'AI not configured. Set GEMINI_API_KEY in your backend environment.' });
+        .json({ message: "The AI assistant isn't fully set up yet. Let your teacher know to add the API key in the backend settings." });
     }
 
     const geminiResponse = await callGemini({
@@ -354,19 +354,19 @@ ${responseLanguage}`;
 
         return res.status(429).json({
           message: seconds
-            ? `Rate limited by Gemini. Retry in ${seconds}s.`
-            : 'Rate limited by Gemini. Please try again shortly.',
+            ? `Whoa, slow down! The AI needs a ${seconds}-second break before I can answer your next question.`
+            : 'I got a bit overwhelmed with requests. Give me a moment and try again.',
           retryAfterSeconds: seconds,
         });
       }
 
-      return res.status(502).json({ message: 'AI request failed' });
+      return res.status(502).json({ message: "I can't fully understand and answer your question right now. Could you try asking in a different way?" });
     }
 
     return res.json({ content: geminiResponse.text });
   } catch (err) {
     console.error('Dashboard assistant error:', err);
-    return res.status(500).json({ message: 'AI error' });
+    return res.status(500).json({ message: "Something went wrong on my end. Can you ask that again?" });
   }
 });
 
@@ -420,7 +420,7 @@ Give a short, encouraging hint that nudges the student toward the correct answer
     if (!geminiKey) {
       return res
         .status(500)
-        .json({ message: 'AI not configured. Set GEMINI_API_KEY in your backend environment.' });
+        .json({ message: "The study coach isn't ready yet. Ask your teacher to add the API key so I can help you study!" });
     }
 
     const geminiResponse = await callGemini({
@@ -439,13 +439,13 @@ Give a short, encouraging hint that nudges the student toward the correct answer
 
         return res.status(429).json({
           message: seconds
-            ? `Rate limited by Gemini. Retry in ${seconds}s.`
-            : 'Rate limited by Gemini. Please try again shortly.',
+            ? `You're asking too fast! Wait ${seconds}s and I'll be ready to help.`
+            : 'I need a short breather before the next question. Try again in a few seconds.',
           retryAfterSeconds: seconds,
         });
       }
 
-      return res.status(502).json({ message: 'AI request failed' });
+      return res.status(502).json({ message: "I can't fully understand and answer your question right now. Could you try asking in a different way?" });
     }
 
     const hintText = geminiResponse.text;
@@ -462,7 +462,7 @@ Give a short, encouraging hint that nudges the student toward the correct answer
     });
   } catch (err) {
     console.error('Study coach error:', err);
-    return res.status(500).json({ message: 'AI error' });
+    return res.status(500).json({ message: "Something went wrong on my end. Can you ask that again?" });
   }
 });
 

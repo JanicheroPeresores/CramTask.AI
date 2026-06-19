@@ -2,12 +2,12 @@ import axios from 'axios';
 
 const FALLBACK_REPLY = {
   content:
-    'I can help you prioritize assignments, turn a deadline into a study plan, or break a big project into the next three steps. What are you working on right now?',
+    "I can't fully understand and answer your question right now. Could you try asking in a different way?",
 };
 
 const FALLBACK_REPLY_TL = {
   content:
-    'Matutulungan kitang ayusin ang priorities, gawing study plan ang deadline, o hatiin ang malaking project sa susunod na tatlong steps. Ano ang ginagawa mo ngayon?',
+    "Hindi ko lubusang maintindihan at masagot ang tanong mo ngayon. Pwede mo bang subukan itong itanong sa ibang paraan?",
 };
 
 export const sendDashboardAssistantMessage = async ({

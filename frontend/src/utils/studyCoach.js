@@ -3,21 +3,21 @@ import axios from 'axios';
 const buildFallbackFeedback = ({ isCorrect, correctAnswer, mode }) => {
   if (mode === 'hint') {
     return {
-      summary: 'Hint mode.',
-      hint: 'Focus on the main concept in the question, then eliminate any choices that do not fit that concept.',
+      summary: "I can't give you a hint right now.",
+      hint: "I'm having trouble understanding what you need. Could you rephrase the question or try again?",
     };
   }
 
   if (isCorrect) {
     return {
-      summary: 'Correct answer.',
-      hint: 'Your answer matches the expected solution. Try explaining why it works in one sentence.',
+      summary: "That looks right!",
+      hint: "I can't give you a detailed explanation right now, but your answer matches what was expected. If you want a deeper explanation, try asking in a different way.",
     };
   }
 
   return {
-    summary: 'Not quite yet.',
-    hint: 'Compare your answer with the key idea the question is testing, then re-check where your reasoning diverged.',
+    summary: "Not quite.",
+    hint: "I can't fully figure out where you went wrong at the moment. Maybe try reading the question again and see if there's a key detail you missed?",
   };
 };
 
@@ -55,7 +55,7 @@ export const reviewAnswerWithGemini = async ({
     if (typeof backendMessage === 'string' && backendMessage.trim()) {
       const trimmed = backendMessage.trim();
       return {
-        summary: 'Rate limited.',
+        summary: 'A bit overwhelmed here!',
         hint: trimmed,
       };
     }
