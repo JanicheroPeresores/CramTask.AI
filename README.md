@@ -262,6 +262,7 @@ END
 ## Researchers / Developers
 
 **Janichero Peresores**
+**Kient Gascon*
 
 Mapúa Malayan Colleges Mindanao
 
