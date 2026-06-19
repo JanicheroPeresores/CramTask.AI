@@ -174,6 +174,18 @@ function DashboardPage({ user, onLogout }) {
     }
   };
 
+  // Silent refresh — doesn't show loading spinner, just updates data
+  const refreshAssignments = async () => {
+    try {
+      const response = await axios.get('/api/assignments', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setAssignments(response.data.assignments || []);
+    } catch (err) {
+      setError(t('errors.fetchAssignments'));
+    }
+  };
+
   useEffect(() => {
     fetchAssignments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -519,7 +531,7 @@ function DashboardPage({ user, onLogout }) {
                     onToggleComplete={handleToggleAssignmentCompletion}
                     updatingAssignmentIds={updatingAssignmentIds}
                   />
-                  <AssignmentProgressWidget assignments={assignments} onRefresh={fetchAssignments} />
+                  <AssignmentProgressWidget assignments={assignments} onRefresh={refreshAssignments} />
                 </>
               )}
             </section>
