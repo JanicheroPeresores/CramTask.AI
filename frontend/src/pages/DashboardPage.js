@@ -35,6 +35,13 @@ const DashboardIcon = ({ name, size = 18 }) => {
         <path d="M8 10h8M8 14h5" />
       </>
     ),
+    calendar: (
+      <>
+        <path d="M7 3v4M17 3v4" />
+        <path d="M4 8h16" />
+        <path d="M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" />
+      </>
+    ),
     plus: <path d="M12 5v14M5 12h14" />,
     logout: (
       <>
@@ -423,9 +430,9 @@ function DashboardPage({ user, onLogout }) {
         <aside className="dashboard-sidebar">
           <div className="sidebar-title">{t('dashboard.sidebarLabel')}</div>
           <nav className="sidebar-nav">
-            <a href="#classroom">
-              <span className="nav-icon"><DashboardIcon name="classroom" /></span>
-              <span>{t('dashboard.navClassroom')}</span>
+            <a href="#calendar">
+              <span className="nav-icon"><DashboardIcon name="calendar" /></span>
+              <span>{t('dashboard.navCalendar')}</span>
             </a>
             <a href="#assignments">
               <span className="nav-icon"><DashboardIcon name="tasks" /></span>
@@ -462,18 +469,6 @@ function DashboardPage({ user, onLogout }) {
                       />
                     </div>
                   ) : null}
-                  {totalAssignments > 0 ? (
-                    <div className="mini-progress-icons" aria-hidden>
-                      <div
-                        className="mini-segment mini-completed"
-                        style={{ width: `${Math.round((completedAssignments / Math.max(1, totalAssignments)) * 100)}%` }}
-                      />
-                      <div
-                        className="mini-segment mini-overdue"
-                        style={{ width: `${Math.round((overdueAssignments / Math.max(1, totalAssignments)) * 100)}%` }}
-                      />
-                    </div>
-                  ) : null}
                 </div>
               </div>
               <p className="summary-card-label">{t('dashboard.assignmentsTitle')}</p>
@@ -483,28 +478,6 @@ function DashboardPage({ user, onLogout }) {
               ) : (
                 <p>{completedAssignments} {t('common.submitted')} - {overdueAssignments} {t('dashboard.quickOverdue')}</p>
               )}
-            </div>
-            <div className="summary-card summary-card-combined">
-              <div className="summary-mini-icon summary-mini-icon--combined" aria-hidden>
-                <div className="combined-badges">
-                  <div className="badge badge-completed"><DashboardIcon name="check" size={14} /></div>
-                  <div className="badge badge-overdue"><DashboardIcon name="alert" size={14} /></div>
-                </div>
-              </div>
-              <div className="combined-content">
-                <div className="combined-row">
-                  <div className="combined-col">
-                    <p className="summary-card-label">Completed</p>
-                    <h3>{completedAssignments}</h3>
-                    <p>{t('common.submitted')}</p>
-                  </div>
-                  <div className="combined-col">
-                    <p className="summary-card-label">Overdue</p>
-                    <h3>{overdueAssignments}</h3>
-                    <p>{t('dashboard.quickOverdue')}</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -531,6 +504,7 @@ function DashboardPage({ user, onLogout }) {
             </section>
 
             <section id="assignments" className="dashboard-panel dashboard-panel--wide">
+              <span id="calendar" className="panel-scroll-anchor" aria-hidden="true" />
               <div className="panel-head">
                 <div>
                   <p className="panel-eyebrow">{t('dashboard.assignmentsEyebrow')}</p>
@@ -657,7 +631,7 @@ function DashboardPage({ user, onLogout }) {
       </aside>
 
       <nav className="dashboard-bottom-nav">
-        <a href="#classroom">{t('dashboard.navClassroom')}</a>
+        <a href="#calendar">{t('dashboard.navCalendar')}</a>
         <a href="#assignments">{t('dashboard.navTasks')}</a>
         <button type="button" onClick={() => setShowModal(true)}>
           <DashboardIcon name="plus" size={16} />

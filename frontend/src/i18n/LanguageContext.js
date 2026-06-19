@@ -56,6 +56,7 @@ const translations = {
       welcome: 'Welcome, {{name}}',
       sidebarLabel: 'MANAGE ASSIGNMENTS',
       navTasks: 'Tasks',
+      navCalendar: 'Calendar',
       navAssistant: 'Assistant',
       navClassroom: 'Classroom',
       classroomEyebrow: 'Google Classroom',
@@ -127,6 +128,7 @@ const translations = {
       allCompleted: 'Completed',
       minimize: 'Minimize',
       restore: 'Restore',
+      resize: 'Resize progress widget',
     },
     classroom: {
       title: 'Google Classroom Integration',
@@ -228,6 +230,7 @@ const translations = {
       welcome: 'Welcome, {{name}}',
       sidebarLabel: 'AYUSIN ANG ASSIGNMENTS',
       navTasks: 'Mga Gawain',
+      navCalendar: 'Kalendaryo',
       navAssistant: 'Assistant',
       navClassroom: 'Classroom',
       classroomEyebrow: 'Google Classroom',
@@ -299,6 +302,7 @@ const translations = {
       allCompleted: 'Tapos na',
       minimize: 'I-minimize',
       restore: 'Ibalik',
+      resize: 'I-resize ang progress widget',
     },
     classroom: {
       title: 'Google Classroom Integration',

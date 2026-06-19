@@ -3,7 +3,9 @@
   --progress-glow: rgba(200, 79, 95, 0.2);
   position: fixed;
   z-index: 70;
-  width: min(340px, calc(100vw - 24px));
+  width: var(--progress-widget-width, 340px);
+  min-width: 220px;
+  min-height: var(--progress-widget-height, 172px);
   display: flex;
   align-items: center;
   gap: 14px;
@@ -15,13 +17,16 @@
   cursor: grab;
   touch-action: none;
   user-select: none;
+  overflow: auto;
   transition: transform 0.24s ease, box-shadow 0.24s ease, width 0.2s ease, height 0.2s ease, padding 0.2s ease;
 }
 
 .assignment-progress-widget.is-collapsed {
   width: 60px;
+  min-width: 60px;
   padding: 10px;
   gap: 0;
+  overflow: visible;
 }
 
 .assignment-progress-widget.is-collapsed .progress-ring-panel,
@@ -46,6 +51,11 @@
   cursor: grabbing;
   transform: scale(1.01);
   box-shadow: 0 30px 80px rgba(41, 84, 91, 0.24);
+}
+
+.assignment-progress-widget.is-resizing {
+  cursor: nwse-resize;
+  transform: none;
 }
 
 :root[data-theme='dark'] .assignment-progress-widget {
@@ -98,6 +108,38 @@
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
   z-index: 1;
+}
+
+.progress-resize-handle {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid rgba(61, 110, 105, 0.2);
+  border-radius: 6px;
+  background:
+    linear-gradient(135deg, transparent 0 48%, rgba(61, 110, 105, 0.62) 49% 54%, transparent 55%),
+    linear-gradient(135deg, transparent 0 66%, rgba(61, 110, 105, 0.42) 67% 72%, transparent 73%),
+    rgba(255, 255, 255, 0.88);
+  cursor: nwse-resize;
+  touch-action: none;
+  z-index: 2;
+}
+
+.progress-resize-handle:hover,
+.progress-resize-handle:focus-visible {
+  transform: none;
+  box-shadow: 0 8px 18px rgba(41, 84, 91, 0.14);
+}
+
+:root[data-theme='dark'] .progress-resize-handle {
+  border-color: rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(135deg, transparent 0 48%, rgba(237, 246, 255, 0.64) 49% 54%, transparent 55%),
+    linear-gradient(135deg, transparent 0 66%, rgba(237, 246, 255, 0.42) 67% 72%, transparent 73%),
+    rgba(15, 23, 35, 0.92);
 }
 
 .assignment-progress-widget:hover .progress-toggle-button,
@@ -259,7 +301,6 @@
 
 @media (max-width: 560px) {
   .assignment-progress-widget {
-    width: min(320px, calc(100vw - 24px));
     flex-direction: row;
     padding: 14px;
   }

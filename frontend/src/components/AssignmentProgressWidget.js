@@ -5,6 +5,7 @@ import './AssignmentProgressWidget.css';
 const RING_RADIUS = 43;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 const POSITION_STORAGE_KEY = 'assignment-progress-position';
+const SIZE_STORAGE_KEY = 'assignment-progress-size';
 const COLLAPSE_STORAGE_KEY = 'assignment-progress-collapsed';
 
 const getDefaultPosition = () => {
@@ -15,30 +16,34 @@ const getDefaultPosition = () => {
   };
 };
 
-const clampPosition = (position) => {
-  if (typeof window === 'undefined') return position;
-  const maxX = Math.max(12, window.innerWidth - 340);
-  const maxY = Math.max(12, window.innerHeight - 260);
-
-  return {
-    x: Math.min(Math.max(12, position.x), maxX),
-    y: Math.min(Math.max(12, position.y), maxY),
-  };
-};
-
 const readStoredPosition = () => {
   if (typeof window === 'undefined') return getDefaultPosition();
 
   try {
     const savedPosition = JSON.parse(localStorage.getItem(POSITION_STORAGE_KEY));
     if (Number.isFinite(savedPosition?.x) && Number.isFinite(savedPosition?.y)) {
-      return clampPosition(savedPosition);
+      return savedPosition;
     }
   } catch (err) {
     localStorage.removeItem(POSITION_STORAGE_KEY);
   }
 
   return getDefaultPosition();
+};
+
+const readStoredSize = () => {
+  if (typeof window === 'undefined') return { width: 340, height: 172 };
+
+  try {
+    const savedSize = JSON.parse(localStorage.getItem(SIZE_STORAGE_KEY));
+    if (Number.isFinite(savedSize?.width) && Number.isFinite(savedSize?.height)) {
+      return savedSize;
+    }
+  } catch (err) {
+    localStorage.removeItem(SIZE_STORAGE_KEY);
+  }
+
+  return { width: 340, height: 172 };
 };
 
 const readStoredCollapsed = () => {
@@ -51,7 +56,9 @@ function AssignmentProgressWidget({ assignments }) {
   const { language, t } = useLanguage();
   const [currentTime, setCurrentTime] = useState(() => new Date());
   const [position, setPosition] = useState(readStoredPosition);
+  const [size, setSize] = useState(readStoredSize);
   const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(readStoredCollapsed);
 
   useEffect(() => {
@@ -64,14 +71,12 @@ function AssignmentProgressWidget({ assignments }) {
   }, [position]);
 
   useEffect(() => {
-    localStorage.setItem(COLLAPSE_STORAGE_KEY, isCollapsed ? 'true' : 'false');
-  }, [isCollapsed]);
+    localStorage.setItem(SIZE_STORAGE_KEY, JSON.stringify(size));
+  }, [size]);
 
   useEffect(() => {
-    const handleResize = () => setPosition((current) => clampPosition(current));
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    localStorage.setItem(COLLAPSE_STORAGE_KEY, isCollapsed ? 'true' : 'false');
+  }, [isCollapsed]);
 
   const dateFormatter = useMemo(
     () =>
@@ -123,12 +128,10 @@ function AssignmentProgressWidget({ assignments }) {
     setIsDragging(true);
 
     const handlePointerMove = (moveEvent) => {
-      setPosition(
-        clampPosition({
-          x: startPosition.x + moveEvent.clientX - startX,
-          y: startPosition.y + moveEvent.clientY - startY,
-        })
-      );
+      setPosition({
+        x: startPosition.x + moveEvent.clientX - startX,
+        y: startPosition.y + moveEvent.clientY - startY,
+      });
     };
 
     const handlePointerUp = () => {
@@ -141,11 +144,44 @@ function AssignmentProgressWidget({ assignments }) {
     window.addEventListener('pointerup', handlePointerUp, { once: true });
   };
 
+  const handleResizePointerDown = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    event.currentTarget.setPointerCapture(event.pointerId);
+
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const startSize = size;
+
+    setIsResizing(true);
+
+    const handlePointerMove = (moveEvent) => {
+      setSize({
+        width: Math.max(220, startSize.width + moveEvent.clientX - startX),
+        height: Math.max(120, startSize.height + moveEvent.clientY - startY),
+      });
+    };
+
+    const handlePointerUp = () => {
+      setIsResizing(false);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp, { once: true });
+  };
+
   return (
     <section
-      className={`assignment-progress-widget progress-${progressTone}${isDragging ? ' is-dragging' : ''}${isCollapsed ? ' is-collapsed' : ''}`}
+      className={`assignment-progress-widget progress-${progressTone}${isDragging ? ' is-dragging' : ''}${isResizing ? ' is-resizing' : ''}${isCollapsed ? ' is-collapsed' : ''}`}
       aria-label={t('progress.title')}
-      style={{ left: `${position.x}px`, top: `${position.y}px` }}
+      style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        '--progress-widget-width': `${size.width}px`,
+        '--progress-widget-height': `${size.height}px`,
+      }}
       onPointerDown={handlePointerDown}
     >
       <button
@@ -214,6 +250,16 @@ function AssignmentProgressWidget({ assignments }) {
         </div>
         <p className="progress-motivation">{t(`progress.${statusKey}`)}</p>
       </div>
+
+      {!isCollapsed && (
+        <button
+          type="button"
+          className="progress-resize-handle"
+          aria-label={t('progress.resize')}
+          title={t('progress.resize')}
+          onPointerDown={handleResizePointerDown}
+        />
+      )}
     </section>
   );
 }
