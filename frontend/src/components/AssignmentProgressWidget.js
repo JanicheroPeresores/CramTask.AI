@@ -103,14 +103,20 @@ function AssignmentProgressWidget({ assignments, onRefresh }) {
     [language]
   );
 
-  // Count only active (unsubmitted) assignments — matches exactly what the calendar shows
-  const activeAssignments = assignments.filter(
-    (assignment) => assignment.submission_status !== 'submitted'
-  );
-  const total = activeAssignments.length;
-  const completed = 0;
-  const remaining = total;
-  const percentage = total === 0 ? 100 : 0;
+  const getAssignmentStatus = (assignment) =>
+    String(assignment.submission_status || assignment.state || assignment.status || '')
+      .trim()
+      .toUpperCase();
+
+  const isAssignmentCompleted = (assignment) => {
+    const status = getAssignmentStatus(assignment);
+    return ['SUBMITTED', 'TURNED_IN', 'RETURNED', 'COMPLETED'].includes(status);
+  };
+
+  const total = assignments.length;
+  const completed = assignments.filter(isAssignmentCompleted).length;
+  const remaining = total - completed;
+  const percentage = total === 0 ? 100 : Math.round((completed / total) * 100);
   const progressOffset = RING_CIRCUMFERENCE * (1 - percentage / 100);
   const progressTone = percentage >= 80 ? 'high' : percentage >= 40 ? 'medium' : 'low';
 

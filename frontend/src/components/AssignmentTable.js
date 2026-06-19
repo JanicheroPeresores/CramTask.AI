@@ -71,10 +71,25 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
     }
   };
 
+  const getAssignmentStatus = (assignment) =>
+    String(assignment.submission_status || assignment.state || assignment.status || '')
+      .trim()
+      .toUpperCase();
+
+  const isAssignmentCompleted = (assignment) => {
+    const status = getAssignmentStatus(assignment);
+    return [
+      'SUBMITTED',
+      'TURNED_IN',
+      'RETURNED',
+      'COMPLETED',
+    ].includes(status);
+  };
+
   const activeAssignments = useMemo(
     () =>
       assignments
-        .filter((assignment) => assignment.submission_status !== 'submitted')
+        .filter((assignment) => !isAssignmentCompleted(assignment))
         .slice()
         .sort((a, b) => new Date(a.due_date || '9999-12-31') - new Date(b.due_date || '9999-12-31')),
     [assignments]
@@ -110,6 +125,11 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
     [selectedDay, selectedMonthAssignments]
   );
 
+  const completedAssignments = useMemo(
+    () => assignments.filter(isAssignmentCompleted),
+    [assignments]
+  );
+
   useEffect(() => {
     if (!monthKeys.length) {
       setSelectedMonth('');
@@ -132,9 +152,11 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
     }
   }, [dayKeys, selectedDay]);
 
-  const renderAssignmentItem = (assignment) => {
+  const renderAssignmentItem = (assignment, completed = false) => {
     const priorityText = getPriorityDisplayText(assignment.priority);
     const priorityClass = getPriorityBadgeClass(assignment.priority);
+    const statusClass = completed ? 'status-submitted' : 'status-pending';
+    const statusLabel = completed ? t('common.submitted') : t('common.notSubmitted');
 
     return (
       <article key={assignment.id} className="calendar-assignment">
@@ -146,8 +168,8 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
             <span>{formatDate(assignment.due_date)}</span>
           </div>
           <div className="assignment-status-bar">
-            <div className="status-indicator status-pending">
-              <span className="status-label">{t('common.notSubmitted')}</span>
+            <div className={`status-indicator ${statusClass}`}>
+              <span className="status-label">{statusLabel}</span>
             </div>
             <div className={`priority-badge ${priorityClass}`}>
               {priorityText}
@@ -161,9 +183,9 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
             className="btn-complete"
             onClick={() => onToggleComplete(assignment)}
             disabled={updatingAssignmentIds.includes(assignment.id)}
-            title={t('common.submitted')}
+            title={completed ? t('progress.restore') : t('common.submitted')}
           >
-            Done
+            {completed ? t('progress.restore') : t('common.done')}
           </button>
           <button
             type="button"
@@ -171,7 +193,7 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
             onClick={() => onDelete(assignment.id)}
             title={t('assignments.deleteTitle')}
           >
-            Delete
+            {t('assignments.deleteTitle')}
           </button>
         </div>
       </article>
@@ -180,7 +202,7 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
 
   return (
     <div className="table-wrapper">
-      {activeAssignments.length === 0 ? (
+      {activeAssignments.length === 0 && completedAssignments.length === 0 ? (
         <div className="empty-state">
           <p>{t('assignments.empty')}</p>
         </div>
@@ -245,6 +267,18 @@ function AssignmentTable({ assignments, onDelete, onToggleComplete, updatingAssi
               </div>
               <div className="no-date-list">
                 {noDateAssignments.map((assignment) => renderAssignmentItem(assignment))}
+              </div>
+            </section>
+          )}
+
+          {completedAssignments.length > 0 && (
+            <section className="assignment-completed-section">
+              <div className="assignment-month-head">
+                <h3>{t('progress.completed')}</h3>
+                <span>{completedAssignments.length}</span>
+              </div>
+              <div className="no-date-list">
+                {completedAssignments.map((assignment) => renderAssignmentItem(assignment, true))}
               </div>
             </section>
           )}

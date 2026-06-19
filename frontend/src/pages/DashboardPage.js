@@ -181,6 +181,7 @@ function DashboardPage({ user, onLogout }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAssignments(response.data.assignments || []);
+      setGoogleClassroomRefresh((prev) => prev + 1);
     } catch (err) {
       setError(t('errors.fetchAssignments'));
     }
@@ -285,6 +286,31 @@ function DashboardPage({ user, onLogout }) {
     }
   };
 
+  const getAssignmentStatus = (assignment) =>
+    String(assignment.submission_status || assignment.state || assignment.status || '')
+      .trim()
+      .toUpperCase();
+
+  const isAssignmentCompleted = (assignment) => {
+    const status = getAssignmentStatus(assignment);
+    return (
+      status === 'SUBMITTED' ||
+      status === 'TURNED_IN' ||
+      status === 'RETURNED' ||
+      status === 'COMPLETED'
+    );
+  };
+
+  const combinedAssignments = [...assignments, ...googleClassroomAssignments];
+  const totalAssignments = combinedAssignments.length;
+  const completedAssignments = combinedAssignments.filter(isAssignmentCompleted).length;
+  const overdueAssignments = combinedAssignments.filter(
+    (assignment) =>
+      !isAssignmentCompleted(assignment) &&
+      assignment.due_date &&
+      new Date(assignment.due_date) < new Date()
+  ).length;
+
   const handleLogout = () => {
     onLogout();
     navigate('/');
@@ -324,14 +350,6 @@ function DashboardPage({ user, onLogout }) {
     sessionStorage.setItem(getIntroStorageKey(user), 'true');
     setShowIntro(false);
   };
-
-  const totalAssignments = assignments.length;
-  const completedAssignments = assignments.filter(
-    (assignment) => assignment.submission_status === 'submitted'
-  ).length;
-  const overdueAssignments = assignments.filter((assignment) => {
-    return assignment.due_date ? new Date(assignment.due_date) < new Date() : false;
-  }).length;
 
   const handleAssistantSend = async (overrideMessage) => {
     const nextMessage = (overrideMessage ?? assistantInput).trim();
@@ -531,7 +549,10 @@ function DashboardPage({ user, onLogout }) {
                     onToggleComplete={handleToggleAssignmentCompletion}
                     updatingAssignmentIds={updatingAssignmentIds}
                   />
-                  <AssignmentProgressWidget assignments={assignments} onRefresh={refreshAssignments} />
+                  <AssignmentProgressWidget
+                    assignments={combinedAssignments}
+                    onRefresh={refreshAssignments}
+                  />
                 </>
               )}
             </section>
