@@ -113,12 +113,6 @@ function AssignmentProgressWidget({ assignments, onRefresh }) {
   const percentage = total === 0 ? 100 : 0;
   const progressOffset = RING_CIRCUMFERENCE * (1 - percentage / 100);
   const progressTone = percentage >= 80 ? 'high' : percentage >= 40 ? 'medium' : 'low';
-  const statusKey =
-    total === 0 && assignments.length > 0
-      ? 'allCompleted'
-      : total === 0
-      ? 'keepGoing'
-      : 'keepGoing';
 
   const handlePointerDown = (event) => {
     event.preventDefault();
