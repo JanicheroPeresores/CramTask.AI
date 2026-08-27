@@ -23,9 +23,10 @@ const isEmailUniqueViolation = (err) => (
 // Sign up
 router.post('/signup', async (req, res) => {
   try {
-    const username = req.body.username?.trim();
-    const { password, confirmPassword } = req.body;
-    const email = req.body.email?.trim().toLowerCase();
+    const body = req.body || {};
+    const username = body.username?.trim();
+    const { password, confirmPassword } = body;
+    const email = body.email?.trim().toLowerCase();
 
     if (!username || !email || !password || !confirmPassword) {
       return res.status(400).json({ message: 'All fields are required' });
@@ -33,6 +34,10 @@ router.post('/signup', async (req, res) => {
 
     if (password !== confirmPassword) {
       return res.status(400).json({ message: 'Passwords do not match' });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long' });
     }
 
     const existingUser = await User.findByUsername(username);

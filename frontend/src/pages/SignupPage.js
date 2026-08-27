@@ -48,7 +48,11 @@ function SignupPage({ onSignup }) {
       onSignup(response.data.token, response.data.user);
       navigate('/dashboard');
     } catch (err) {
-      setError(translateServerMessage(err.response?.data?.message, 'errors.signupFailed'));
+      const responseMessage = err.response?.data?.message;
+      const fallbackMessage = err.response
+        ? `Signup failed (${err.response.status}). Please try again.`
+        : 'Unable to reach the signup service. Please check your connection and try again.';
+      setError(translateServerMessage(responseMessage, fallbackMessage));
     } finally {
       setLoading(false);
     }

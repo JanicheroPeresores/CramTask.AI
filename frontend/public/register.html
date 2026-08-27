@@ -238,7 +238,13 @@
                     body: JSON.stringify({ username, email, password, confirmPassword }),
                 });
 
-                const data = await response.json();
+                const responseText = await response.text();
+                let data = {};
+                try {
+                    data = responseText ? JSON.parse(responseText) : {};
+                } catch (parseError) {
+                    data = {};
+                }
 
                 if (response.ok) {
                     showAlert('Account created successfully! Redirecting to login...', 'success');
@@ -246,7 +252,7 @@
                         window.location.href = 'login.html';
                     }, 2000);
                 } else {
-                    showAlert(data.message || 'Registration failed', 'error');
+                    showAlert(data.message || `Registration failed (${response.status})`, 'error');
                 }
             } catch (error) {
                 showAlert('An error occurred. Please try again.', 'error');
