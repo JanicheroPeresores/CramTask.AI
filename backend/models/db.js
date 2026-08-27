@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const path = require('path');
 
 let sql = null;
 
@@ -49,16 +50,14 @@ const getDatabase = async () => {
 
   const databaseUrl = process.env.DATABASE_URL;
   const databaseUrlUnpooled = process.env.DATABASE_URL_UNPOOLED;
-  
-  if (!databaseUrl && !databaseUrlUnpooled) {
-    throw new Error(
-      'DATABASE_URL or DATABASE_URL_UNPOOLED environment variable is not set. Add a database connection string.'
-    );
-  }
+  const fallbackDatabasePath = process.env.VERCEL
+    ? '/tmp/cramtask.sqlite'
+    : path.join(__dirname, '../../database.db');
+  const configuredDatabaseUrl = databaseUrl || databaseUrlUnpooled || `sqlite://${fallbackDatabasePath}`;
 
-  if (databaseUrl && databaseUrl.startsWith('sqlite://')) {
+  if (configuredDatabaseUrl.startsWith('sqlite://')) {
     // SQLite setup
-    const dbPath = databaseUrl.replace('sqlite://', '');
+    const dbPath = configuredDatabaseUrl.replace('sqlite://', '');
     const { sqlite3, open } = await loadSqlite();
     return open({
       filename: dbPath,
@@ -111,7 +110,9 @@ const getDatabase = async () => {
 
 const initDatabase = async () => {
   const sql = await getDatabase();
-  const databaseUrl = process.env.DATABASE_URL || process.env.DATABASE_URL_UNPOOLED;
+  const databaseUrl = process.env.DATABASE_URL
+    || process.env.DATABASE_URL_UNPOOLED
+    || `sqlite://${process.env.VERCEL ? '/tmp/cramtask.sqlite' : path.join(__dirname, '../../database.db')}`;
   const isSQLite = databaseUrl.startsWith('sqlite://');
 
   // Adjust SQL syntax based on database type
