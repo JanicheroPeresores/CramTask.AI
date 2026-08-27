@@ -252,7 +252,7 @@
                         window.location.href = 'login.html';
                     }, 2000);
                 } else {
-                    showAlert(data.message || `Registration failed (${response.status})`, 'error');
+                    showAlert(data.message || data.error || `Registration failed (${response.status})`, 'error');
                 }
             } catch (error) {
                 showAlert('An error occurred. Please try again.', 'error');
