@@ -111,8 +111,7 @@ const getDatabase = async () => {
 
 const initDatabase = async () => {
   const sql = await getDatabase();
-  const databaseUrl = process.env.DATABASE_URL || process.env.DATABASE_URL_UNPOOLED;
-  const isSQLite = databaseUrl.startsWith('sqlite://');
+  const isSQLite = process.env.DATABASE_URL.startsWith('sqlite://');
 
   // Adjust SQL syntax based on database type
   const serialType = isSQLite ? 'INTEGER PRIMARY KEY AUTOINCREMENT' : 'SERIAL PRIMARY KEY';
